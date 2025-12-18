@@ -8,10 +8,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useTheme } from '@/components/theme-provider'
 
+type Theme = 'light' | 'dark' | 'system'
+
 export function ModeToggle() {
   const { setTheme } = useTheme()
 
-  const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
+  const handleThemeChange = (newTheme: Theme) => {
     setTheme(newTheme)
   }
 
