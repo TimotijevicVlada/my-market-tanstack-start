@@ -4,7 +4,7 @@ import { Check, ChevronsUpDown } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/custom/Button'
 import {
   Command,
   CommandEmpty,
@@ -136,8 +136,14 @@ function RouteComponent() {
               required
             />
           </div>
-          <Button type="submit" disabled={isPending}>
-            {isPending ? 'Kreiranje kategorije...' : 'Kreiraj kategoriju'}
+          <Button
+            type="submit"
+            loading={{
+              state: isPending,
+              text: 'Kreiranje kategorije...',
+            }}
+          >
+            Kreiraj kategoriju
           </Button>
         </form>
       </section>

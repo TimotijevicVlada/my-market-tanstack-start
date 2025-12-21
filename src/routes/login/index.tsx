@@ -36,7 +36,7 @@ function LoginComponent() {
       {
         onError: (err) => {
           setError('root', {
-            message: err.message || 'Prijava neuspesna',
+            message: err.message || 'Prijava neuspešna',
           })
         },
       },
@@ -51,7 +51,7 @@ function LoginComponent() {
           {(error || errors.root) && (
             <div className="bg-destructive/15 text-destructive px-4 py-2 rounded-md text-sm">
               {errors.root?.message ||
-                (error instanceof Error ? error.message : 'Prijava neuspesna')}
+                (error instanceof Error ? error.message : 'Prijava neuspešna')}
             </div>
           )}
           <FormField
