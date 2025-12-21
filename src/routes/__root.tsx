@@ -7,13 +7,12 @@ import {
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
-import Header from '../components/Header'
-import { ThemeProvider } from '../components/theme-provider'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
 import { getLoggedInUser } from '@/api/auth/server'
+import Header from '@/layout/Header'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -54,28 +53,57 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   const { user } = loaderData
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const stored = localStorage.getItem('theme');
+                  let themeMode = 'light';
+                  
+                  if (stored) {
+                    const parsed = JSON.parse(stored);
+                    themeMode = parsed?.state?.themeMode || 'light';
+                  }
+                  
+                  const root = document.documentElement;
+                  root.classList.remove('light', 'dark');
+                  
+                  if (themeMode === 'system') {
+                    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                    root.classList.add(systemTheme);
+                  } else {
+                    root.classList.add(themeMode);
+                  }
+                } catch (e) {
+                  // Fallback to light theme if there's an error
+                  document.documentElement.classList.remove('light', 'dark');
+                  document.documentElement.classList.add('light');
+                }
+              })();
+            `,
+          }}
+        />
       </head>
       <body>
-        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <Header initialUser={user} />
-          {children}
-          <Toaster />
-          <TanStackDevtools
-            config={{
-              position: 'bottom-right',
-            }}
-            plugins={[
-              {
-                name: 'Tanstack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-              TanStackQueryDevtools,
-            ]}
-          />
-        </ThemeProvider>
+        <Header initialUser={user} />
+        {children}
+        <Toaster />
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            TanStackQueryDevtools,
+          ]}
+        />
         <Scripts />
       </body>
     </html>
