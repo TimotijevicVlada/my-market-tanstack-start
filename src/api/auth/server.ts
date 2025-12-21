@@ -1,51 +1,33 @@
 import { createServerFn } from '@tanstack/react-start'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
-import type { User } from '@/api/middleware/types'
+import type { SignOptions } from 'jsonwebtoken'
+import type { LoginPayload, RegisterPayload } from './types'
 import { db } from '@/db'
 import { users } from '@/db/schema'
 
 const JWT_SECRET = process.env.JWT_SECRET!
 
 // Helper function to sign JWT token (server-only)
-function signJWTToken(userId: string, expiresIn: string = '7d'): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn } as jwt.SignOptions)
-}
-
-interface LoginPayload {
-  email: string
-  password: string
-}
-
-interface LoginResponse {
-  token: string
-  user: User
-}
-
-interface RegisterPayload {
-  username: string
-  email: string
-  password: string
-  role?: 'producer' | 'buyer' | 'admin'
-}
-
-interface RegisterResponse {
-  token: string
-  user: User
+function signJWTToken(
+  userId: string,
+  expiresIn: SignOptions['expiresIn'] = '7d',
+) {
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn })
 }
 
 export const login = createServerFn({
   method: 'POST',
 })
   .inputValidator((data: LoginPayload) => data)
-  .handler(async ({ data }): Promise<LoginResponse> => {
+  .handler(async ({ data }) => {
     // Find user by email
     const user = await db.query.users.findFirst({
       where: (userTable, { eq }) => eq(userTable.email, data.email),
     })
 
     if (!user) {
-      throw new Error('Invalid email or password')
+      throw new Error('Neispravna email adresa')
     }
 
     // Verify password
@@ -55,22 +37,17 @@ export const login = createServerFn({
     )
 
     if (!isValidPassword) {
-      throw new Error('Invalid email or password')
+      throw new Error('Neispravna lozinka')
     }
 
     // Generate JWT token
     const token = signJWTToken(user.id)
 
     // Return token and user (without password hash)
+    const { passwordHash: _, ...userWithoutPassword } = user
     return {
       token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt ?? new Date(),
-      },
+      user: userWithoutPassword,
     }
   })
 
@@ -78,17 +55,14 @@ export const register = createServerFn({
   method: 'POST',
 })
   .inputValidator((data: RegisterPayload) => data)
-  .handler(async ({ data }): Promise<RegisterResponse> => {
-    // Default role to 'buyer' if not provided
-    const role = data.role || 'buyer'
-
+  .handler(async ({ data }) => {
     // Check if email already exists
     const existingUserByEmail = await db.query.users.findFirst({
       where: (userTable, { eq }) => eq(userTable.email, data.email),
     })
 
     if (existingUserByEmail) {
-      throw new Error('Email already registered')
+      throw new Error('Email je već zauzet')
     }
 
     // Check if username already exists
@@ -97,7 +71,7 @@ export const register = createServerFn({
     })
 
     if (existingUserByUsername) {
-      throw new Error('Username already taken')
+      throw new Error('Korisničko ime je već zauzeto')
     }
 
     // Hash password
@@ -110,7 +84,7 @@ export const register = createServerFn({
         username: data.username,
         email: data.email,
         passwordHash,
-        role,
+        role: data.role || 'buyer',
       })
       .returning()
 
@@ -118,14 +92,10 @@ export const register = createServerFn({
     const token = signJWTToken(user.id)
 
     // Return token and user (without password hash)
+
+    const { passwordHash: _, ...userWithoutPassword } = user
     return {
       token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        createdAt: user.createdAt ?? new Date(),
-      },
+      user: userWithoutPassword,
     }
   })

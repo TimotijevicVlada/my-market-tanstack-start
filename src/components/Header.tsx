@@ -13,10 +13,10 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-5">
         <Link to="/login">
-          <Button>Login</Button>
+          <Button variant="ghost">Prijavi se</Button>
         </Link>
         <Link to="/register">
-          <Button>Register</Button>
+          <Button>Registruj se</Button>
         </Link>
         <Button asChild>
           <Link to="/create-category">

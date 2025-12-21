@@ -37,7 +37,7 @@ function RegisterComponent() {
       {
         onError: (err) => {
           setError('root', {
-            message: err.message || 'Registration failed',
+            message: err.message || 'Registracija neuspešna',
           })
         },
       },
@@ -48,41 +48,41 @@ function RegisterComponent() {
     <div className="min-h-screen bg-background flex justify-center">
       <section className="w-full max-w-md p-8">
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-2xl font-bold text-center mb-4">Register</h1>
+          <h1 className="text-2xl font-bold text-center mb-4">Registracija</h1>
 
           {(error || errors.root) && (
             <div className="bg-destructive/15 text-destructive px-4 py-2 rounded-md text-sm">
               {errors.root?.message ||
                 (error instanceof Error
                   ? error.message
-                  : 'Registration failed')}
+                  : 'Registracija neuspešna')}
             </div>
           )}
 
           <FormField
-            label="Username"
-            placeholder="Enter your username"
+            label="Korisničko ime"
+            placeholder="Unesite vaše korisničko ime"
             error={errors.username?.message}
             {...registerField('username')}
           />
 
           <FormField
-            label="Email"
-            placeholder="Enter your email"
+            label="Email adresa"
+            placeholder="Unesite vašu email adresu"
             error={errors.email?.message}
             {...registerField('email')}
           />
 
           <FormField
-            label="Role"
-            placeholder="Select your role"
+            label="Uloga"
+            placeholder="Izaberite vašu ulogu"
             error={errors.role?.message}
             {...registerField('role')}
           />
 
           <FormField
-            label="Password"
-            placeholder="Enter your password"
+            label="Lozinka"
+            placeholder="Unesite vašu lozinku"
             error={errors.password?.message}
             type="password"
             autoComplete="new-password"
@@ -90,8 +90,8 @@ function RegisterComponent() {
           />
 
           <FormField
-            label="Confirm Password"
-            placeholder="Confirm your password"
+            label="Potvrdite lozinku"
+            placeholder="Potvrdite vašu lozinku"
             error={errors.confirmPassword?.message}
             type="password"
             autoComplete="new-password"
@@ -102,17 +102,17 @@ function RegisterComponent() {
             type="submit"
             loading={{
               state: isPending,
-              text: 'Registering...',
+              text: 'Registracija...',
             }}
             className="w-full"
           >
-            Register
+            Registruj se
           </Button>
 
           <div className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
+            Već imate nalog?{' '}
             <Link to="/login" className="text-primary hover:underline">
-              Login
+              Prijavi se
             </Link>
           </div>
         </form>

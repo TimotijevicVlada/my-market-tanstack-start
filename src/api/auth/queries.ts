@@ -24,7 +24,7 @@ export function useLogin() {
     onSuccess: (response) => {
       setAuthToken(response.token)
       navigate({ to: '/' })
-      toast.success('Login successful')
+      toast.success('Prijavljivanje uspešno')
     },
     onError: (error) => {
       toast.error(error.message)
@@ -40,7 +40,7 @@ export function useRegister() {
     onSuccess: (response) => {
       setAuthToken(response.token)
       navigate({ to: '/' })
-      toast.success('Register successful')
+      toast.success('Registracija uspešna')
     },
     onError: (error) => {
       toast.error(error.message)

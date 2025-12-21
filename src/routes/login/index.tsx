@@ -36,7 +36,7 @@ function LoginComponent() {
       {
         onError: (err) => {
           setError('root', {
-            message: err.message || 'Login failed',
+            message: err.message || 'Prijava neuspesna',
           })
         },
       },
@@ -47,23 +47,23 @@ function LoginComponent() {
     <div className="min-h-screen bg-background flex justify-center">
       <section className="w-full max-w-md p-8">
         <form className="flex flex-col gap-4" onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
+          <h1 className="text-2xl font-bold text-center mb-4">Prijava</h1>
           {(error || errors.root) && (
             <div className="bg-destructive/15 text-destructive px-4 py-2 rounded-md text-sm">
               {errors.root?.message ||
-                (error instanceof Error ? error.message : 'Login failed')}
+                (error instanceof Error ? error.message : 'Prijava neuspesna')}
             </div>
           )}
           <FormField
             label="Email"
-            placeholder="Enter your email"
+            placeholder="Unesite vašu email adresu"
             error={errors.email?.message}
             startIcon={<MailIcon />}
             {...register('email')}
           />
           <FormField
             label="Password"
-            placeholder="Enter your password"
+            placeholder="Unesite vašu lozinku"
             error={errors.password?.message}
             type={showPassword ? 'text' : 'password'}
             autoComplete="current-password"
@@ -85,16 +85,16 @@ function LoginComponent() {
             type="submit"
             loading={{
               state: isPending,
-              text: 'Logging in...',
+              text: 'Prijavljivanje...',
             }}
             className="w-full"
           >
-            Login
+            Prijavi se
           </Button>
           <div className="text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            Nemate nalog?{' '}
             <Link to="/register" className="text-primary hover:underline">
-              Register
+              Registruj se
             </Link>
           </div>
         </form>
