@@ -3,6 +3,7 @@ import {
   Link,
   Scripts,
   createRootRouteWithContext,
+  useLoaderData,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
@@ -12,12 +13,17 @@ import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
 import { Toaster } from '@/components/ui/sonner'
+import { getLoggedInUser } from '@/api/auth/server'
 
 interface MyRouterContext {
   queryClient: QueryClient
 }
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+  loader: async () => {
+    const user = await getLoggedInUser()
+    return { user }
+  },
   head: () => ({
     meta: [
       {
@@ -44,6 +50,9 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const loaderData = useLoaderData({ from: '__root__' })
+  const { user } = loaderData
+
   return (
     <html lang="en">
       <head>
@@ -51,7 +60,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <Header />
+          <Header initialUser={user} />
           {children}
           <Toaster />
           <TanStackDevtools

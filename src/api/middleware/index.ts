@@ -4,6 +4,13 @@ import type { User } from './types'
 
 // Export types for use in other files
 export type { User } from './types'
+interface JWTPayload {
+  userId: string
+  email?: string
+  role?: string
+  iat?: number
+  exp?: number
+}
 
 // Request middleware for logging
 export const loggingMiddleware = createMiddleware().server(
@@ -138,13 +145,6 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
       if (authToken) {
         try {
           // Verify JWT token
-          interface JWTPayload {
-            userId: string
-            email?: string
-            role?: string
-            iat?: number
-            exp?: number
-          }
 
           const decoded = jwt.verify(authToken, JWT_SECRET) as JWTPayload
 

@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { authMiddleware } from '../middleware'
 import type { SignOptions } from 'jsonwebtoken'
 import type { LoginPayload, RegisterPayload } from './types'
 import { db } from '@/db'
@@ -98,4 +99,12 @@ export const register = createServerFn({
       token,
       user: userWithoutPassword,
     }
+  })
+
+export const getLoggedInUser = createServerFn({
+  method: 'GET',
+})
+  .middleware([authMiddleware])
+  .handler(({ context }) => {
+    return context.user
   })
