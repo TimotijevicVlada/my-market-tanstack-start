@@ -87,9 +87,9 @@ function NotFoundComponent() {
     <div className="min-h-screen bg-background flex justify-center items-center">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">404</h1>
-        <p className="text-muted-foreground mb-4">Page not found</p>
+        <p className="text-muted-foreground mb-4">Stranica nije pronađena</p>
         <Link to="/" className="text-primary hover:underline inline-block">
-          Go back home
+          Vrati se na početnu stranicu
         </Link>
       </div>
     </div>

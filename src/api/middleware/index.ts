@@ -1,9 +1,9 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
+import jwt from 'jsonwebtoken'
 import type { User } from './types'
+import { db } from '@/db'
 
-// Export types for use in other files
-export type { User } from './types'
 interface JWTPayload {
   userId: string
   email?: string
@@ -77,8 +77,8 @@ export const authTokenMiddleware = createMiddleware({
   } else if (cookies) {
     const tokenCookie = cookies
       .split(';')
-      .map((c: string) => c.trim())
-      .find((c: string) => c.startsWith('auth-token='))
+      .map((c) => c.trim())
+      .find((c) => c.startsWith('auth-token='))
     if (tokenCookie) {
       authToken = tokenCookie.split('=')[1]
     }
@@ -103,8 +103,8 @@ export function getAuthTokenFromRequest(request: Request): string | null {
   if (cookies) {
     const tokenCookie = cookies
       .split(';')
-      .map((c: string) => c.trim())
-      .find((c: string) => c.startsWith('auth-token='))
+      .map((c) => c.trim())
+      .find((c) => c.startsWith('auth-token='))
     if (tokenCookie) {
       return tokenCookie.split('=')[1]
     }
@@ -120,21 +120,7 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
     let user: User | null = null
 
     try {
-      // Lazy-load all server-only dependencies only when middleware runs
-      const [{ eq }, { db }, { users }, jwtModule, { config }] =
-        await Promise.all([
-          import('drizzle-orm'),
-          import('@/db'),
-          import('@/db/schema'),
-          import('jsonwebtoken'),
-          import('dotenv'),
-        ])
-
-      config()
-
       const JWT_SECRET = process.env.JWT_SECRET!
-      // jsonwebtoken can export as default or named - handle both
-      const jwt = 'default' in jwtModule ? jwtModule.default : jwtModule
 
       // Get request to extract auth token
       const request = getRequest()
@@ -150,7 +136,7 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
 
           // Load user from database using the user ID from the token
           const dbUser = await db.query.users.findFirst({
-            where: eq(users.id, decoded.userId),
+            where: (userTable, { eq }) => eq(userTable.id, decoded.userId),
           })
 
           if (dbUser) {
@@ -170,7 +156,6 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
       console.error('Auth middleware error:', error)
     }
 
-    // Always return the same context shape
     return next({
       context: {
         user,
@@ -183,10 +168,8 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
 export const requireAuthMiddleware = createMiddleware({ type: 'function' })
   .middleware([authMiddleware])
   .server(async ({ next, context }) => {
-    // Type assertion needed due to middleware context typing
-    const ctx = context as unknown as { user?: User | null }
-    if (ctx.user === null || ctx.user === undefined) {
-      throw new Error('Unauthorized: Authentication required')
+    if (!context.user) {
+      throw new Error('Neovlašćeni pristup: Potrebna je autentifikacija')
     }
 
     return next()
@@ -197,14 +180,13 @@ export const requireRoleMiddleware = (allowedRoles: Array<User['role']>) =>
   createMiddleware({ type: 'function' })
     .middleware([requireAuthMiddleware])
     .server(async ({ next, context }) => {
-      const ctx = context as unknown as { user?: User }
-      if (!ctx.user) {
-        throw new Error('Unauthorized: Authentication required')
+      if (!context.user) {
+        throw new Error('Neovlašćeni pristup: Potrebna je autentifikacija')
       }
 
-      if (!allowedRoles.includes(ctx.user.role)) {
+      if (!allowedRoles.includes(context.user.role)) {
         throw new Error(
-          `Forbidden: Required role: ${allowedRoles.join(' or ')}`,
+          `Zabranjeni pristup: Potrebna je uloga: ${allowedRoles.join(' ili ')}`,
         )
       }
 
