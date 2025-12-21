@@ -71,6 +71,20 @@
       "when": 1765709170352,
       "tag": "0009_plain_warpath",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1766164565403,
+      "tag": "0010_first_lady_deathstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1766264049389,
+      "tag": "0011_powerful_kingpin",
+      "breakpoints": true
     }
   ]
 }

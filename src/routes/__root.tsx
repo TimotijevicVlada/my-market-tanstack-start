@@ -1,5 +1,6 @@
 import {
   HeadContent,
+  Link,
   Scripts,
   createRootRouteWithContext,
 } from '@tanstack/react-router'
@@ -10,6 +11,7 @@ import { ThemeProvider } from '../components/theme-provider'
 import TanStackQueryDevtools from '../integrations/tanstack-query/devtools'
 import appCss from '../styles.css?url'
 import type { QueryClient } from '@tanstack/react-query'
+import { Toaster } from '@/components/ui/sonner'
 
 interface MyRouterContext {
   queryClient: QueryClient
@@ -38,6 +40,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
   }),
 
   shellComponent: RootDocument,
+  notFoundComponent: NotFoundComponent,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -50,6 +53,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <Header />
           {children}
+          <Toaster />
           <TanStackDevtools
             config={{
               position: 'bottom-right',
@@ -66,5 +70,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+  )
+}
+
+function NotFoundComponent() {
+  return (
+    <div className="min-h-screen bg-background flex justify-center items-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">404</h1>
+        <p className="text-muted-foreground mb-4">Page not found</p>
+        <Link to="/" className="text-primary hover:underline inline-block">
+          Go back home
+        </Link>
+      </div>
+    </div>
   )
 }
