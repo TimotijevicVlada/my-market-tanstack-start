@@ -18,7 +18,7 @@ export function App() {
   const categories = useLoaderData({ from: '/' })
 
   return (
-    <div className="min-h-screen bg-background flex justify-center">
+    <div className="min-h-screen flex justify-center">
       <section className="flex  gap-4 pt-5 h-full w-5xl">
         <Carousel
           opts={{

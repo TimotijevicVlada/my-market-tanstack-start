@@ -21,7 +21,7 @@ import {
 import { getCategories } from '@/api/categories/server'
 import { useCreateCategory } from '@/api/categories/queries'
 
-export const Route = createFileRoute('/create-category')({
+export const Route = createFileRoute('/_private/create-category')({
   component: RouteComponent,
   loader: async () => await getCategories(),
 })
@@ -30,7 +30,7 @@ function RouteComponent() {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
 
-  const categories = useLoaderData({ from: '/create-category' })
+  const categories = useLoaderData({ from: '/_private/create-category' })
 
   const { mutate: createCategory, isPending } = useCreateCategory()
 
@@ -68,7 +68,10 @@ function RouteComponent() {
                 type="button"
               >
                 {value
-                  ? categories.find((category) => category.id === value)?.name
+                  ? categories.find(
+                      (category: { id: string; name: string }) =>
+                        category.id === value,
+                    )?.name
                   : 'Select category...'}
                 <ChevronsUpDown className="opacity-50" />
               </Button>
@@ -82,31 +85,36 @@ function RouteComponent() {
                 <CommandList>
                   <CommandEmpty>No category found.</CommandEmpty>
                   <CommandGroup>
-                    {categories.map((category) => (
-                      <CommandItem
-                        key={category.id}
-                        value={category.name}
-                        onSelect={(currentValue) => {
-                          const selectedCategory = categories.find(
-                            (cat) => cat.name === currentValue,
-                          )
-                          setValue(
-                            selectedCategory?.id === value
-                              ? ''
-                              : selectedCategory?.id || '',
-                          )
-                          setOpen(false)
-                        }}
-                      >
-                        {category.name}
-                        <Check
-                          className={cn(
-                            'ml-auto',
-                            value === category.id ? 'opacity-100' : 'opacity-0',
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
+                    {categories.map(
+                      (category: { id: string; name: string }) => (
+                        <CommandItem
+                          key={category.id}
+                          value={category.name}
+                          onSelect={(currentValue) => {
+                            const selectedCategory = categories.find(
+                              (cat: { id: string; name: string }) =>
+                                cat.name === currentValue,
+                            )
+                            setValue(
+                              selectedCategory?.id === value
+                                ? ''
+                                : selectedCategory?.id || '',
+                            )
+                            setOpen(false)
+                          }}
+                        >
+                          {category.name}
+                          <Check
+                            className={cn(
+                              'ml-auto',
+                              value === category.id
+                                ? 'opacity-100'
+                                : 'opacity-0',
+                            )}
+                          />
+                        </CommandItem>
+                      ),
+                    )}
                   </CommandGroup>
                 </CommandList>
               </Command>
