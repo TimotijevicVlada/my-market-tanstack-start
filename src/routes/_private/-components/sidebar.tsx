@@ -1,40 +1,47 @@
 import { ListIcon, UserIcon, UsersIcon } from 'lucide-react'
-import { useLocation, useNavigate } from '@tanstack/react-router'
+import { Link, useLocation } from '@tanstack/react-router'
 import { Button } from '@/components/custom/Button'
 
 export const Sidebar = () => {
-  const navigate = useNavigate()
   const location = useLocation()
 
+  const getButtonVariant = (path: string) => {
+    return location.pathname === path ? 'default' : 'ghost'
+  }
+
   return (
-    <div className="flex flex-col align-start gap-2">
-      <Button
-        variant={location.pathname === '/profile' ? 'default' : 'ghost'}
-        className="justify-start"
-        onClick={() => navigate({ to: '/profile' })}
-        size="lg"
-      >
-        <UserIcon />
-        Moj profil
-      </Button>
-      <Button
-        variant={location.pathname === '/categories' ? 'default' : 'ghost'}
-        className="justify-start"
-        onClick={() => navigate({ to: '/categories' })}
-        size="lg"
-      >
-        <ListIcon />
-        Kategorije
-      </Button>
-      <Button
-        variant={location.pathname === '/users' ? 'default' : 'ghost'}
-        className="justify-start"
-        onClick={() => navigate({ to: '/users' })}
-        size="lg"
-      >
-        <UsersIcon />
-        Korisnici
-      </Button>
+    <div className="flex flex-col gap-2">
+      <Link to="/profile">
+        <Button
+          variant={getButtonVariant('/profile')}
+          className="justify-start w-full"
+          size="lg"
+        >
+          <UserIcon />
+          Moj profil
+        </Button>
+      </Link>
+
+      <Link to="/categories">
+        <Button
+          variant={getButtonVariant('/categories')}
+          className="justify-start w-full"
+          size="lg"
+        >
+          <ListIcon />
+          Kategorije
+        </Button>
+      </Link>
+      <Link to="/users">
+        <Button
+          variant={getButtonVariant('/users')}
+          className="justify-start w-full"
+          size="lg"
+        >
+          <UsersIcon />
+          Korisnici
+        </Button>
+      </Link>
     </div>
   )
 }
