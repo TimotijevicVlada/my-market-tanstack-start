@@ -1,5 +1,5 @@
-import { ChevronDownIcon, LogOutIcon, PlusIcon, UserIcon } from 'lucide-react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { ChevronDownIcon, LogOutIcon, UserIcon } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import type { User } from '@/api/middleware/types'
 import { Button } from '@/components/ui/button'
@@ -42,18 +42,10 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-40" align="end">
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ to: '/profile' })}>
           <UserIcon />
           Moj profil
         </DropdownMenuItem>
-        {loggedInUser.role === 'admin' && (
-          <DropdownMenuItem asChild>
-            <Link to="/create-category">
-              <PlusIcon className="h-4 w-4" />
-              Kreiraj kategoriju
-            </Link>
-          </DropdownMenuItem>
-        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOutIcon />

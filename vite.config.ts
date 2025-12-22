@@ -33,6 +33,10 @@ const config = defineConfig({
   server: {
     open: true,
     port: 3000,
+    watch: {
+      usePolling: true, // Helps with file watching on Windows
+      interval: 1000, // Poll every second
+    },
   },
 })
 
