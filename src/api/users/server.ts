@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import { count, desc } from 'drizzle-orm'
+import { count, desc, eq } from 'drizzle-orm'
 import { requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
 import { db } from '@/db'
@@ -24,6 +24,7 @@ export const getPagedUsers = createServerFn({
         username: users.username,
         email: users.email,
         role: users.role,
+        isActive: users.isActive,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
       })
@@ -41,4 +42,31 @@ export const getPagedUsers = createServerFn({
         totalPages: Math.ceil(total / limit),
       },
     }
+  })
+
+export const toggleUserActiveStatus = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data }) => {
+    const { userId } = data
+
+    const user = await db.query.users.findFirst({
+      where: (usersTable) => eq(usersTable.id, userId),
+    })
+
+    if (!user) {
+      throw new Error('Korisnik nije pronađen')
+    }
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        isActive: !user.isActive,
+      })
+      .where(eq(users.id, userId))
+      .returning()
+
+    return updatedUser
   })

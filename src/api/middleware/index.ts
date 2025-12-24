@@ -145,6 +145,7 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
               username: dbUser.username,
               email: dbUser.email,
               role: dbUser.role,
+              isActive: dbUser.isActive,
               createdAt: dbUser.createdAt ?? new Date(),
             }
           }
