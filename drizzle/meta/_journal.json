@@ -85,6 +85,13 @@
       "when": 1766264049389,
       "tag": "0011_powerful_kingpin",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1766589375774,
+      "tag": "0012_smart_red_wolf",
+      "breakpoints": true
     }
   ]
 }

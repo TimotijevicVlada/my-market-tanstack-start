@@ -4,5 +4,6 @@ export type User = {
   username: string
   email: string
   role: 'producer' | 'buyer' | 'admin'
+  isActive: boolean
   createdAt: Date
 }
