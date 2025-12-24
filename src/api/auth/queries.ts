@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
 import { getLoggedInUser, login, register } from './server'
-import type { User } from '@/api/middleware/types'
+import type { User } from '@/api/users/types'
 import { setAuthToken } from '@/lib/auth'
 
 interface LoginData {
