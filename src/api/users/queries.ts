@@ -11,6 +11,7 @@ export const useGetUsers = (params: UseGetUsersParams) => {
   return useQuery({
     queryKey: ['users', params],
     queryFn: () => getPagedUsers({ data: params }),
+    placeholderData: (prev) => prev,
   })
 }
 

@@ -1,7 +1,7 @@
 import { ChevronDownIcon, LogOutIcon, UserIcon } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
-import type { User } from '@/api/middleware/types'
+import type { User } from '@/api/users/types'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,

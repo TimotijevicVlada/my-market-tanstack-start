@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import {
+  ArrowRightIcon,
   PencilIcon,
-  PlusIcon,
   SearchIcon,
   Trash2Icon,
   TriangleAlertIcon,
 } from 'lucide-react'
 import { getRole } from './-data'
-import { useGetUsers, useToggleUserActiveStatus } from '@/api/users/queries'
+import { StatusColumn } from './-components/StatusColumn'
+import { CreateUser } from './-components/CreateUser'
+import { useGetUsers } from '@/api/users/queries'
 import {
   Table,
   TableBody,
@@ -19,23 +21,14 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
-import { Button } from '@/components/ui/button'
-
-import {
-  MultiSelect,
-  MultiSelectContent,
-  MultiSelectGroup,
-  MultiSelectItem,
-  MultiSelectTrigger,
-  MultiSelectValue,
-} from '@/components/ui/multi-select'
-import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/custom/Button'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from '@/components/ui/input-group'
 import { Spinner } from '@/components/ui/spinner'
+import { ButtonGroup } from '@/components/ui/button-group'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -43,24 +36,13 @@ export const Route = createFileRoute('/_private/users/')({
 
 function RouteComponent() {
   const [page, setPage] = useState(1)
+
   const limit = 10
 
   const { data, isLoading, error, refetch } = useGetUsers({ page, limit })
-  const { mutate: toggleUserActiveStatus } = useToggleUserActiveStatus()
 
   const users = data?.data ?? []
   const pagination = data?.pagination
-
-  const handleToggleUserActiveStatus = (userId: string) => {
-    toggleUserActiveStatus(
-      { userId },
-      {
-        onSuccess: () => {
-          refetch()
-        },
-      },
-    )
-  }
 
   if (isLoading) {
     return (
@@ -84,22 +66,18 @@ function RouteComponent() {
     <div>
       <h1 className="text-xl font-bold">Lista korisnika</h1>
       <div className="flex justify-between items-center my-4">
-        <InputGroup className="w-xs">
-          <InputGroupInput
-            type="text"
-            placeholder="Pretraga..."
-            className="w-xs"
-          />
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-        </InputGroup>
-        {pagination && (
-          <Button variant="outline">
-            <PlusIcon />
-            Dodaj korisnika
+        <ButtonGroup className="w-[15rem]">
+          <InputGroup>
+            <InputGroupInput type="text" placeholder="Pretraga..." />
+            <InputGroupAddon>
+              <SearchIcon />
+            </InputGroupAddon>
+          </InputGroup>
+          <Button variant="outline" aria-label="Search">
+            <ArrowRightIcon />
           </Button>
-        )}
+        </ButtonGroup>
+        <CreateUser />
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -131,10 +109,7 @@ function RouteComponent() {
                 {(page - 1) * limit + index + 1}
               </TableCell>
               <TableCell>
-                <Switch
-                  checked={user.isActive}
-                  onCheckedChange={() => handleToggleUserActiveStatus(user.id)}
-                />
+                <StatusColumn user={user} refetchUsers={refetch} />
               </TableCell>
               <TableCell className="font-medium">{user.username}</TableCell>
               <TableCell>
@@ -191,28 +166,6 @@ function RouteComponent() {
           />
         </div>
       )}
-
-      <MultiSelect>
-        <MultiSelectTrigger className="w-full max-w-[400px]">
-          <MultiSelectValue placeholder="Select frameworks..." />
-        </MultiSelectTrigger>
-        <MultiSelectContent>
-          <MultiSelectGroup>
-            <MultiSelectItem value="next.js">Next.js</MultiSelectItem>
-            <MultiSelectItem value="sveltekit">SvelteKit</MultiSelectItem>
-            <MultiSelectItem value="astro">Astro</MultiSelectItem>
-            <MultiSelectItem value="vue">Vue.js</MultiSelectItem>
-            <MultiSelectItem value="react">React</MultiSelectItem>
-            <MultiSelectItem value="angular">Angular</MultiSelectItem>
-            <MultiSelectItem value="deno">Deno</MultiSelectItem>
-            <MultiSelectItem value="solid">Solid</MultiSelectItem>
-            <MultiSelectItem value="qwik">Qwik</MultiSelectItem>
-            <MultiSelectItem value="remix">Remix</MultiSelectItem>
-            <MultiSelectItem value="sapper">Sapper</MultiSelectItem>
-            <MultiSelectItem value="astro">Astro</MultiSelectItem>
-          </MultiSelectGroup>
-        </MultiSelectContent>
-      </MultiSelect>
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ThemeModeDropdown } from './ThemeModeDropdown'
 import { UserMenuDropdown } from './UserMenuDropdown'
-import type { User } from '@/api/middleware/types'
+import type { User } from '@/api/users/types'
 import { useLoggedInUser } from '@/api/auth/queries'
 import { Button } from '@/components/ui/button'
 

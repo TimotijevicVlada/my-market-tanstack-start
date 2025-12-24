@@ -1,7 +1,7 @@
 import { createMiddleware } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import jwt from 'jsonwebtoken'
-import type { User } from './types'
+import type { User } from '../users/types'
 import { db } from '@/db'
 
 interface JWTPayload {
@@ -147,6 +147,7 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
               role: dbUser.role,
               isActive: dbUser.isActive,
               createdAt: dbUser.createdAt ?? new Date(),
+              updatedAt: dbUser.updatedAt ?? new Date(),
             }
           }
         } catch (jwtError) {
