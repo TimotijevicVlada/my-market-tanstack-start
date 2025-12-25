@@ -1,7 +1,9 @@
+import bcrypt from 'bcryptjs'
 import { createServerFn } from '@tanstack/react-start'
 import { count, desc, eq } from 'drizzle-orm'
 import { requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
+import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
 
@@ -69,4 +71,43 @@ export const toggleUserActiveStatus = createServerFn({
       .returning()
 
     return updatedUser
+  })
+
+export const createUser = createServerFn({
+  method: 'POST',
+})
+  .inputValidator((data: UserSchema) => data)
+  .handler(async ({ data }) => {
+    const existingUserByEmail = await db.query.users.findFirst({
+      where: (userTable) => eq(userTable.email, data.email),
+    })
+
+    if (existingUserByEmail) {
+      throw new Error('Email je već zauzet')
+    }
+
+    const existingUserByUsername = await db.query.users.findFirst({
+      where: (userTable) => eq(userTable.username, data.username),
+    })
+
+    if (existingUserByUsername) {
+      throw new Error('Korisničko ime je već zauzeto')
+    }
+
+    const passwordHash = await bcrypt.hash(data.password, 10)
+
+    const [user] = await db
+      .insert(users)
+      .values({
+        username: data.username,
+        email: data.email,
+        passwordHash,
+        role: data.role,
+      })
+      .returning()
+
+    const { passwordHash: _, ...userWithoutPassword } = user
+    return {
+      user: userWithoutPassword,
+    }
   })

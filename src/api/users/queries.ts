@@ -1,13 +1,14 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { getPagedUsers, toggleUserActiveStatus } from './server'
+import { createUser, getPagedUsers, toggleUserActiveStatus } from './server'
+import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
 
-interface UseGetUsersParams {
+export interface UsersParams {
   page: number
   limit: number
 }
 
-export const useGetUsers = (params: UseGetUsersParams) => {
+export const useGetUsers = (params: UsersParams) => {
   return useQuery({
     queryKey: ['users', params],
     queryFn: () => getPagedUsers({ data: params }),
@@ -23,6 +24,21 @@ export const useToggleUserActiveStatus = () => {
       toast.success(
         `Korisnik ${res.username.toUpperCase()} je uspesno ${res.isActive ? 'aktiviran' : 'deaktiviran'}`,
       )
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useCreateUser = (params: UsersParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: UserSchema) => createUser({ data }),
+    onSuccess: () => {
+      toast.success('Novi korisnik je uspesno kreiran')
+      queryClient.invalidateQueries({ queryKey: ['users', params] })
     },
     onError: (error) => {
       toast.error(error.message)
