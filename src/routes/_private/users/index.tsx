@@ -104,7 +104,7 @@ function RouteComponent() {
           setIsOpen={setIsCreateUserModalOpen}
         />
       </div>
-      <Table>
+      <Table className="overflow-x-auto">
         <TableHeader className="bg-muted">
           <TableRow>
             <TableHead>#</TableHead>
@@ -112,6 +112,7 @@ function RouteComponent() {
             <TableHead>Korisničko ime</TableHead>
             <TableHead>Email adresa</TableHead>
             <TableHead>Uloga</TableHead>
+            <TableHead>Broj proizvoda</TableHead>
             <TableHead>Kreirano</TableHead>
             <TableHead>Ažurirano</TableHead>
             <TableHead className="text-right">Akcije</TableHead>
@@ -160,6 +161,7 @@ function RouteComponent() {
                   {getRole[user.role].name}
                 </Badge>
               </TableCell>
+              <TableCell>{user.productCount}</TableCell>
               <TableCell>
                 {new Date(user.createdAt ?? new Date()).toLocaleDateString(
                   'hr-HR',

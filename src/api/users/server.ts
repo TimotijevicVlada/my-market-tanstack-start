@@ -6,6 +6,8 @@ import type { GetUsersParams } from './types'
 import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
+import { producers } from '@/db/schema/producers'
+import { products } from '@/db/schema/products'
 
 export const getPagedUsers = createServerFn({
   method: 'POST',
@@ -40,8 +42,12 @@ export const getPagedUsers = createServerFn({
         isActive: users.isActive,
         createdAt: users.createdAt,
         updatedAt: users.updatedAt,
+        productCount: count(products.id).as('product_count'),
       })
       .from(users)
+      .leftJoin(producers, eq(producers.userId, users.id))
+      .leftJoin(products, eq(products.producerId, producers.id))
+      .groupBy(users.id)
 
     if (hasKeyword) {
       query.where(
