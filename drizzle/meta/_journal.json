@@ -92,6 +92,20 @@
       "when": 1766589375774,
       "tag": "0012_smart_red_wolf",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1766653326002,
+      "tag": "0013_equal_imperial_guard",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1766654686544,
+      "tag": "0014_abandoned_raider",
+      "breakpoints": true
     }
   ]
 }

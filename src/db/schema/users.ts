@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm'
 import {
   boolean,
   pgEnum,
@@ -18,6 +19,6 @@ export const users = pgTable('users', {
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at')
-    .defaultNow()
+    .default(sql`NULL`)
     .$onUpdate(() => new Date()),
 })

@@ -77,7 +77,7 @@ function RouteComponent() {
             <ArrowRightIcon />
           </Button>
         </ButtonGroup>
-        <CreateUser />
+        <CreateUser params={{ page, limit }} />
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -133,14 +133,13 @@ function RouteComponent() {
                 )}
               </TableCell>
               <TableCell>
-                {new Date(user.updatedAt ?? new Date()).toLocaleDateString(
-                  'hr-HR',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  },
-                )}
+                {user.updatedAt
+                  ? new Date(user.updatedAt).toLocaleDateString('hr-HR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })
+                  : '/'}
               </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
