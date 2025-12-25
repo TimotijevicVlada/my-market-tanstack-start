@@ -4,6 +4,7 @@ import type { InputHTMLAttributes, ReactNode } from 'react'
 
 interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
+  required?: boolean
   error?: string
   startIcon?: ReactNode
   endIcon?: ReactNode
@@ -11,6 +12,7 @@ interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const FormField = ({
   label,
+  required,
   error,
   startIcon,
   endIcon,
@@ -18,7 +20,12 @@ export const FormField = ({
 }: FormFieldProps) => {
   return (
     <Field className="gap-1">
-      {label && <FieldLabel>{label}</FieldLabel>}
+      {label && (
+        <FieldLabel>
+          {label}
+          {required && <span className="text-destructive font-bold">*</span>}
+        </FieldLabel>
+      )}
       <InputGroup>
         <InputGroupInput {...props} />
         {startIcon && (

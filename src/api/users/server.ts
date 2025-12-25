@@ -3,7 +3,10 @@ import { createServerFn } from '@tanstack/react-start'
 import { count, desc, eq, ilike, or } from 'drizzle-orm'
 import { requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
-import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
+import type {
+  CreateUserSchema,
+  EditUserSchema,
+} from '@/routes/_private/users/-components/zod-schema'
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { producers } from '@/db/schema/producers'
@@ -105,7 +108,7 @@ export const createUser = createServerFn({
   method: 'POST',
 })
   .middleware([requireAdminMiddleware])
-  .inputValidator((data: UserSchema) => data)
+  .inputValidator((data: CreateUserSchema) => data)
   .handler(async ({ data }) => {
     const existingUserByEmail = await db.query.users.findFirst({
       where: (userTable) => eq(userTable.email, data.email),
@@ -157,4 +160,25 @@ export const deleteUser = createServerFn({
     return {
       user: deletedUser,
     }
+  })
+
+export const editUser = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: EditUserSchema & { userId: string }) => data)
+  .handler(async ({ data }) => {
+    const { userId } = data
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        username: data.username,
+        email: data.email,
+        role: data.role,
+      })
+      .where(eq(users.id, userId))
+      .returning()
+
+    return updatedUser
   })

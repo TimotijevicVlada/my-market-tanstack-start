@@ -4,6 +4,7 @@ import type { UsersParams } from '@/api/users/queries'
 import { Button } from '@/components/custom/Button'
 import { useDeleteUser } from '@/api/users/queries'
 import { AlertDialog } from '@/components/custom/AlertDialog'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 interface DeleteUserProps {
   userId: string
@@ -17,14 +18,16 @@ export const DeleteUser = ({ userId, params }: DeleteUserProps) => {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setIsDeleteUserModalOpen(true)}
-        loading={{ state: isPending, text: 'Brisanje...' }}
-      >
-        <Trash2Icon className="text-red-500" />
-      </Button>
+      <Tooltip title="Brisanje korisnika">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsDeleteUserModalOpen(true)}
+          loading={{ state: isPending, text: 'Brisanje...' }}
+        >
+          <Trash2Icon className="text-red-500" />
+        </Button>
+      </Tooltip>
       <AlertDialog
         open={isDeleteUserModalOpen}
         onOpenChange={() => setIsDeleteUserModalOpen(false)}

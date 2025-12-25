@@ -3,10 +3,14 @@ import { toast } from 'sonner'
 import {
   createUser,
   deleteUser,
+  editUser,
   getPagedUsers,
   toggleUserActiveStatus,
 } from './server'
-import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
+import type {
+  CreateUserSchema,
+  EditUserSchema,
+} from '@/routes/_private/users/-components/zod-schema'
 
 export interface UsersParams {
   page: number
@@ -57,9 +61,27 @@ export const useCreateUser = (params: UsersParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: UserSchema) => createUser({ data }),
+    mutationFn: (data: CreateUserSchema) => createUser({ data }),
     onSuccess: () => {
       toast.success('Novi korisnik je uspesno kreiran')
+      queryClient.invalidateQueries({ queryKey: ['users', params] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useEditUser = (params: UsersParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: EditUserSchema & { userId: string }) =>
+      editUser({ data }),
+    onSuccess: (res) => {
+      toast.success(
+        `Korisnik ${res.username.toUpperCase()} je uspesno izmenjen`,
+      )
       queryClient.invalidateQueries({ queryKey: ['users', params] })
     },
     onError: (error) => {
