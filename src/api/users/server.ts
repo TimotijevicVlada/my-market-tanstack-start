@@ -76,6 +76,7 @@ export const toggleUserActiveStatus = createServerFn({
 export const createUser = createServerFn({
   method: 'POST',
 })
+  .middleware([requireAdminMiddleware])
   .inputValidator((data: UserSchema) => data)
   .handler(async ({ data }) => {
     const existingUserByEmail = await db.query.users.findFirst({
@@ -109,5 +110,20 @@ export const createUser = createServerFn({
     const { passwordHash: _, ...userWithoutPassword } = user
     return {
       user: userWithoutPassword,
+    }
+  })
+
+export const deleteUser = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data }) => {
+    const { userId } = data
+
+    await db.delete(users).where(eq(users.id, userId))
+
+    return {
+      message: 'Korisnik je obrisan',
     }
   })

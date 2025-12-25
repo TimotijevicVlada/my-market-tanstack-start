@@ -4,12 +4,12 @@ import {
   ArrowRightIcon,
   PencilIcon,
   SearchIcon,
-  Trash2Icon,
   TriangleAlertIcon,
 } from 'lucide-react'
 import { getRole } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
+import { DeleteUser } from './-components/DeleteUser'
 import { useGetUsers } from '@/api/users/queries'
 import {
   Table,
@@ -36,10 +36,10 @@ export const Route = createFileRoute('/_private/users/')({
 
 function RouteComponent() {
   const [page, setPage] = useState(1)
-
   const limit = 10
+  const params = { page, limit }
 
-  const { data, isLoading, error, refetch } = useGetUsers({ page, limit })
+  const { data, isLoading, error, refetch } = useGetUsers(params)
 
   const users = data?.data ?? []
   const pagination = data?.pagination
@@ -77,7 +77,7 @@ function RouteComponent() {
             <ArrowRightIcon />
           </Button>
         </ButtonGroup>
-        <CreateUser params={{ page, limit }} />
+        <CreateUser params={params} />
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -146,9 +146,7 @@ function RouteComponent() {
                   <Button variant="ghost" size="icon">
                     <PencilIcon className="text-orange-500" />
                   </Button>
-                  <Button variant="ghost" size="icon">
-                    <Trash2Icon className="text-red-500" />
-                  </Button>
+                  <DeleteUser userId={user.id} params={params} />
                 </div>
               </TableCell>
             </TableRow>
