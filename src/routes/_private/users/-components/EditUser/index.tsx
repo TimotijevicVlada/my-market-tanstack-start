@@ -1,9 +1,10 @@
-import { EyeClosedIcon, EyeIcon, PlusIcon } from 'lucide-react'
-import { useState } from 'react'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { PencilIcon } from 'lucide-react'
 import { useController, useForm } from 'react-hook-form'
-import { createUserDefaultValues, createUserSchema } from '../zod-schema'
-import type { CreateUserSchema } from '../zod-schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { baseSchema, editUserDefaultValues } from '../zod-schema'
+import type { User } from '@/api/users/types'
+import type { EditUserSchema } from '../zod-schema'
 import type { UsersParams } from '@/api/users/queries'
 import { Button } from '@/components/custom/Button'
 import {
@@ -14,19 +15,19 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
-import { FormField } from '@/components/custom/FormField'
 import { ButtonGroup } from '@/components/ui/button-group'
-import { useCreateUser } from '@/api/users/queries'
+import { FormField } from '@/components/custom/FormField'
 import { Label } from '@/components/ui/label'
+import { useEditUser } from '@/api/users/queries'
+import { Tooltip } from '@/components/custom/Tooltip'
 
-interface CreateUserProps {
+interface EditUserProps {
+  user: User
   params: UsersParams
-  isOpen: boolean
-  setIsOpen: (isOpen: boolean) => void
 }
 
-export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
-  const [showPassword, setShowPassword] = useState(false)
+export const EditUser = ({ user, params }: EditUserProps) => {
+  const [userToEdit, setUserToEdit] = useState<User | null>(null)
 
   const {
     register,
@@ -34,9 +35,9 @@ export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
     formState: { errors },
     reset,
     control,
-  } = useForm<CreateUserSchema>({
-    resolver: zodResolver(createUserSchema),
-    defaultValues: createUserDefaultValues,
+  } = useForm<EditUserSchema>({
+    resolver: zodResolver(baseSchema),
+    defaultValues: editUserDefaultValues,
   })
 
   const {
@@ -46,27 +47,42 @@ export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
     control: control,
   })
 
-  const { mutate: createUser, isPending } = useCreateUser(params)
+  const { mutate: editUser, isPending } = useEditUser(params)
 
-  const onSubmit = (data: CreateUserSchema) => {
-    createUser(data, {
-      onSuccess: () => {
-        reset()
-        setIsOpen(false)
+  const onSubmit = (data: EditUserSchema) => {
+    editUser(
+      { ...data, userId: userToEdit?.id ?? '' },
+      {
+        onSuccess: () => {
+          reset()
+          setUserToEdit(null)
+        },
       },
-    })
+    )
   }
+
+  useEffect(() => {
+    if (userToEdit) {
+      reset(userToEdit)
+    }
+  }, [userToEdit])
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>
-        <PlusIcon />
-        Dodaj korisnika
-      </Button>
-      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+      <Tooltip title="Izmena korisnika">
+        <Button
+          variant="ghost"
+          size="icon"
+          disabled={!user.isActive}
+          onClick={() => setUserToEdit(user)}
+        >
+          <PencilIcon className="text-orange-500" />
+        </Button>
+      </Tooltip>
+      <Dialog open={!!userToEdit} onOpenChange={() => setUserToEdit(null)}>
         <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Kreiranje korisnika</DialogTitle>
+            <DialogTitle>Izmena korisnika</DialogTitle>
             <Separator />
           </DialogHeader>
           <form
@@ -118,25 +134,6 @@ export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
                 </Button>
               </ButtonGroup>
             </div>
-            <FormField
-              required
-              label="Lozinka"
-              placeholder="Unesite lozinku"
-              type={showPassword ? 'text' : 'password'}
-              error={errors.password?.message}
-              {...register('password')}
-              endIcon={
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  type="button"
-                  className="rounded-full"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                >
-                  {showPassword ? <EyeIcon /> : <EyeClosedIcon />}
-                </Button>
-              }
-            />
             <DialogFooter>
               <Button variant="outline" type="button" onClick={() => reset()}>
                 Ponisti
@@ -145,10 +142,10 @@ export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
                 type="submit"
                 loading={{
                   state: isPending,
-                  text: 'Kreiranje...',
+                  text: 'Izmena...',
                 }}
               >
-                Sačuvaj
+                Izmeni
               </Button>
             </DialogFooter>
           </form>
