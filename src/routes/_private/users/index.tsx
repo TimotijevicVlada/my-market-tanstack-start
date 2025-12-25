@@ -4,7 +4,6 @@ import {
   ArrowRightIcon,
   PlusIcon,
   SearchIcon,
-  ShieldEllipsisIcon,
   TriangleAlertIcon,
 } from 'lucide-react'
 import { getRole } from './-data'
@@ -12,6 +11,7 @@ import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
 import { EditUser } from './-components/EditUser'
+import { EditPassword } from './-components/EditPassword'
 import { useGetUsers } from '@/api/users/queries'
 import {
   Table,
@@ -32,7 +32,6 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { EmptyData } from '@/components/custom/EmptyData'
-import { Tooltip } from '@/components/custom/Tooltip'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -185,11 +184,7 @@ function RouteComponent() {
               </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
-                  <Tooltip title="Izmeni lozinku">
-                    <Button variant="ghost" size="icon">
-                      <ShieldEllipsisIcon className="text-purple-500" />
-                    </Button>
-                  </Tooltip>
+                  <EditPassword userId={user.id} params={params} />
                   <EditUser user={user} params={params} />
                   <DeleteUser userId={user.id} params={params} />
                 </div>
