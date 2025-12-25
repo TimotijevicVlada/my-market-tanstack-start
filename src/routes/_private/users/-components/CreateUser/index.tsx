@@ -21,10 +21,11 @@ import { Label } from '@/components/ui/label'
 
 interface CreateUserProps {
   params: UsersParams
+  isOpen: boolean
+  setIsOpen: (isOpen: boolean) => void
 }
 
-export const CreateUser = ({ params }: CreateUserProps) => {
-  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false)
+export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
   const [showPassword, setShowPassword] = useState(false)
 
   const {
@@ -51,21 +52,18 @@ export const CreateUser = ({ params }: CreateUserProps) => {
     createUser(data, {
       onSuccess: () => {
         reset()
-        setIsCreateUserModalOpen(false)
+        setIsOpen(false)
       },
     })
   }
 
   return (
     <>
-      <Button onClick={() => setIsCreateUserModalOpen(true)}>
+      <Button onClick={() => setIsOpen(true)}>
         <PlusIcon />
         Dodaj korisnika
       </Button>
-      <Dialog
-        open={isCreateUserModalOpen}
-        onOpenChange={() => setIsCreateUserModalOpen(false)}
-      >
+      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
         <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Kreiranje korisnika</DialogTitle>

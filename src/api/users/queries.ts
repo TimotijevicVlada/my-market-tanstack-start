@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createUser, getPagedUsers, toggleUserActiveStatus } from './server'
+import {
+  createUser,
+  deleteUser,
+  getPagedUsers,
+  toggleUserActiveStatus,
+} from './server'
 import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
 
 export interface UsersParams {
@@ -24,6 +29,23 @@ export const useToggleUserActiveStatus = () => {
       toast.success(
         `Korisnik ${res.username.toUpperCase()} je uspesno ${res.isActive ? 'aktiviran' : 'deaktiviran'}`,
       )
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useDeleteUser = (params: UsersParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { userId: string }) => deleteUser({ data }),
+    onSuccess: (res) => {
+      toast.success(
+        `Korisnik ${res.user.username.toUpperCase()} je uspesno obrisan`,
+      )
+      queryClient.invalidateQueries({ queryKey: ['users', params] })
     },
     onError: (error) => {
       toast.error(error.message)

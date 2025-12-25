@@ -1,16 +1,8 @@
 import { useState } from 'react'
 import type { User } from '@/api/users/types'
 import { useToggleUserActiveStatus } from '@/api/users/queries'
-import { Button } from '@/components/custom/Button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import { Switch } from '@/components/ui/switch'
+import { AlertDialog } from '@/components/custom/AlertDialog'
 
 interface StatusColumnProps {
   user: User
@@ -63,38 +55,19 @@ export const StatusColumn = ({ user, refetchUsers }: StatusColumnProps) => {
           }
         }}
       />
-      <Dialog
+      <AlertDialog
         open={!!userIdForDeactivation}
         onOpenChange={() => setUserIdForDeactivation(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Da li ste sigurni?</DialogTitle>
-            <DialogDescription>
-              Deaktiviranjem korisnik nece moci da se uloguje na sistem niti da
-              pristupi stranicama.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setUserIdForDeactivation(null)}
-            >
-              Odustani
-            </Button>
-            <Button
-              onClick={() => handleToggleUserActiveStatus()}
-              loading={{
-                state: isTogglingUserActiveStatus,
-                text: 'Deaktiviranje...',
-              }}
-              variant="destructive"
-            >
-              Deaktiviraj
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        title="Da li ste sigurni?"
+        description="Deaktiviranjem korisnik nece moci da se uloguje na sistem niti da pristupi stranicama."
+        onConfirm={() => handleToggleUserActiveStatus()}
+        onCancel={() => setUserIdForDeactivation(null)}
+        confirmText="Deaktiviraj"
+        loading={{
+          state: isTogglingUserActiveStatus,
+          text: 'Deaktiviranje...',
+        }}
+      />
     </>
   )
 }
