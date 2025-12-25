@@ -143,7 +143,7 @@ function RouteComponent() {
               </TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" disabled={!user.isActive}>
                     <PencilIcon className="text-orange-500" />
                   </Button>
                   <DeleteUser userId={user.id} params={params} />

@@ -3,14 +3,7 @@ import { useState } from 'react'
 import type { UsersParams } from '@/api/users/queries'
 import { Button } from '@/components/custom/Button'
 import { useDeleteUser } from '@/api/users/queries'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { AlertDialog } from '@/components/custom/AlertDialog'
 
 interface DeleteUserProps {
   userId: string
@@ -32,39 +25,19 @@ export const DeleteUser = ({ userId, params }: DeleteUserProps) => {
       >
         <Trash2Icon className="text-red-500" />
       </Button>
-      <Dialog
+      <AlertDialog
         open={isDeleteUserModalOpen}
         onOpenChange={() => setIsDeleteUserModalOpen(false)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Da li ste sigurni?</DialogTitle>
-            <DialogDescription>
-              Brisanjem korisnika, nece moci da se uloguje na sistem niti da
-              pristupi stranicama. Ovo je nepovratna akcija koja ne moze biti
-              vracena.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteUserModalOpen(false)}
-            >
-              Odustani
-            </Button>
-            <Button
-              onClick={() => deleteUser({ userId })}
-              loading={{
-                state: isPending,
-                text: 'Brisanje...',
-              }}
-              variant="destructive"
-            >
-              Obrisi
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        title="Da li ste sigurni?"
+        description="Brisanjem korisnika, nece moci da se uloguje na sistem niti da pristupi stranicama. Ovo je nepovratna akcija koja ne moze biti vracena."
+        onConfirm={() => deleteUser({ userId })}
+        onCancel={() => setIsDeleteUserModalOpen(false)}
+        confirmText="Obrisi"
+        loading={{
+          state: isPending,
+          text: 'Brisanje...',
+        }}
+      />
     </>
   )
 }

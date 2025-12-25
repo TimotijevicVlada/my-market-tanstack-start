@@ -121,9 +121,12 @@ export const deleteUser = createServerFn({
   .handler(async ({ data }) => {
     const { userId } = data
 
-    await db.delete(users).where(eq(users.id, userId))
+    const [deletedUser] = await db
+      .delete(users)
+      .where(eq(users.id, userId))
+      .returning()
 
     return {
-      message: 'Korisnik je obrisan',
+      user: deletedUser,
     }
   })

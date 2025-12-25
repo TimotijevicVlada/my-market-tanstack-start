@@ -41,8 +41,10 @@ export const useDeleteUser = (params: UsersParams) => {
 
   return useMutation({
     mutationFn: (data: { userId: string }) => deleteUser({ data }),
-    onSuccess: () => {
-      toast.success('Korisnik je uspesno obrisan')
+    onSuccess: (res) => {
+      toast.success(
+        `Korisnik ${res.user.username.toUpperCase()} je uspesno obrisan`,
+      )
       queryClient.invalidateQueries({ queryKey: ['users', params] })
     },
     onError: (error) => {
