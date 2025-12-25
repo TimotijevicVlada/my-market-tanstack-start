@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { createServerFn } from '@tanstack/react-start'
-import { count, desc, eq } from 'drizzle-orm'
+import { count, desc, eq, ilike, or } from 'drizzle-orm'
 import { requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
 import type { UserSchema } from '@/routes/_private/users/-components/CreateUser/schema'
@@ -13,14 +13,25 @@ export const getPagedUsers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetUsersParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit } = data
+    const { page, limit, keyword } = data
+    const trimmedKeyword = keyword?.trim()
+    const hasKeyword = trimmedKeyword !== ''
 
     const offset = (page - 1) * limit
 
-    const [totalResult] = await db.select({ count: count() }).from(users)
+    const totalQuery = db.select({ count: count() }).from(users)
+    if (hasKeyword) {
+      totalQuery.where(
+        or(
+          ilike(users.username, `%${trimmedKeyword}%`),
+          ilike(users.email, `%${trimmedKeyword}%`),
+        ),
+      )
+    }
+    const [totalResult] = await totalQuery
     const total = totalResult.count
 
-    const result = await db
+    const query = db
       .select({
         id: users.id,
         username: users.username,
@@ -31,6 +42,17 @@ export const getPagedUsers = createServerFn({
         updatedAt: users.updatedAt,
       })
       .from(users)
+
+    if (hasKeyword) {
+      query.where(
+        or(
+          ilike(users.username, `%${trimmedKeyword}%`),
+          ilike(users.email, `%${trimmedKeyword}%`),
+        ),
+      )
+    }
+
+    const result = await query
       .orderBy(desc(users.createdAt))
       .limit(limit)
       .offset(offset)

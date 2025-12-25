@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import {
   ArrowRightIcon,
   PencilIcon,
+  PlusIcon,
   SearchIcon,
   TriangleAlertIcon,
 } from 'lucide-react'
@@ -29,6 +30,7 @@ import {
 } from '@/components/ui/input-group'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
+import { EmptyData } from '@/components/custom/EmptyData'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -37,7 +39,12 @@ export const Route = createFileRoute('/_private/users/')({
 function RouteComponent() {
   const [page, setPage] = useState(1)
   const limit = 10
-  const params = { page, limit }
+
+  const [searchInputValue, setSearchInputValue] = useState('')
+  const [keyword, setKeyword] = useState('')
+  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false)
+
+  const params = { page, limit, keyword }
 
   const { data, isLoading, error, refetch } = useGetUsers(params)
 
@@ -68,16 +75,34 @@ function RouteComponent() {
       <div className="flex justify-between items-center my-4">
         <ButtonGroup className="w-[15rem]">
           <InputGroup>
-            <InputGroupInput type="text" placeholder="Pretraga..." />
+            <InputGroupInput
+              type="text"
+              placeholder="Pretraga..."
+              value={searchInputValue}
+              onChange={(e) => setSearchInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  setKeyword(searchInputValue)
+                }
+              }}
+            />
             <InputGroupAddon>
               <SearchIcon />
             </InputGroupAddon>
           </InputGroup>
-          <Button variant="outline" aria-label="Search">
+          <Button
+            variant="outline"
+            aria-label="Search"
+            onClick={() => setKeyword(searchInputValue)}
+          >
             <ArrowRightIcon />
           </Button>
         </ButtonGroup>
-        <CreateUser params={params} />
+        <CreateUser
+          params={params}
+          isOpen={isCreateUserModalOpen}
+          setIsOpen={setIsCreateUserModalOpen}
+        />
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -96,10 +121,23 @@ function RouteComponent() {
           {users.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={6}
+                colSpan={8}
                 className="text-center text-muted-foreground"
               >
-                Nema korisnika
+                <EmptyData
+                  title="Nema korisnika"
+                  description="Jos uvek nema korisnika, dodajte prvog."
+                  button={{
+                    text: 'Dodaj korisnika',
+                    icon: <PlusIcon />,
+                    onClick: () => {
+                      setIsCreateUserModalOpen(true)
+                      setKeyword('')
+                      setSearchInputValue('')
+                      setPage(1)
+                    },
+                  }}
+                />
               </TableCell>
             </TableRow>
           )}
