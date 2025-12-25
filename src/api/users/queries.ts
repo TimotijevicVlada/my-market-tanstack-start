@@ -4,6 +4,7 @@ import {
   createUser,
   deleteUser,
   editUser,
+  editUserPassword,
   getPagedUsers,
   toggleUserActiveStatus,
 } from './server'
@@ -11,6 +12,7 @@ import type {
   CreateUserSchema,
   EditUserSchema,
 } from '@/routes/_private/users/-components/zod-schema'
+import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
 
 export interface UsersParams {
   page: number
@@ -81,6 +83,24 @@ export const useEditUser = (params: UsersParams) => {
     onSuccess: (res) => {
       toast.success(
         `Korisnik ${res.username.toUpperCase()} je uspesno izmenjen`,
+      )
+      queryClient.invalidateQueries({ queryKey: ['users', params] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useEditUserPassword = (params: UsersParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: EditPasswordSchema & { userId: string }) =>
+      editUserPassword({ data }),
+    onSuccess: (res) => {
+      toast.success(
+        `Lozinka korisnika ${res.user.username.toUpperCase()} je uspesno izmenjena`,
       )
       queryClient.invalidateQueries({ queryKey: ['users', params] })
     },

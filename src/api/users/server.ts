@@ -7,6 +7,7 @@ import type {
   CreateUserSchema,
   EditUserSchema,
 } from '@/routes/_private/users/-components/zod-schema'
+import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { producers } from '@/db/schema/producers'
@@ -170,6 +171,22 @@ export const editUser = createServerFn({
   .handler(async ({ data }) => {
     const { userId } = data
 
+    const existingUserByEmail = await db.query.users.findFirst({
+      where: (userTable) => eq(userTable.email, data.email),
+    })
+
+    if (existingUserByEmail && existingUserByEmail.id !== userId) {
+      throw new Error('Email je već zauzet')
+    }
+
+    const existingUserByUsername = await db.query.users.findFirst({
+      where: (userTable) => eq(userTable.username, data.username),
+    })
+
+    if (existingUserByUsername && existingUserByUsername.id !== userId) {
+      throw new Error('Korisničko ime je već zauzeto')
+    }
+
     const [updatedUser] = await db
       .update(users)
       .set({
@@ -181,4 +198,27 @@ export const editUser = createServerFn({
       .returning()
 
     return updatedUser
+  })
+
+export const editUserPassword = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: EditPasswordSchema & { userId: string }) => data)
+  .handler(async ({ data }) => {
+    const { userId } = data
+
+    const passwordHash = await bcrypt.hash(data.password, 10)
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({ passwordHash })
+      .where(eq(users.id, userId))
+      .returning()
+
+    const { passwordHash: _, ...userWithoutPassword } = updatedUser
+
+    return {
+      user: userWithoutPassword,
+    }
   })
