@@ -52,6 +52,11 @@ function RouteComponent() {
   const users = data?.data ?? []
   const pagination = data?.pagination
 
+  const handleSearch = () => {
+    setKeyword(searchInputValue)
+    setPage(1)
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center gap-2 mt-70">
@@ -83,7 +88,7 @@ function RouteComponent() {
               onChange={(e) => setSearchInputValue(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  setKeyword(searchInputValue)
+                  handleSearch()
                 }
               }}
             />
@@ -94,7 +99,7 @@ function RouteComponent() {
           <Button
             variant="outline"
             aria-label="Search"
-            onClick={() => setKeyword(searchInputValue)}
+            onClick={() => handleSearch()}
           >
             <ArrowRightIcon />
           </Button>

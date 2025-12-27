@@ -49,6 +49,11 @@ function RouteComponent() {
   const categories = data?.data ?? []
   const pagination = data?.pagination
 
+  const handleSearch = () => {
+    setKeyword(searchInputValue)
+    setPage(1)
+  }
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center gap-2 mt-70">
@@ -80,7 +85,7 @@ function RouteComponent() {
               onChange={(e) => setSearchInputValue(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  setKeyword(searchInputValue)
+                  handleSearch()
                 }
               }}
             />
@@ -91,7 +96,7 @@ function RouteComponent() {
           <Button
             variant="outline"
             aria-label="Search"
-            onClick={() => setKeyword(searchInputValue)}
+            onClick={() => handleSearch()}
           >
             <ArrowRightIcon />
           </Button>
@@ -101,7 +106,7 @@ function RouteComponent() {
           Kreiraj kategoriju
         </Button>
       </div>
-      <Table className="overflow-x-auto">
+      <Table>
         <TableHeader className="bg-muted">
           <TableRow>
             <TableHead>#</TableHead>
@@ -119,14 +124,14 @@ function RouteComponent() {
           {categories.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={8}
+                colSpan={9}
                 className="text-center text-muted-foreground"
               >
                 <EmptyData
-                  title="Nema korisnika"
-                  description="Jos uvek nema korisnika, dodajte prvog."
+                  title="Nema kategorija"
+                  description="Jos uvek nema kategorija, kreirajte prvu."
                   button={{
-                    text: 'Dodaj korisnika',
+                    text: 'Kreiraj kategoriju',
                     icon: <PlusIcon />,
                     onClick: () => {
                       // setIsCreateUserModalOpen(true)

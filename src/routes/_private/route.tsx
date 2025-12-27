@@ -7,11 +7,11 @@ export const Route = createFileRoute('/_private')({
 
 function RouteComponent() {
   return (
-    <div className="min-h-screen flex">
-      <div className="w-75 bg-sidebar p-4">
+    <div className="min-h-screen flex overflow-hidden">
+      <div className="w-70 bg-sidebar p-4 flex-shrink-0">
         <Sidebar />
       </div>
-      <div className="flex-1 p-4">
+      <div className="flex-1 p-4 min-w-0 overflow-hidden">
         <Outlet />
       </div>
     </div>
