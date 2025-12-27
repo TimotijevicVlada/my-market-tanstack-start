@@ -1,6 +1,6 @@
 import { Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
-import type { UsersParams } from '@/api/users/queries'
+import type { GetUsersParams } from '@/api/users/types'
 import { Button } from '@/components/custom/Button'
 import { useDeleteUser } from '@/api/users/queries'
 import { AlertDialog } from '@/components/custom/AlertDialog'
@@ -8,7 +8,7 @@ import { Tooltip } from '@/components/custom/Tooltip'
 
 interface DeleteUserProps {
   userId: string
-  params: UsersParams
+  params: GetUsersParams
 }
 
 export const DeleteUser = ({ userId, params }: DeleteUserProps) => {

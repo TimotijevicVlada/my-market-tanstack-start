@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useController, useForm } from 'react-hook-form'
 import { createUserDefaultValues, createUserSchema } from '../zod-schema'
 import type { CreateUserSchema } from '../zod-schema'
-import type { UsersParams } from '@/api/users/queries'
+import type { GetUsersParams } from '@/api/users/types'
 import { Button } from '@/components/custom/Button'
 import {
   Dialog,
@@ -20,7 +20,7 @@ import { useCreateUser } from '@/api/users/queries'
 import { Label } from '@/components/ui/label'
 
 interface CreateUserProps {
-  params: UsersParams
+  params: GetUsersParams
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
 }
