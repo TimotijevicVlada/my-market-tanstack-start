@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { editPasswordDefaultValues, editPasswordSchema } from './zod-schema'
 import type { EditPasswordSchema } from './zod-schema'
-import type { UsersParams } from '@/api/users/queries'
+import type { GetUsersParams } from '@/api/users/types'
 import { useEditUserPassword } from '@/api/users/queries'
 import { Tooltip } from '@/components/custom/Tooltip'
 import { Button } from '@/components/custom/Button'
@@ -20,7 +20,7 @@ import { FormField } from '@/components/custom/FormField'
 
 interface EditPasswordProps {
   userId: string
-  params: UsersParams
+  params: GetUsersParams
 }
 
 export const EditPassword = ({ userId, params }: EditPasswordProps) => {

@@ -19,7 +19,7 @@ export function App() {
 
   return (
     <div className="min-h-screen flex justify-center">
-      <section className="flex  gap-4 pt-5 h-full w-5xl">
+      <section className="flex gap-4 pt-5 h-full w-5xl">
         <Carousel
           opts={{
             align: 'start',
@@ -27,12 +27,12 @@ export function App() {
           }}
           className="w-full"
         >
-          <CarouselContent className="-ml-2">
+          <CarouselContent className="-ml-1">
             {categories.map((category) => (
-              <CarouselItem key={category.id} className="pl-2 basis-auto">
-                <div className="p-1">
-                  <Card className="whitespace-nowrap h-12 flex items-center justify-center py-0 shadow-none">
-                    <span className="text-l font-semibold px-4">
+              <CarouselItem key={category.id} className="pl-1 basis-auto">
+                <div className="p-0.5">
+                  <Card className="rounded-md whitespace-nowrap h-8 flex items-center justify-center py-0 shadow-none">
+                    <span className="text-sm font-semibold px-4">
                       {category.name}
                     </span>
                   </Card>

@@ -3,9 +3,8 @@ import { PencilIcon } from 'lucide-react'
 import { useController, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { baseSchema, editUserDefaultValues } from '../zod-schema'
-import type { User } from '@/api/users/types'
 import type { EditUserSchema } from '../zod-schema'
-import type { UsersParams } from '@/api/users/queries'
+import type { GetUsersParams, User } from '@/api/users/types'
 import { Button } from '@/components/custom/Button'
 import {
   Dialog,
@@ -23,7 +22,7 @@ import { Tooltip } from '@/components/custom/Tooltip'
 
 interface EditUserProps {
   user: User
-  params: UsersParams
+  params: GetUsersParams
 }
 
 export const EditUser = ({ user, params }: EditUserProps) => {

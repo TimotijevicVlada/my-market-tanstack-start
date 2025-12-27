@@ -13,13 +13,9 @@ import type {
   EditUserSchema,
 } from '@/routes/_private/users/-components/zod-schema'
 import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
+import type { GetUsersParams } from './types'
 
-export interface UsersParams {
-  page: number
-  limit: number
-}
-
-export const useGetUsers = (params: UsersParams) => {
+export const useGetUsers = (params: GetUsersParams) => {
   return useQuery({
     queryKey: ['users', params],
     queryFn: () => getPagedUsers({ data: params }),
@@ -42,7 +38,7 @@ export const useToggleUserActiveStatus = () => {
   })
 }
 
-export const useDeleteUser = (params: UsersParams) => {
+export const useDeleteUser = (params: GetUsersParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -59,7 +55,7 @@ export const useDeleteUser = (params: UsersParams) => {
   })
 }
 
-export const useCreateUser = (params: UsersParams) => {
+export const useCreateUser = (params: GetUsersParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -74,7 +70,7 @@ export const useCreateUser = (params: UsersParams) => {
   })
 }
 
-export const useEditUser = (params: UsersParams) => {
+export const useEditUser = (params: GetUsersParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -92,7 +88,7 @@ export const useEditUser = (params: UsersParams) => {
   })
 }
 
-export const useEditUserPassword = (params: UsersParams) => {
+export const useEditUserPassword = (params: GetUsersParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
