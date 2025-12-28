@@ -120,6 +120,13 @@
       "when": 1766876225229,
       "tag": "0016_fluffy_white_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1766919517028,
+      "tag": "0017_loving_mad_thinker",
+      "breakpoints": true
     }
   ]
 }

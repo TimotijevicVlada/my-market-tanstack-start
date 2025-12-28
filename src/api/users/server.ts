@@ -10,7 +10,7 @@ import type {
 import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
-import { producers } from '@/db/schema/producers'
+import { sellers } from '@/db/schema/sellers'
 import { products } from '@/db/schema/products'
 
 export const getPagedUsers = createServerFn({
@@ -49,8 +49,8 @@ export const getPagedUsers = createServerFn({
         productCount: count(products.id).as('product_count'),
       })
       .from(users)
-      .leftJoin(producers, eq(producers.userId, users.id))
-      .leftJoin(products, eq(products.producerId, producers.id))
+      .leftJoin(sellers, eq(sellers.userId, users.id))
+      .leftJoin(products, eq(products.sellerId, sellers.id))
       .groupBy(users.id)
 
     if (hasKeyword) {

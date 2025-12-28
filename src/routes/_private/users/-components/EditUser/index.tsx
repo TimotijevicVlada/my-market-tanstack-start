@@ -116,9 +116,9 @@ export const EditUser = ({ user, params }: EditUserProps) => {
                   Kupac
                 </Button>
                 <Button
-                  variant={role === 'producer' ? 'default' : 'outline'}
+                  variant={role === 'seller' ? 'default' : 'outline'}
                   className="flex-1"
-                  onClick={() => onChange('producer')}
+                  onClick={() => onChange('seller')}
                   type="button"
                 >
                   Prodavac
@@ -129,7 +129,15 @@ export const EditUser = ({ user, params }: EditUserProps) => {
                   onClick={() => onChange('admin')}
                   type="button"
                 >
-                  Administrator
+                  Admin
+                </Button>
+                <Button
+                  variant={role === 'super-admin' ? 'default' : 'outline'}
+                  className="flex-1"
+                  onClick={() => onChange('super-admin')}
+                  type="button"
+                >
+                  Super Admin
                 </Button>
               </ButtonGroup>
             </div>

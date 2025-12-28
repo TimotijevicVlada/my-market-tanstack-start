@@ -197,5 +197,8 @@ export const requireRoleMiddleware = (allowedRoles: Array<User['role']>) =>
 
 // Convenience middlewares for common role checks
 export const requireAdminMiddleware = requireRoleMiddleware(['admin'])
-export const requireProducerMiddleware = requireRoleMiddleware(['producer'])
+export const requireSellerMiddleware = requireRoleMiddleware(['seller'])
 export const requireBuyerMiddleware = requireRoleMiddleware(['buyer'])
+export const requireSuperAdminMiddleware = requireRoleMiddleware([
+  'super-admin',
+]) // TODO: Add super-admin middleware later

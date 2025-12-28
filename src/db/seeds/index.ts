@@ -1,7 +1,7 @@
 import { pool } from '../index.ts'
 import { seedUsers } from './users.ts'
 import { seedCategories } from './categories.ts'
-import { seedProducers } from './producers.ts'
+import { seedSellers } from './sellers.ts'
 import { seedProducts } from './products.ts'
 import { seedProductReviews } from './product-reviews.ts'
 import { seedProductImages } from './product-images.ts'
@@ -12,10 +12,10 @@ export async function runAllSeeds() {
   try {
     console.log('🌱 Starting seed process...\n')
 
-    // Run all seed functions (order matters: users → categories → producers → products → reviews → images)
+    // Run all seed functions (order matters: users → categories → sellers → products → reviews → images)
     await seedUsers()
     await seedCategories()
-    await seedProducers()
+    await seedSellers()
     await seedProducts()
     await seedProductReviews()
     await seedProductImages()

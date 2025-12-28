@@ -3,19 +3,8 @@ import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
 import { getLoggedInUser, login, register } from './server'
 import type { User } from '@/api/users/types'
+import type { LoginData, RegisterData } from './types'
 import { setAuthToken } from '@/lib/auth'
-
-interface LoginData {
-  email: string
-  password: string
-}
-
-interface RegisterData {
-  username: string
-  email: string
-  password: string
-  role?: 'producer' | 'buyer' | 'admin'
-}
 
 export function useLogin() {
   const navigate = useNavigate()
