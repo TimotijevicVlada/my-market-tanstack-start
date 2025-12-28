@@ -10,7 +10,7 @@ export const getCategories = createServerFn({
   method: 'GET',
 }).handler(async () => {
   return await db.query.categories.findMany({
-    orderBy: (category) => [desc(category.createdAt)],
+    orderBy: (category) => [desc(category.createdAt), desc(category.id)],
     where: (category, { isNull }) => isNull(category.parentId),
   })
 })
@@ -58,7 +58,7 @@ export const getPagedCategories = createServerFn({
     }
 
     const result = await query
-      .orderBy(desc(categories.createdAt))
+      .orderBy(desc(categories.createdAt), desc(categories.id))
       .limit(limit)
       .offset(offset)
 
@@ -71,6 +71,33 @@ export const getPagedCategories = createServerFn({
         totalPages: Math.ceil(total / limit),
       },
     }
+  })
+
+export const toggleCategoryActiveStatus = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: { categoryId: string }) => data)
+  .handler(async ({ data }) => {
+    const { categoryId } = data
+
+    const category = await db.query.categories.findFirst({
+      where: (categoriesTable) => eq(categoriesTable.id, categoryId),
+    })
+
+    if (!category) {
+      throw new Error('Kategorija nije pronađena')
+    }
+
+    const [updatedCategory] = await db
+      .update(categories)
+      .set({
+        isActive: !category.isActive,
+      })
+      .where(eq(categories.id, categoryId))
+      .returning()
+
+    return updatedCategory
   })
 
 export const createCategory = createServerFn({

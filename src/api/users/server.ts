@@ -63,7 +63,7 @@ export const getPagedUsers = createServerFn({
     }
 
     const result = await query
-      .orderBy(desc(users.createdAt))
+      .orderBy(desc(users.createdAt), desc(users.id))
       .limit(limit)
       .offset(offset)
 

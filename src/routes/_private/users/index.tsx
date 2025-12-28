@@ -32,6 +32,7 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { EmptyData } from '@/components/custom/EmptyData'
+import { formatDate } from '@/utils/format-date'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -168,25 +169,8 @@ function RouteComponent() {
                 </Badge>
               </TableCell>
               <TableCell>{user.productCount}</TableCell>
-              <TableCell>
-                {new Date(user.createdAt ?? new Date()).toLocaleDateString(
-                  'hr-HR',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  },
-                )}
-              </TableCell>
-              <TableCell>
-                {user.updatedAt
-                  ? new Date(user.updatedAt).toLocaleDateString('hr-HR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })
-                  : '/'}
-              </TableCell>
+              <TableCell>{formatDate(user.createdAt)}</TableCell>
+              <TableCell>{formatDate(user.updatedAt)}</TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
                   <EditPassword userId={user.id} params={params} />

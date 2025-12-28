@@ -8,6 +8,7 @@ import {
   Trash2Icon,
   TriangleAlertIcon,
 } from 'lucide-react'
+import { StatusColumn } from './-components/StatusColumn'
 import { useGetCategories } from '@/api/categories/queries'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -26,9 +27,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { EmptyData } from '@/components/custom/EmptyData'
-import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
+import { formatDate } from '@/utils/format-date'
 
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
@@ -44,7 +45,7 @@ function RouteComponent() {
 
   const params = { page, limit, keyword }
 
-  const { data, isLoading, error } = useGetCategories(params)
+  const { data, isLoading, error, refetch } = useGetCategories(params)
 
   const categories = data?.data ?? []
   const pagination = data?.pagination
@@ -150,7 +151,7 @@ function RouteComponent() {
                 {(page - 1) * limit + index + 1}
               </TableCell>
               <TableCell>
-                <Switch checked={true} />
+                <StatusColumn category={category} refetchCategories={refetch} />
               </TableCell>
               <TableCell className="font-medium">{category.name}</TableCell>
               <TableCell>
@@ -160,25 +161,8 @@ function RouteComponent() {
               </TableCell>
               <TableCell>{category.parentName ?? '/'}</TableCell>
               <TableCell>{category.description}</TableCell>
-              <TableCell>
-                {new Date(category.createdAt ?? new Date()).toLocaleDateString(
-                  'hr-HR',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  },
-                )}
-              </TableCell>
-              <TableCell>
-                {category.updatedAt
-                  ? new Date(category.updatedAt).toLocaleDateString('hr-HR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })
-                  : '/'}
-              </TableCell>
+              <TableCell>{formatDate(category.createdAt)}</TableCell>
+              <TableCell>{formatDate(category.updatedAt)}</TableCell>
               <TableCell>
                 <div className="flex justify-end gap-1">
                   <Button variant="ghost" size="icon">
