@@ -1,30 +1,30 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../index.ts'
-import { producers } from '../schema/producers.ts'
+import { sellers } from '../schema/sellers.ts'
 import { users } from '../schema/users.ts'
 
-export async function seedProducers() {
+export async function seedSellers() {
   // Safety check: prevent running in production
   if (process.env.NODE_ENV === 'production') {
     console.log('⚠️  Seed script cannot run in production environment!')
     return { inserted: 0, skipped: true }
   }
 
-  // Get all users with producer role
-  const producerUsers = await db
+  // Get all users with seller role
+  const sellerUsers = await db
     .select()
     .from(users)
-    .where(eq(users.role, 'producer'))
+    .where(eq(users.role, 'seller'))
 
-  if (producerUsers.length === 0) {
-    console.log('⚠️  No producer users found. Skipping producers seed.')
-    console.log('💡 Make sure to seed users first with producer role.')
+  if (sellerUsers.length === 0) {
+    console.log('⚠️  No seller users found. Skipping sellers seed.')
+    console.log('💡 Make sure to seed users first with seller role.')
     return { inserted: 0, skipped: true }
   }
 
-  // Create fake producers data based on PRODUCER users
-  const fakeProducers = producerUsers.map((user, index) => {
-    const producerData = [
+  // Create fake sellers data based on SELLER users
+  const fakeSellers = sellerUsers.map((user, index) => {
+    const fakeSellersData = [
       {
         name: "Johnson's Organic Farm",
         slug: 'johnsons-organic-farm',
@@ -47,27 +47,27 @@ export async function seedProducers() {
 
     return {
       userId: user.id,
-      ...producerData[index % producerData.length],
+      ...fakeSellersData[index % fakeSellersData.length],
     }
   })
 
-  // Delete all existing producers to override
-  console.log('🗑️  Deleting existing producers...')
-  await db.delete(producers)
+  // Delete all existing sellers to override
+  console.log('🗑️  Deleting existing sellers...')
+  await db.delete(sellers)
 
-  // Insert producers
-  console.log('📝 Inserting producers...')
-  const insertedProducers = await db
-    .insert(producers)
-    .values(fakeProducers)
+  // Insert sellers
+  console.log('📝 Inserting sellers...')
+  const insertedSellers = await db
+    .insert(sellers)
+    .values(fakeSellers)
     .returning()
 
-  console.log(`✅ Successfully inserted ${insertedProducers.length} producers:`)
-  insertedProducers.forEach((producer) => {
+  console.log(`✅ Successfully inserted ${insertedSellers.length} sellers:`)
+  insertedSellers.forEach((seller) => {
     console.log(
-      `   - ${producer.name} (${producer.slug}) - Verified: ${producer.isVerified}`,
+      `   - ${seller.name} (${seller.slug}) - Verified: ${seller.isVerified}`,
     )
   })
 
-  return { inserted: insertedProducers.length, skipped: false }
+  return { inserted: insertedSellers.length, skipped: false }
 }

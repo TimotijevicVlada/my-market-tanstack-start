@@ -9,7 +9,7 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
-import { producers } from './producers.ts'
+import { sellers } from './sellers.ts'
 import { categories } from './categories.ts'
 
 export const productUnitEnum = pgEnum('product_unit', [
@@ -34,9 +34,9 @@ export const productStatusEnum = pgEnum('product_status', [
 
 export const products = pgTable('products', {
   id: uuid('id').primaryKey().defaultRandom(),
-  producerId: uuid('producer_id')
+  sellerId: uuid('seller_id')
     .notNull()
-    .references(() => producers.id, { onDelete: 'cascade' }),
+    .references(() => sellers.id, { onDelete: 'cascade' }),
   categoryId: uuid('category_id')
     .notNull()
     .references(() => categories.id, { onDelete: 'restrict' }),

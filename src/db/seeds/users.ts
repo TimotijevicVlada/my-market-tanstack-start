@@ -19,7 +19,7 @@ const fakeUsers = [
     username: 'bob_johnson',
     email: 'bob.johnson@example.com',
     passwordHash: 'password',
-    role: 'producer' as const,
+    role: 'seller' as const,
   },
   {
     username: 'alice_williams',
@@ -31,7 +31,7 @@ const fakeUsers = [
     username: 'charlie_brown',
     email: 'charlie.brown@example.com',
     passwordHash: 'password',
-    role: 'producer' as const,
+    role: 'seller' as const,
   },
 ]
 

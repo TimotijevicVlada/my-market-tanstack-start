@@ -8,7 +8,7 @@ import {
 } from 'drizzle-orm/pg-core'
 import { users } from './users.ts'
 
-export const producers = pgTable('producers', {
+export const sellers = pgTable('sellers', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: uuid('user_id')
     .notNull()
