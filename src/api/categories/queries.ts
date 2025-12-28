@@ -1,6 +1,11 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { createCategory, getCategories, getPagedCategories } from './server'
+import {
+  createCategory,
+  getCategories,
+  getPagedCategories,
+  toggleCategoryActiveStatus,
+} from './server'
 import type { GetCategoriesParams } from './types'
 
 export const useGetCategories = (params: GetCategoriesParams) => {
@@ -17,6 +22,20 @@ export const useCreateCategory = () => {
     onSuccess: () => {
       getCategories()
       toast.success('Kategorija uspešno kreirana')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useToggleCategoryActiveStatus = () => {
+  return useMutation({
+    mutationFn: toggleCategoryActiveStatus,
+    onSuccess: (res) => {
+      toast.success(
+        `Kategorija ${res.name.toUpperCase()} je uspesno ${res.isActive ? 'aktivirana' : 'deaktivirana'}`,
+      )
     },
     onError: (error) => {
       toast.error(error.message)

@@ -58,8 +58,8 @@ export const StatusColumn = ({ user, refetchUsers }: StatusColumnProps) => {
       <AlertDialog
         open={!!userIdForDeactivation}
         onOpenChange={() => setUserIdForDeactivation(null)}
-        title="Da li ste sigurni?"
-        description="Deaktiviranjem korisnik nece moci da se uloguje na sistem niti da pristupi stranicama."
+        title="Potvrdite deaktivaciju korisnika"
+        description={`Da li ste sigurni da želite da deaktivujete korisnika ${user.username.toUpperCase()}?`}
         onConfirm={() => handleToggleUserActiveStatus()}
         onCancel={() => setUserIdForDeactivation(null)}
         confirmText="Deaktiviraj"

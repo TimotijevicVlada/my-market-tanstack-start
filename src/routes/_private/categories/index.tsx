@@ -8,6 +8,8 @@ import {
   Trash2Icon,
   TriangleAlertIcon,
 } from 'lucide-react'
+import { StatusColumn } from './-components/StatusColumn'
+import { categoriesColumns } from './-data'
 import { useGetCategories } from '@/api/categories/queries'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -26,9 +28,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { EmptyData } from '@/components/custom/EmptyData'
-import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
+import { formatDate } from '@/utils/format-date'
 
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
@@ -44,7 +46,7 @@ function RouteComponent() {
 
   const params = { page, limit, keyword }
 
-  const { data, isLoading, error } = useGetCategories(params)
+  const { data, isLoading, error, refetch } = useGetCategories(params)
 
   const categories = data?.data ?? []
   const pagination = data?.pagination
@@ -109,15 +111,11 @@ function RouteComponent() {
       <Table>
         <TableHeader className="bg-muted">
           <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Naziv</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead>Nadređena kategorija</TableHead>
-            <TableHead>Opis</TableHead>
-            <TableHead>Kreirano</TableHead>
-            <TableHead>Ažurirano</TableHead>
-            <TableHead className="text-right">Akcije</TableHead>
+            {categoriesColumns.map(({ key, options, label }) => (
+              <TableHead key={key} {...options}>
+                {label}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -145,50 +143,61 @@ function RouteComponent() {
             </TableRow>
           )}
           {categories.map((category, index) => (
-            <TableRow key={category.id}>
-              <TableCell className="font-medium">
-                {(page - 1) * limit + index + 1}
-              </TableCell>
-              <TableCell>
-                <Switch checked={true} />
-              </TableCell>
-              <TableCell className="font-medium">{category.name}</TableCell>
-              <TableCell>
-                <Badge variant="secondary" className="rounded-sm">
-                  {category.slug}
-                </Badge>
-              </TableCell>
-              <TableCell>{category.parentName ?? '/'}</TableCell>
-              <TableCell>{category.description}</TableCell>
-              <TableCell>
-                {new Date(category.createdAt ?? new Date()).toLocaleDateString(
-                  'hr-HR',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  },
-                )}
-              </TableCell>
-              <TableCell>
-                {category.updatedAt
-                  ? new Date(category.updatedAt).toLocaleDateString('hr-HR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })
-                  : '/'}
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-end gap-1">
-                  <Button variant="ghost" size="icon">
-                    <PencilIcon color="orange" />
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Trash2Icon color="red" />
-                  </Button>
-                </div>
-              </TableCell>
+            <TableRow key={category.id} className="group">
+              {categoriesColumns.map(({ key }) => {
+                if (key === 'order') {
+                  return (
+                    <TableCell key={key}>
+                      {(page - 1) * limit + index + 1}
+                    </TableCell>
+                  )
+                }
+                if (key === 'isActive') {
+                  return (
+                    <TableCell key={key}>
+                      <StatusColumn
+                        category={category}
+                        refetchCategories={refetch}
+                      />
+                    </TableCell>
+                  )
+                }
+                if (key === 'parentName') {
+                  return <TableCell key={key}>{category[key] ?? '/'}</TableCell>
+                }
+                if (key === 'slug') {
+                  return (
+                    <TableCell key={key}>
+                      <Badge variant="secondary" className="rounded-sm">
+                        {category[key]}
+                      </Badge>
+                    </TableCell>
+                  )
+                }
+                if (key === 'createdAt' || key === 'updatedAt') {
+                  return (
+                    <TableCell key={key}>{formatDate(category[key])}</TableCell>
+                  )
+                }
+                if (key === 'actions') {
+                  return (
+                    <TableCell
+                      key={key}
+                      className="sticky right-0 z-10 bg-background group-hover:bg-muted-background text-right"
+                    >
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon">
+                          <PencilIcon color="orange" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash2Icon color="red" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )
+                }
+                return <TableCell key={key}>{category[key]}</TableCell>
+              })}
             </TableRow>
           ))}
         </TableBody>

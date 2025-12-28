@@ -6,7 +6,7 @@ import {
   SearchIcon,
   TriangleAlertIcon,
 } from 'lucide-react'
-import { getRole } from './-data'
+import { getRole, usersColumns } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
@@ -32,6 +32,7 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { EmptyData } from '@/components/custom/EmptyData'
+import { formatDate } from '@/utils/format-date'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -113,22 +114,18 @@ function RouteComponent() {
       <Table className="overflow-x-auto">
         <TableHeader className="bg-muted">
           <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Korisničko ime</TableHead>
-            <TableHead>Email adresa</TableHead>
-            <TableHead>Uloga</TableHead>
-            <TableHead>Broj proizvoda</TableHead>
-            <TableHead>Kreirano</TableHead>
-            <TableHead>Ažurirano</TableHead>
-            <TableHead className="text-right">Akcije</TableHead>
+            {usersColumns.map(({ label, key, options }) => (
+              <TableHead key={key} {...options}>
+                {label}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
           {users.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={8}
+                colSpan={9}
                 className="text-center text-muted-foreground"
               >
                 <EmptyData
@@ -150,50 +147,59 @@ function RouteComponent() {
           )}
           {users.map((user, index) => (
             <TableRow key={user.id}>
-              <TableCell className="font-medium">
-                {(page - 1) * limit + index + 1}
-              </TableCell>
-              <TableCell>
-                <StatusColumn user={user} refetchUsers={refetch} />
-              </TableCell>
-              <TableCell className="font-medium">{user.username}</TableCell>
-              <TableCell>
-                <Badge variant="secondary" className="rounded-sm">
-                  {user.email}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <Badge className={`${getRole[user.role].color} text-white`}>
-                  {getRole[user.role].name}
-                </Badge>
-              </TableCell>
-              <TableCell>{user.productCount}</TableCell>
-              <TableCell>
-                {new Date(user.createdAt ?? new Date()).toLocaleDateString(
-                  'hr-HR',
-                  {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                  },
-                )}
-              </TableCell>
-              <TableCell>
-                {user.updatedAt
-                  ? new Date(user.updatedAt).toLocaleDateString('hr-HR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })
-                  : '/'}
-              </TableCell>
-              <TableCell>
-                <div className="flex justify-end gap-1">
-                  <EditPassword userId={user.id} params={params} />
-                  <EditUser user={user} params={params} />
-                  <DeleteUser userId={user.id} params={params} />
-                </div>
-              </TableCell>
+              {usersColumns.map(({ key }) => {
+                if (key === 'order') {
+                  return (
+                    <TableCell key={key}>
+                      {(page - 1) * limit + index + 1}
+                    </TableCell>
+                  )
+                }
+                if (key === 'isActive') {
+                  return (
+                    <TableCell key={key}>
+                      <StatusColumn user={user} refetchUsers={refetch} />
+                    </TableCell>
+                  )
+                }
+                if (key === 'email') {
+                  return (
+                    <TableCell key={key}>
+                      <Badge variant="secondary" className="rounded-sm">
+                        {user[key]}
+                      </Badge>
+                    </TableCell>
+                  )
+                }
+                if (key === 'role') {
+                  return (
+                    <TableCell key={key}>
+                      <Badge
+                        className={`${getRole[user[key]].color} text-white`}
+                      >
+                        {getRole[user[key]].name}
+                      </Badge>
+                    </TableCell>
+                  )
+                }
+                if (key === 'createdAt' || key === 'updatedAt') {
+                  return (
+                    <TableCell key={key}>{formatDate(user[key])}</TableCell>
+                  )
+                }
+                if (key === 'actions') {
+                  return (
+                    <TableCell key={key}>
+                      <div className="flex justify-end gap-1">
+                        <EditPassword userId={user.id} params={params} />
+                        <EditUser user={user} params={params} />
+                        <DeleteUser userId={user.id} params={params} />
+                      </div>
+                    </TableCell>
+                  )
+                }
+                return <TableCell key={key}>{user[key]}</TableCell>
+              })}
             </TableRow>
           ))}
         </TableBody>
