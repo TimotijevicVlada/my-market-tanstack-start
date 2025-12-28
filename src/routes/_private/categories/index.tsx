@@ -9,6 +9,7 @@ import {
   TriangleAlertIcon,
 } from 'lucide-react'
 import { StatusColumn } from './-components/StatusColumn'
+import { categoriesColumns } from './-data'
 import { useGetCategories } from '@/api/categories/queries'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -110,15 +111,11 @@ function RouteComponent() {
       <Table>
         <TableHeader className="bg-muted">
           <TableRow>
-            <TableHead>#</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Naziv</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead>Nadređena kategorija</TableHead>
-            <TableHead>Opis</TableHead>
-            <TableHead>Kreirano</TableHead>
-            <TableHead>Ažurirano</TableHead>
-            <TableHead className="text-right">Akcije</TableHead>
+            {categoriesColumns.map(({ key, options, label }) => (
+              <TableHead key={key} {...options}>
+                {label}
+              </TableHead>
+            ))}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -146,33 +143,61 @@ function RouteComponent() {
             </TableRow>
           )}
           {categories.map((category, index) => (
-            <TableRow key={category.id}>
-              <TableCell className="font-medium">
-                {(page - 1) * limit + index + 1}
-              </TableCell>
-              <TableCell>
-                <StatusColumn category={category} refetchCategories={refetch} />
-              </TableCell>
-              <TableCell className="font-medium">{category.name}</TableCell>
-              <TableCell>
-                <Badge variant="secondary" className="rounded-sm">
-                  {category.slug}
-                </Badge>
-              </TableCell>
-              <TableCell>{category.parentName ?? '/'}</TableCell>
-              <TableCell>{category.description}</TableCell>
-              <TableCell>{formatDate(category.createdAt)}</TableCell>
-              <TableCell>{formatDate(category.updatedAt)}</TableCell>
-              <TableCell>
-                <div className="flex justify-end gap-1">
-                  <Button variant="ghost" size="icon">
-                    <PencilIcon color="orange" />
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Trash2Icon color="red" />
-                  </Button>
-                </div>
-              </TableCell>
+            <TableRow key={category.id} className="group">
+              {categoriesColumns.map(({ key }) => {
+                if (key === 'order') {
+                  return (
+                    <TableCell key={key}>
+                      {(page - 1) * limit + index + 1}
+                    </TableCell>
+                  )
+                }
+                if (key === 'isActive') {
+                  return (
+                    <TableCell key={key}>
+                      <StatusColumn
+                        category={category}
+                        refetchCategories={refetch}
+                      />
+                    </TableCell>
+                  )
+                }
+                if (key === 'parentName') {
+                  return <TableCell key={key}>{category[key] ?? '/'}</TableCell>
+                }
+                if (key === 'slug') {
+                  return (
+                    <TableCell key={key}>
+                      <Badge variant="secondary" className="rounded-sm">
+                        {category[key]}
+                      </Badge>
+                    </TableCell>
+                  )
+                }
+                if (key === 'createdAt' || key === 'updatedAt') {
+                  return (
+                    <TableCell key={key}>{formatDate(category[key])}</TableCell>
+                  )
+                }
+                if (key === 'actions') {
+                  return (
+                    <TableCell
+                      key={key}
+                      className="sticky right-0 z-10 bg-background group-hover:bg-muted-background text-right"
+                    >
+                      <div className="flex justify-end gap-1">
+                        <Button variant="ghost" size="icon">
+                          <PencilIcon color="orange" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <Trash2Icon color="red" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  )
+                }
+                return <TableCell key={key}>{category[key]}</TableCell>
+              })}
             </TableRow>
           ))}
         </TableBody>
