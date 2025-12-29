@@ -170,7 +170,7 @@ function RouteComponent() {
                       <div className="flex justify-end gap-1">
                         <EditPassword userId={user.id} params={params} />
                         <EditUser user={user} params={params} />
-                        <DeleteUser userId={user.id} params={params} />
+                        <DeleteUser user={user} params={params} />
                       </div>
                     </TableCell>
                   )

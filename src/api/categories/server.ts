@@ -164,3 +164,19 @@ export const editCategory = createServerFn({
 
     return updatedCategory
   })
+
+export const deleteCategory = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: { categoryId: string }) => data)
+  .handler(async ({ data }) => {
+    const { categoryId } = data
+
+    const [deletedCategory] = await db
+      .delete(categories)
+      .where(eq(categories.id, categoryId))
+      .returning()
+
+    return deletedCategory
+  })

@@ -1,15 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import {
-  ArrowRightIcon,
-  SearchIcon,
-  Trash2Icon,
-  TriangleAlertIcon,
-} from 'lucide-react'
+import { ArrowRightIcon, SearchIcon, TriangleAlertIcon } from 'lucide-react'
 import { StatusColumn } from './-components/StatusColumn'
 import { categoriesColumns } from './-data'
 import { CreateCategory } from './-components/CreateCategory'
 import { EditCategory } from './-components/EditCategory'
+import { DeleteCategory } from './-components/DeleteCategory'
 import { useGetCategories } from '@/api/categories/queries'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -171,9 +167,7 @@ function RouteComponent() {
                     >
                       <div className="flex justify-end gap-1">
                         <EditCategory category={category} params={params} />
-                        <Button variant="ghost" size="icon">
-                          <Trash2Icon color="red" />
-                        </Button>
+                        <DeleteCategory category={category} params={params} />
                       </div>
                     </TableCell>
                   )
