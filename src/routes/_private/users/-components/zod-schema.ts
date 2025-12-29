@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const baseSchema = z.object({
-  username: z.string().min(1, 'Korisničko ime je obavezno'),
+  username: z.string().trim().min(1, 'Korisničko ime je obavezno'),
   email: z.email('Neispravna email adresa'),
   role: z.enum(['seller', 'buyer', 'admin', 'super-admin']),
 })
@@ -9,6 +9,7 @@ export const baseSchema = z.object({
 export const createUserSchema = baseSchema.extend({
   password: z
     .string()
+    .trim()
     .min(1, 'Lozinka je obavezna')
     .min(4, 'Lozinka mora imati najmanje 4 karaktera'),
 })

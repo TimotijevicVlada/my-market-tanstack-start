@@ -11,7 +11,8 @@ import { Card } from '@/components/ui/card'
 
 export const Route = createFileRoute('/')({
   component: App,
-  loader: async () => await getCategories(),
+  loader: async () =>
+    await getCategories({ data: { rootCategoriesOnly: true } }),
 })
 
 export function App() {

@@ -21,12 +21,11 @@ import { Label } from '@/components/ui/label'
 
 interface CreateUserProps {
   params: GetUsersParams
-  isOpen: boolean
-  setIsOpen: (isOpen: boolean) => void
 }
 
-export const CreateUser = ({ params, isOpen, setIsOpen }: CreateUserProps) => {
+export const CreateUser = ({ params }: CreateUserProps) => {
   const [showPassword, setShowPassword] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   const {
     register,
