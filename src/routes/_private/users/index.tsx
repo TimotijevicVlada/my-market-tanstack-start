@@ -1,12 +1,18 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { ArrowRightIcon, SearchIcon, TriangleAlertIcon } from 'lucide-react'
-import { getRole, usersColumns } from './-data'
+import {
+  ArrowRightIcon,
+  FilterIcon,
+  SearchIcon,
+  TriangleAlertIcon,
+} from 'lucide-react'
+import { getRole, statusFilterOptions, usersColumns } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
 import { EditUser } from './-components/EditUser'
 import { EditPassword } from './-components/EditPassword'
+import type { GetUsersParams, UserStatus } from '@/api/users/types'
 import { useGetUsers } from '@/api/users/queries'
 import {
   Table,
@@ -28,6 +34,7 @@ import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { EmptyData } from '@/components/custom/EmptyData'
 import { formatDate } from '@/utils/format-date'
+import { DropdownMenu } from '@/components/custom/DropdownMenu'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -39,8 +46,13 @@ function RouteComponent() {
 
   const [searchInputValue, setSearchInputValue] = useState('')
   const [keyword, setKeyword] = useState('')
+  const [status, setStatus] = useState<UserStatus | null>(null)
 
-  const params = { page, limit, keyword }
+  const params: GetUsersParams = { page, limit, keyword }
+
+  if (status) {
+    params.status = status
+  }
 
   const { data, isLoading, error, refetch } = useGetUsers(params)
 
@@ -49,6 +61,11 @@ function RouteComponent() {
 
   const handleSearch = () => {
     setKeyword(searchInputValue)
+    setPage(1)
+  }
+
+  const handleStatusChange = (newStatus: { id: UserStatus; label: string }) => {
+    setStatus(newStatus.id === status ? null : newStatus.id)
     setPage(1)
   }
 
@@ -104,11 +121,41 @@ function RouteComponent() {
       <Table className="overflow-x-auto">
         <TableHeader className="bg-muted">
           <TableRow>
-            {usersColumns.map(({ label, key, options }) => (
-              <TableHead key={key} {...options}>
-                {label}
-              </TableHead>
-            ))}
+            {usersColumns.map(({ label, key, options }) => {
+              if (key === 'isActive') {
+                return (
+                  <TableHead
+                    key={key}
+                    {...options}
+                    className="flex items-center gap-3"
+                  >
+                    {label}
+                    <DropdownMenu
+                      options={statusFilterOptions}
+                      handleOptionChange={handleStatusChange}
+                      labelKey="label"
+                      active={{ key: 'id', value: status }}
+                      triggerButton={
+                        <Button
+                          variant="ghost"
+                          aria-label="Open menu"
+                          size="icon-sm"
+                        >
+                          <FilterIcon
+                            className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
+                          />
+                        </Button>
+                      }
+                    />
+                  </TableHead>
+                )
+              }
+              return (
+                <TableHead key={key} {...options}>
+                  {label}
+                </TableHead>
+              )
+            })}
           </TableRow>
         </TableHeader>
         <TableBody>

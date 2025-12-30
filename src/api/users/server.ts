@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { createServerFn } from '@tanstack/react-start'
-import { count, desc, eq, ilike, or } from 'drizzle-orm'
+import { and, count, desc, eq, ilike, or } from 'drizzle-orm'
 import { requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
 import type {
@@ -19,20 +19,30 @@ export const getPagedUsers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetUsersParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword } = data
+    const { page, limit, keyword, status } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
     const offset = (page - 1) * limit
 
+    const conditions = [
+      ...(hasKeyword
+        ? [
+            or(
+              ilike(users.username, `%${trimmedKeyword}%`),
+              ilike(users.email, `%${trimmedKeyword}%`),
+            ),
+          ]
+        : []),
+      ...(status
+        ? [eq(users.isActive, status === 'active' ? true : false)]
+        : []),
+    ]
+
     const totalQuery = db.select({ count: count() }).from(users)
-    if (hasKeyword) {
-      totalQuery.where(
-        or(
-          ilike(users.username, `%${trimmedKeyword}%`),
-          ilike(users.email, `%${trimmedKeyword}%`),
-        ),
-      )
+
+    if (conditions.length > 0) {
+      totalQuery.where(and(...conditions))
     }
     const [totalResult] = await totalQuery
     const total = totalResult.count
@@ -53,13 +63,8 @@ export const getPagedUsers = createServerFn({
       .leftJoin(products, eq(products.sellerId, sellers.id))
       .groupBy(users.id)
 
-    if (hasKeyword) {
-      query.where(
-        or(
-          ilike(users.username, `%${trimmedKeyword}%`),
-          ilike(users.email, `%${trimmedKeyword}%`),
-        ),
-      )
+    if (conditions.length > 0) {
+      query.where(and(...conditions))
     }
 
     const result = await query

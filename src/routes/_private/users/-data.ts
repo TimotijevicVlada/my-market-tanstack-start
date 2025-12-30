@@ -1,4 +1,4 @@
-import type { User } from '@/api/users/types'
+import type { User, UserStatus } from '@/api/users/types'
 
 export const getRole = {
   seller: { name: 'Prodavač', color: `bg-blue-500` },
@@ -23,4 +23,12 @@ export const usersColumns: Array<Column> = [
   { label: 'Datum kreiranja', key: 'createdAt' },
   { label: 'Datum ažuriranja', key: 'updatedAt' },
   { label: 'Akcije', key: 'actions', options: { className: 'text-right' } },
+]
+
+export const statusFilterOptions: Array<{
+  id: UserStatus
+  label: string
+}> = [
+  { id: 'active', label: 'Aktivne' },
+  { id: 'inactive', label: 'Neaktivne' },
 ]

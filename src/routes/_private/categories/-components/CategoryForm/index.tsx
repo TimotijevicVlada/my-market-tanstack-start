@@ -113,7 +113,7 @@ export const CategoryForm = ({
                         )
                         onChange(
                           selectedCategory?.id === parentCategoryId
-                            ? ''
+                            ? null
                             : selectedCategory?.id,
                         )
                         setDropdownOpen(false)

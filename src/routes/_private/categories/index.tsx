@@ -47,7 +47,6 @@ function RouteComponent() {
   const limit = 10
 
   const [searchInputValue, setSearchInputValue] = useState('')
-
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<CategoryStatus | null>(null)
 
