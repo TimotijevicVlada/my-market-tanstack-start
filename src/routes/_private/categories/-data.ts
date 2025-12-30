@@ -1,4 +1,4 @@
-import type { Category } from '@/api/categories/types'
+import type { Category, CategoryStatus } from '@/api/categories/types'
 
 type Column = {
   label: string
@@ -16,4 +16,12 @@ export const categoriesColumns: Array<Column> = [
   { label: 'Kreirano', key: 'createdAt' },
   { label: 'Ažurirano', key: 'updatedAt' },
   { label: 'Akcije', key: 'actions', options: { className: 'text-right' } },
+]
+
+export const statusFilterOptions: Array<{
+  id: CategoryStatus
+  label: string
+}> = [
+  { id: 'active', label: 'Aktivne' },
+  { id: 'inactive', label: 'Neaktivne' },
 ]

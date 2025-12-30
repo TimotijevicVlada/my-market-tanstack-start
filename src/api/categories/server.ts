@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start'
 import {
+  and,
   count,
   desc,
   eq,
@@ -38,21 +39,31 @@ export const getPagedCategories = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetCategoriesParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword } = data
+    const { page, limit, keyword, status } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
     const offset = (page - 1) * limit
 
+    const conditions = [
+      ...(hasKeyword
+        ? [
+            or(
+              ilike(categories.name, `%${trimmedKeyword}%`),
+              ilike(categories.slug, `%${trimmedKeyword}%`),
+            ),
+          ]
+        : []),
+      ...(status
+        ? [eq(categories.isActive, status === 'active' ? true : false)]
+        : []),
+    ]
+
     const totalQuery = db.select({ count: count() }).from(categories)
-    if (hasKeyword) {
-      totalQuery.where(
-        or(
-          ilike(categories.name, `%${trimmedKeyword}%`),
-          ilike(categories.slug, `%${trimmedKeyword}%`),
-        ),
-      )
+    if (conditions.length > 0) {
+      totalQuery.where(and(...conditions))
     }
+
     const [totalResult] = await totalQuery
     const total = totalResult.count
 
@@ -65,13 +76,8 @@ export const getPagedCategories = createServerFn({
       .from(categories)
       .leftJoin(parentCategory, eq(categories.parentId, parentCategory.id))
 
-    if (hasKeyword) {
-      query.where(
-        or(
-          ilike(categories.name, `%${trimmedKeyword}%`),
-          ilike(categories.slug, `%${trimmedKeyword}%`),
-        ),
-      )
+    if (conditions.length > 0) {
+      query.where(and(...conditions))
     }
 
     const result = await query

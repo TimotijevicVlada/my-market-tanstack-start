@@ -1,11 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { ArrowRightIcon, SearchIcon, TriangleAlertIcon } from 'lucide-react'
+import {
+  ArrowRightIcon,
+  FilterIcon,
+  SearchIcon,
+  TriangleAlertIcon,
+} from 'lucide-react'
 import { StatusColumn } from './-components/StatusColumn'
-import { categoriesColumns } from './-data'
+import { categoriesColumns, statusFilterOptions } from './-data'
 import { CreateCategory } from './-components/CreateCategory'
 import { EditCategory } from './-components/EditCategory'
 import { DeleteCategory } from './-components/DeleteCategory'
+import type {
+  CategoryStatus,
+  GetCategoriesParams,
+} from '@/api/categories/types'
 import { useGetCategories } from '@/api/categories/queries'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -27,6 +36,7 @@ import { EmptyData } from '@/components/custom/EmptyData'
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
 import { formatDate } from '@/utils/format-date'
+import { DropdownMenu } from '@/components/custom/DropdownMenu'
 
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
@@ -37,10 +47,18 @@ function RouteComponent() {
   const limit = 10
 
   const [searchInputValue, setSearchInputValue] = useState('')
-
   const [keyword, setKeyword] = useState('')
+  const [status, setStatus] = useState<CategoryStatus | null>(null)
 
-  const params = { page, limit, keyword }
+  const params: GetCategoriesParams = {
+    page,
+    limit,
+    keyword,
+  }
+
+  if (status) {
+    params.status = status
+  }
 
   const { data, isLoading, error, refetch } = useGetCategories(params)
 
@@ -49,6 +67,14 @@ function RouteComponent() {
 
   const handleSearch = () => {
     setKeyword(searchInputValue)
+    setPage(1)
+  }
+
+  const handleStatusChange = (newStatus: {
+    id: CategoryStatus
+    label: string
+  }) => {
+    setStatus(newStatus.id === status ? null : newStatus.id)
     setPage(1)
   }
 
@@ -104,11 +130,41 @@ function RouteComponent() {
       <Table>
         <TableHeader className="bg-muted">
           <TableRow>
-            {categoriesColumns.map(({ key, options, label }) => (
-              <TableHead key={key} {...options}>
-                {label}
-              </TableHead>
-            ))}
+            {categoriesColumns.map(({ key, options, label }) => {
+              if (key === 'isActive') {
+                return (
+                  <TableHead
+                    key={key}
+                    {...options}
+                    className="flex items-center gap-3"
+                  >
+                    {label}
+                    <DropdownMenu
+                      options={statusFilterOptions}
+                      handleOptionChange={handleStatusChange}
+                      labelKey="label"
+                      active={{ key: 'id', value: status }}
+                      triggerButton={
+                        <Button
+                          variant="ghost"
+                          aria-label="Open menu"
+                          size="icon-sm"
+                        >
+                          <FilterIcon
+                            className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
+                          />
+                        </Button>
+                      }
+                    />
+                  </TableHead>
+                )
+              }
+              return (
+                <TableHead key={key} {...options}>
+                  {label}
+                </TableHead>
+              )
+            })}
           </TableRow>
         </TableHeader>
         <TableBody>
