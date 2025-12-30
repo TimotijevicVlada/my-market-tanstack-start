@@ -88,6 +88,7 @@ export function Pagination({
         <PaginationItem>
           <Button
             variant="ghost"
+            size="icon"
             className={
               currentPage === 1 ? 'pointer-events-none opacity-50' : ''
             }
@@ -99,7 +100,6 @@ export function Pagination({
             }}
           >
             <ChevronLeftIcon />
-            Prethodna
           </Button>
         </PaginationItem>
 
@@ -128,6 +128,7 @@ export function Pagination({
         <PaginationItem>
           <Button
             variant="ghost"
+            size="icon"
             className={
               currentPage === totalPages ? 'pointer-events-none opacity-50' : ''
             }
@@ -138,7 +139,6 @@ export function Pagination({
               }
             }}
           >
-            Sledeca
             <ChevronRightIcon />
           </Button>
         </PaginationItem>

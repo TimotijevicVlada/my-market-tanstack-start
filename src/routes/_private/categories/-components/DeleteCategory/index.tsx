@@ -1,24 +1,24 @@
 import { Trash2Icon } from 'lucide-react'
 import { useState } from 'react'
-import type { GetUsersParams, User } from '@/api/users/types'
+import type { Category, GetCategoriesParams } from '@/api/categories/types'
 import { Button } from '@/components/custom/Button'
-import { useDeleteUser } from '@/api/users/queries'
 import { AlertDialog } from '@/components/custom/AlertDialog'
 import { Tooltip } from '@/components/custom/Tooltip'
+import { useDeleteCategory } from '@/api/categories/queries'
 
-interface DeleteUserProps {
-  user: User
-  params: GetUsersParams
+interface DeleteCategoryProps {
+  category: Category
+  params: GetCategoriesParams
 }
 
-export const DeleteUser = ({ user, params }: DeleteUserProps) => {
-  const { mutate: deleteUser, isPending } = useDeleteUser(params)
+export const DeleteCategory = ({ category, params }: DeleteCategoryProps) => {
+  const { mutate: deleteCategory, isPending } = useDeleteCategory(params)
 
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <>
-      <Tooltip title="Brisanje korisnika">
+      <Tooltip title="Brisanje kategorije">
         <Button
           variant="ghost"
           size="icon"
@@ -31,9 +31,9 @@ export const DeleteUser = ({ user, params }: DeleteUserProps) => {
       <AlertDialog
         open={isOpen}
         onOpenChange={() => setIsOpen(false)}
-        title="Potvrdite brisanje korisnika"
-        description={`Da li ste sigurni da želite da obrišete korisnika ${user.username.toUpperCase()}?`}
-        onConfirm={() => deleteUser({ userId: user.id })}
+        title="Potvrdite brisanje kategorije"
+        description={`Da li ste sigurni da želite da obrišete kategoriju ${category.name.toUpperCase()}?`}
+        onConfirm={() => deleteCategory({ data: { categoryId: category.id } })}
         onCancel={() => setIsOpen(false)}
         confirmText="Obrisi"
         loading={{

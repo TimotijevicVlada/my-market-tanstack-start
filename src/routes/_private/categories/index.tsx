@@ -1,15 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import {
-  ArrowRightIcon,
-  PencilIcon,
-  PlusIcon,
-  SearchIcon,
-  Trash2Icon,
-  TriangleAlertIcon,
-} from 'lucide-react'
+import { ArrowRightIcon, SearchIcon, TriangleAlertIcon } from 'lucide-react'
 import { StatusColumn } from './-components/StatusColumn'
 import { categoriesColumns } from './-data'
+import { CreateCategory } from './-components/CreateCategory'
+import { EditCategory } from './-components/EditCategory'
+import { DeleteCategory } from './-components/DeleteCategory'
 import { useGetCategories } from '@/api/categories/queries'
 import { Spinner } from '@/components/ui/spinner'
 import { ButtonGroup } from '@/components/ui/button-group'
@@ -103,10 +99,7 @@ function RouteComponent() {
             <ArrowRightIcon />
           </Button>
         </ButtonGroup>
-        <Button>
-          <PlusIcon />
-          Kreiraj kategoriju
-        </Button>
+        <CreateCategory params={params} />
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -125,20 +118,7 @@ function RouteComponent() {
                 colSpan={9}
                 className="text-center text-muted-foreground"
               >
-                <EmptyData
-                  title="Nema kategorija"
-                  description="Jos uvek nema kategorija, kreirajte prvu."
-                  button={{
-                    text: 'Kreiraj kategoriju',
-                    icon: <PlusIcon />,
-                    onClick: () => {
-                      // setIsCreateUserModalOpen(true)
-                      setKeyword('')
-                      setSearchInputValue('')
-                      setPage(1)
-                    },
-                  }}
-                />
+                <EmptyData title="Nema kategorija" />
               </TableCell>
             </TableRow>
           )}
@@ -186,17 +166,13 @@ function RouteComponent() {
                       className="sticky right-0 z-10 bg-background group-hover:bg-muted-background text-right"
                     >
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="icon">
-                          <PencilIcon color="orange" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Trash2Icon color="red" />
-                        </Button>
+                        <EditCategory category={category} params={params} />
+                        <DeleteCategory category={category} params={params} />
                       </div>
                     </TableCell>
                   )
                 }
-                return <TableCell key={key}>{category[key]}</TableCell>
+                return <TableCell key={key}>{category[key] || '/'}</TableCell>
               })}
             </TableRow>
           ))}

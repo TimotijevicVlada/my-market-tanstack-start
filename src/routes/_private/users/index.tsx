@@ -1,11 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  ArrowRightIcon,
-  PlusIcon,
-  SearchIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
+import { ArrowRightIcon, SearchIcon, TriangleAlertIcon } from 'lucide-react'
 import { getRole, usersColumns } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
@@ -44,7 +39,6 @@ function RouteComponent() {
 
   const [searchInputValue, setSearchInputValue] = useState('')
   const [keyword, setKeyword] = useState('')
-  const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false)
 
   const params = { page, limit, keyword }
 
@@ -105,11 +99,7 @@ function RouteComponent() {
             <ArrowRightIcon />
           </Button>
         </ButtonGroup>
-        <CreateUser
-          params={params}
-          isOpen={isCreateUserModalOpen}
-          setIsOpen={setIsCreateUserModalOpen}
-        />
+        <CreateUser params={params} />
       </div>
       <Table className="overflow-x-auto">
         <TableHeader className="bg-muted">
@@ -128,20 +118,7 @@ function RouteComponent() {
                 colSpan={9}
                 className="text-center text-muted-foreground"
               >
-                <EmptyData
-                  title="Nema korisnika"
-                  description="Jos uvek nema korisnika, dodajte prvog."
-                  button={{
-                    text: 'Dodaj korisnika',
-                    icon: <PlusIcon />,
-                    onClick: () => {
-                      setIsCreateUserModalOpen(true)
-                      setKeyword('')
-                      setSearchInputValue('')
-                      setPage(1)
-                    },
-                  }}
-                />
+                <EmptyData title="Nema korisnika" />
               </TableCell>
             </TableRow>
           )}
@@ -193,7 +170,7 @@ function RouteComponent() {
                       <div className="flex justify-end gap-1">
                         <EditPassword userId={user.id} params={params} />
                         <EditUser user={user} params={params} />
-                        <DeleteUser userId={user.id} params={params} />
+                        <DeleteUser user={user} params={params} />
                       </div>
                     </TableCell>
                   )

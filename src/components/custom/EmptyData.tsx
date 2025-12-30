@@ -11,7 +11,7 @@ import {
 
 interface EmptyDataProps {
   title: string
-  description: string
+  description?: string
   button?: {
     text: string
     icon?: React.ReactNode
@@ -29,7 +29,7 @@ export const EmptyData = ({ title, description, button }: EmptyDataProps) => {
           <FolderIcon />
         </EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
-        <EmptyDescription>{description}</EmptyDescription>
+        {description && <EmptyDescription>{description}</EmptyDescription>}
       </EmptyHeader>
       <EmptyContent>
         {button && (

@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as PrivateRouteRouteImport } from './routes/_private/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as PrivateCreateCategoryRouteImport } from './routes/_private/create-category'
 import { Route as PrivateUsersIndexRouteImport } from './routes/_private/users/index'
 import { Route as PrivateProfileIndexRouteImport } from './routes/_private/profile/index'
 import { Route as PrivateCategoriesIndexRouteImport } from './routes/_private/categories/index'
@@ -31,11 +30,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const PrivateCreateCategoryRoute = PrivateCreateCategoryRouteImport.update({
-  id: '/create-category',
-  path: '/create-category',
-  getParentRoute: () => PrivateRouteRoute,
 } as any)
 const PrivateUsersIndexRoute = PrivateUsersIndexRouteImport.update({
   id: '/users/',
@@ -65,7 +59,6 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/create-category': typeof PrivateCreateCategoryRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/categories': typeof PrivateCategoriesIndexRoute
@@ -74,7 +67,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/create-category': typeof PrivateCreateCategoryRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/categories': typeof PrivateCategoriesIndexRoute
@@ -86,7 +78,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_private': typeof PrivateRouteRouteWithChildren
-  '/_private/create-category': typeof PrivateCreateCategoryRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_private/categories/': typeof PrivateCategoriesIndexRoute
@@ -97,27 +88,18 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/create-category'
     | '/login'
     | '/register'
     | '/categories'
     | '/profile'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/create-category'
-    | '/login'
-    | '/register'
-    | '/categories'
-    | '/profile'
-    | '/users'
+  to: '/' | '/login' | '/register' | '/categories' | '/profile' | '/users'
   id:
     | '__root__'
     | '/'
     | '/_auth'
     | '/_private'
-    | '/_private/create-category'
     | '/_auth/login/'
     | '/_auth/register/'
     | '/_private/categories/'
@@ -153,13 +135,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_private/create-category': {
-      id: '/_private/create-category'
-      path: '/create-category'
-      fullPath: '/create-category'
-      preLoaderRoute: typeof PrivateCreateCategoryRouteImport
-      parentRoute: typeof PrivateRouteRoute
     }
     '/_private/users/': {
       id: '/_private/users/'
@@ -214,14 +189,12 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface PrivateRouteRouteChildren {
-  PrivateCreateCategoryRoute: typeof PrivateCreateCategoryRoute
   PrivateCategoriesIndexRoute: typeof PrivateCategoriesIndexRoute
   PrivateProfileIndexRoute: typeof PrivateProfileIndexRoute
   PrivateUsersIndexRoute: typeof PrivateUsersIndexRoute
 }
 
 const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
-  PrivateCreateCategoryRoute: PrivateCreateCategoryRoute,
   PrivateCategoriesIndexRoute: PrivateCategoriesIndexRoute,
   PrivateProfileIndexRoute: PrivateProfileIndexRoute,
   PrivateUsersIndexRoute: PrivateUsersIndexRoute,

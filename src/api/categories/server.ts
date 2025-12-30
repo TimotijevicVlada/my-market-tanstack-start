@@ -1,19 +1,36 @@
 import { createServerFn } from '@tanstack/react-start'
-import { count, desc, eq, getTableColumns, ilike, or } from 'drizzle-orm'
+import {
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  isNull,
+  or,
+} from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
-import type { CreateCategoryPayload, GetCategoriesParams } from './types'
+import type { GetCategoriesParams } from './types'
+import type { CategorySchema } from '@/routes/_private/categories/-components/zod-schema'
 import { db } from '@/db'
 import { categories } from '@/db/schema'
 import { requireAdminMiddleware } from '@/api/middleware'
 
 export const getCategories = createServerFn({
   method: 'GET',
-}).handler(async () => {
-  return await db.query.categories.findMany({
-    orderBy: (category) => [desc(category.createdAt), desc(category.id)],
-    where: (category, { isNull }) => isNull(category.parentId),
-  })
 })
+  .inputValidator((data: { rootCategoriesOnly: boolean } | undefined) => data)
+  .handler(async ({ data }) => {
+    const { rootCategoriesOnly } = data ?? {}
+
+    const result = await db.query.categories.findMany({
+      orderBy: (category) => [desc(category.createdAt), desc(category.id)],
+      ...(rootCategoriesOnly && {
+        where: (category) => isNull(category.parentId),
+      }),
+    })
+
+    return result
+  })
 
 export const getPagedCategories = createServerFn({
   method: 'POST',
@@ -104,17 +121,62 @@ export const createCategory = createServerFn({
   method: 'POST',
 })
   .middleware([requireAdminMiddleware])
-  .inputValidator((data: CreateCategoryPayload) => data)
+  .inputValidator((data: CategorySchema) => data)
   .handler(async ({ data }) => {
-    const [category] = await db
-      .insert(categories)
-      .values({
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        parentId: data.parentId || null,
-      })
-      .returning()
+    const existingSlug = await db.query.categories.findFirst({
+      where: (categoryTable) => eq(categoryTable.slug, data.slug),
+    })
+
+    if (existingSlug) {
+      throw new Error('Slug je već zauzet')
+    }
+
+    const [category] = await db.insert(categories).values(data).returning()
 
     return category
+  })
+
+export const editCategory = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: CategorySchema & { categoryId: string }) => data)
+  .handler(async ({ data }) => {
+    const { categoryId, ...categoryData } = data
+
+    const existingSlug = await db.query.categories.findFirst({
+      where: (categoryTable) => eq(categoryTable.slug, categoryData.slug),
+    })
+
+    if (existingSlug && existingSlug.id !== categoryId) {
+      throw new Error('Slug je već zauzet')
+    }
+
+    if (categoryData.parentId === categoryId) {
+      throw new Error('Kategorija ne može biti parent kategorija samoj sebi')
+    }
+
+    const [updatedCategory] = await db
+      .update(categories)
+      .set(categoryData)
+      .where(eq(categories.id, categoryId))
+      .returning()
+
+    return updatedCategory
+  })
+
+export const deleteCategory = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: { categoryId: string }) => data)
+  .handler(async ({ data }) => {
+    const { categoryId } = data
+
+    const [deletedCategory] = await db
+      .delete(categories)
+      .where(eq(categories.id, categoryId))
+      .returning()
+
+    return deletedCategory
   })
