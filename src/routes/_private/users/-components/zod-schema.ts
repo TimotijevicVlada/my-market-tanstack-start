@@ -16,6 +16,7 @@ export const createUserSchema = baseSchema.extend({
 
 export type EditUserSchema = z.infer<typeof baseSchema>
 export type CreateUserSchema = z.infer<typeof createUserSchema>
+export type UserSchema = CreateUserSchema & EditUserSchema
 
 export const createUserDefaultValues: CreateUserSchema = {
   username: '',

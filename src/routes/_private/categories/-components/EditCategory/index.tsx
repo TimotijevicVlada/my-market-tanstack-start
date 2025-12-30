@@ -31,14 +31,11 @@ export const EditCategory = ({ params, category }: EditCategoryProps) => {
 
   const { mutate: editCategory, isPending } = useEditCategory(params)
 
-  const { reset } = methods
-
   const onFormSubmit = (data: CategorySchema) => {
     editCategory(
       { data: { ...data, categoryId: category.id } },
       {
         onSuccess: () => {
-          reset()
           setCategoryToEdit(null)
         },
       },
@@ -47,7 +44,7 @@ export const EditCategory = ({ params, category }: EditCategoryProps) => {
 
   useEffect(() => {
     if (categoryToEdit) {
-      reset(categoryToEdit)
+      methods.reset(categoryToEdit)
     }
   }, [categoryToEdit])
 

@@ -48,10 +48,7 @@ export const CategoryForm = ({
 
   const {
     field: { onChange, value: parentCategoryId },
-  } = useController({
-    name: 'parentId',
-    control: control,
-  })
+  } = useController({ name: 'parentId', control })
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onFormSubmit)}>
