@@ -1,4 +1,4 @@
-import { ListIcon, UserIcon, UsersIcon } from 'lucide-react'
+import { ListIcon, StoreIcon, UserIcon, UsersIcon } from 'lucide-react'
 import { Link, useLocation } from '@tanstack/react-router'
 import { Button } from '@/components/custom/Button'
 
@@ -40,6 +40,16 @@ export const Sidebar = () => {
         >
           <UsersIcon />
           Korisnici
+        </Button>
+      </Link>
+      <Link to="/sellers">
+        <Button
+          variant={getButtonVariant('/sellers')}
+          className="justify-start w-full"
+          size="lg"
+        >
+          <StoreIcon />
+          Prodavci
         </Button>
       </Link>
     </div>

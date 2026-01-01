@@ -13,6 +13,7 @@ import { Route as PrivateRouteRouteImport } from './routes/_private/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PrivateUsersIndexRouteImport } from './routes/_private/users/index'
+import { Route as PrivateSellersIndexRouteImport } from './routes/_private/sellers/index'
 import { Route as PrivateProfileIndexRouteImport } from './routes/_private/profile/index'
 import { Route as PrivateCategoriesIndexRouteImport } from './routes/_private/categories/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
@@ -34,6 +35,11 @@ const IndexRoute = IndexRouteImport.update({
 const PrivateUsersIndexRoute = PrivateUsersIndexRouteImport.update({
   id: '/users/',
   path: '/users/',
+  getParentRoute: () => PrivateRouteRoute,
+} as any)
+const PrivateSellersIndexRoute = PrivateSellersIndexRouteImport.update({
+  id: '/sellers/',
+  path: '/sellers/',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
 const PrivateProfileIndexRoute = PrivateProfileIndexRouteImport.update({
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterIndexRoute
   '/categories': typeof PrivateCategoriesIndexRoute
   '/profile': typeof PrivateProfileIndexRoute
+  '/sellers': typeof PrivateSellersIndexRoute
   '/users': typeof PrivateUsersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterIndexRoute
   '/categories': typeof PrivateCategoriesIndexRoute
   '/profile': typeof PrivateProfileIndexRoute
+  '/sellers': typeof PrivateSellersIndexRoute
   '/users': typeof PrivateUsersIndexRoute
 }
 export interface FileRoutesById {
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_private/categories/': typeof PrivateCategoriesIndexRoute
   '/_private/profile/': typeof PrivateProfileIndexRoute
+  '/_private/sellers/': typeof PrivateSellersIndexRoute
   '/_private/users/': typeof PrivateUsersIndexRoute
 }
 export interface FileRouteTypes {
@@ -92,9 +101,17 @@ export interface FileRouteTypes {
     | '/register'
     | '/categories'
     | '/profile'
+    | '/sellers'
     | '/users'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/categories' | '/profile' | '/users'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/categories'
+    | '/profile'
+    | '/sellers'
+    | '/users'
   id:
     | '__root__'
     | '/'
@@ -104,6 +121,7 @@ export interface FileRouteTypes {
     | '/_auth/register/'
     | '/_private/categories/'
     | '/_private/profile/'
+    | '/_private/sellers/'
     | '/_private/users/'
   fileRoutesById: FileRoutesById
 }
@@ -141,6 +159,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/users'
       preLoaderRoute: typeof PrivateUsersIndexRouteImport
+      parentRoute: typeof PrivateRouteRoute
+    }
+    '/_private/sellers/': {
+      id: '/_private/sellers/'
+      path: '/sellers'
+      fullPath: '/sellers'
+      preLoaderRoute: typeof PrivateSellersIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
     '/_private/profile/': {
@@ -191,12 +216,14 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface PrivateRouteRouteChildren {
   PrivateCategoriesIndexRoute: typeof PrivateCategoriesIndexRoute
   PrivateProfileIndexRoute: typeof PrivateProfileIndexRoute
+  PrivateSellersIndexRoute: typeof PrivateSellersIndexRoute
   PrivateUsersIndexRoute: typeof PrivateUsersIndexRoute
 }
 
 const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateCategoriesIndexRoute: PrivateCategoriesIndexRoute,
   PrivateProfileIndexRoute: PrivateProfileIndexRoute,
+  PrivateSellersIndexRoute: PrivateSellersIndexRoute,
   PrivateUsersIndexRoute: PrivateUsersIndexRoute,
 }
 
