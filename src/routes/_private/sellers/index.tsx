@@ -3,6 +3,8 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import {
   ArrowRightIcon,
   Link2Icon,
+  MailIcon,
+  MessageSquareText,
   PencilIcon,
   PlusIcon,
   SearchIcon,
@@ -35,6 +37,7 @@ import { Pagination } from '@/components/custom/Pagination'
 import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { truncateText } from '@/utils/truncate-text'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 export const Route = createFileRoute('/_private/sellers/')({
   component: RouteComponent,
@@ -149,6 +152,7 @@ function RouteComponent() {
                   return (
                     <TableCell key={key}>
                       <Badge variant="secondary" className="rounded-sm">
+                        <MailIcon className="w-3.5! h-3.5!" />
                         {seller[key]}
                       </Badge>
                     </TableCell>
@@ -173,23 +177,29 @@ function RouteComponent() {
                 if (key === 'status') {
                   return (
                     <TableCell key={key}>
-                      <Badge
-                        className={`${seller.status === 'approved' ? 'bg-green-500' : seller.status === 'rejected' ? 'bg-red-500' : 'bg-yellow-500'} text-white`}
+                      <Tooltip
+                        title={seller.verificationNote ?? '/'}
+                        disabled={!seller.verificationNote}
                       >
-                        {seller.status === 'approved'
-                          ? 'Odobreno'
-                          : seller.status === 'rejected'
-                            ? 'Odbijeno'
-                            : 'Na cekanju'}
-                      </Badge>
+                        <Badge
+                          className={`${seller.status === 'approved' ? 'bg-green-500' : seller.status === 'rejected' ? 'bg-red-500' : 'bg-yellow-500'} text-white`}
+                        >
+                          {seller.status === 'approved'
+                            ? 'Odobreno'
+                            : seller.status === 'rejected'
+                              ? 'Odbijeno'
+                              : 'Na cekanju'}
+                          {seller.verificationNote && (
+                            <MessageSquareText className="w-4! h-4!" />
+                          )}
+                        </Badge>
+                      </Tooltip>
                     </TableCell>
                   )
                 }
                 if (key === 'description') {
                   return (
-                    <TableCell key={key}>
-                      {truncateText(seller[key] ?? '')}
-                    </TableCell>
+                    <TableCell key={key}>{truncateText(seller[key])}</TableCell>
                   )
                 }
                 if (key === 'createdAt' || key === 'updatedAt') {

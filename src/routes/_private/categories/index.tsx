@@ -37,6 +37,7 @@ import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
 import { formatDate } from '@/utils/format-date'
 import { DropdownMenu } from '@/components/custom/DropdownMenu'
+import { truncateText } from '@/utils/truncate-text'
 
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
@@ -213,6 +214,13 @@ function RouteComponent() {
                 if (key === 'createdAt' || key === 'updatedAt') {
                   return (
                     <TableCell key={key}>{formatDate(category[key])}</TableCell>
+                  )
+                }
+                if (key === 'description') {
+                  return (
+                    <TableCell key={key}>
+                      {truncateText(category[key])}
+                    </TableCell>
                   )
                 }
                 if (key === 'actions') {
