@@ -3,6 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import {
   ArrowRightIcon,
   FilterIcon,
+  MailIcon,
   SearchIcon,
   TriangleAlertIcon,
 } from 'lucide-react'
@@ -190,6 +191,7 @@ function RouteComponent() {
                   return (
                     <TableCell key={key}>
                       <Badge variant="secondary" className="rounded-sm">
+                        <MailIcon className="w-3.5! h-3.5!" />
                         {user[key]}
                       </Badge>
                     </TableCell>

@@ -53,7 +53,7 @@ export const EditPassword = ({ userId, params }: EditPasswordProps) => {
 
   return (
     <>
-      <Tooltip title="Izmeni lozinku">
+      <Tooltip title="Izmena lozinke">
         <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)}>
           <ShieldEllipsisIcon className="text-purple-500" />
         </Button>

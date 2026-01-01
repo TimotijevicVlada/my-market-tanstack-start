@@ -8,12 +8,24 @@ interface TooltipProps {
   children: React.ReactNode
   title: string
   side?: 'top' | 'right' | 'bottom' | 'left'
+  disabled?: boolean
 }
 
-export const Tooltip = ({ children, title, side = 'bottom' }: TooltipProps) => {
+export const Tooltip = ({
+  children,
+  title,
+  side = 'bottom',
+  disabled,
+}: TooltipProps) => {
+  if (disabled) {
+    return children
+  }
+
   return (
     <TooltipUI>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipTrigger asChild disabled={disabled}>
+        {children}
+      </TooltipTrigger>
       <TooltipContent side={side}>
         <p>{title}</p>
       </TooltipContent>

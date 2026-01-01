@@ -15,6 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 interface EditCategoryProps {
   params: GetCategoriesParams
@@ -50,14 +51,16 @@ export const EditCategory = ({ params, category }: EditCategoryProps) => {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={() => setCategoryToEdit(category)}
-        disabled={!category.isActive}
-      >
-        <PencilIcon className="text-orange-500" />
-      </Button>
+      <Tooltip title="Izmena kategorije">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setCategoryToEdit(category)}
+          disabled={!category.isActive}
+        >
+          <PencilIcon className="text-orange-500" />
+        </Button>
+      </Tooltip>
       <Dialog
         open={!!categoryToEdit}
         onOpenChange={() => setCategoryToEdit(null)}

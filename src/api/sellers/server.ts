@@ -5,7 +5,9 @@ import type { GetSellerParams } from './types'
 import { db } from '@/db'
 import { sellers, users } from '@/db/schema'
 
-export const getPagedSellers = createServerFn({})
+export const getPagedSellers = createServerFn({
+  method: 'POST',
+})
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetSellerParams) => data)
   .handler(async ({ data }) => {
