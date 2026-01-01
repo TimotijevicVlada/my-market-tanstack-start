@@ -1,27 +1,20 @@
 import { useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
-  ArrowRightIcon,
   Link2Icon,
   MailIcon,
   MessageSquareText,
   PencilIcon,
   PlusIcon,
-  SearchIcon,
-  ShieldCheck,
-  Trash2Icon,
   TriangleAlertIcon,
 } from 'lucide-react'
 import { sellersColumns } from './-data'
+import { StatusColumn } from './-components/StatusColumn'
+import { DeleteSeller } from './-components/DeleteSeller'
+import { VerifySeller } from './-components/VerifySeller'
 import type { GetSellerParams } from '@/api/sellers/types'
 import { useGetSellers } from '@/api/sellers/queries'
 import { Spinner } from '@/components/ui/spinner'
-import { ButtonGroup } from '@/components/ui/button-group'
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group'
 import { Button } from '@/components/custom/Button'
 import {
   Table,
@@ -34,10 +27,10 @@ import {
 import { EmptyData } from '@/components/custom/EmptyData'
 import { formatDate } from '@/utils/format-date'
 import { Pagination } from '@/components/custom/Pagination'
-import { Switch } from '@/components/ui/switch'
 import { Badge } from '@/components/ui/badge'
 import { truncateText } from '@/utils/truncate-text'
 import { Tooltip } from '@/components/custom/Tooltip'
+import { TableSearch } from '@/components/custom/TableSearch'
 
 export const Route = createFileRoute('/_private/sellers/')({
   component: RouteComponent,
@@ -47,12 +40,19 @@ function RouteComponent() {
   const [page, setPage] = useState(1)
   const limit = 10
 
-  const params: GetSellerParams = { page, limit }
+  const [keyword, setKeyword] = useState('')
 
-  const { data, isLoading, error } = useGetSellers(params)
+  const params: GetSellerParams = { page, limit, keyword }
+
+  const { data, isLoading, error, refetch } = useGetSellers(params)
 
   const sellers = data?.data ?? []
   const pagination = data?.pagination
+
+  const handleSearch = (searchValue: string) => {
+    setKeyword(searchValue)
+    setPage(1)
+  }
 
   if (isLoading) {
     return (
@@ -75,31 +75,7 @@ function RouteComponent() {
     <div>
       <h1 className="text-xl font-bold">Lista prodavaca</h1>
       <div className="flex justify-between items-center my-4">
-        <ButtonGroup className="w-[15rem]">
-          <InputGroup>
-            <InputGroupInput
-              type="text"
-              placeholder="Pretraga..."
-              // value={searchInputValue}
-              // onChange={(e) => setSearchInputValue(e.target.value)}
-              // onKeyDown={(e) => {
-              //   if (e.key === 'Enter') {
-              //     handleSearch()
-              //   }
-              // }}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-          <Button
-            variant="outline"
-            aria-label="Search"
-            // onClick={() => handleSearch()}
-          >
-            <ArrowRightIcon />
-          </Button>
-        </ButtonGroup>
+        <TableSearch onSearchClick={handleSearch} />
         <Button>
           <PlusIcon />
           Dodaj prodavca
@@ -121,7 +97,7 @@ function RouteComponent() {
           {sellers.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={9}
+                colSpan={sellersColumns.length}
                 className="text-center text-muted-foreground"
               >
                 <EmptyData title="Nema prodavaca" />
@@ -141,10 +117,7 @@ function RouteComponent() {
                 if (key === 'isActive') {
                   return (
                     <TableCell key={key}>
-                      <Switch
-                        checked={seller.isActive}
-                        onCheckedChange={() => {}}
-                      />
+                      <StatusColumn seller={seller} refetchSellers={refetch} />
                     </TableCell>
                   )
                 }
@@ -162,7 +135,7 @@ function RouteComponent() {
                   return (
                     <TableCell key={key}>
                       <div className="flex items-center gap-2 hover:underline hover:text-primary">
-                        <Link2Icon className="w-4 h-4" />
+                        <Link2Icon className="w-4 h-4 rotate-[-40deg]" />
                         <Link
                           to={seller[key] ?? ''}
                           target="_blank"
@@ -214,21 +187,11 @@ function RouteComponent() {
                       className="sticky right-0 z-10 bg-background group-hover:bg-muted-background text-right"
                     >
                       <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          disabled={seller.status !== 'pending'}
-                        >
-                          <ShieldCheck
-                            className={`${seller.status === 'pending' ? 'text-blue-500' : 'text-muted-foreground'}`}
-                          />
-                        </Button>
+                        <VerifySeller seller={seller} params={params} />
                         <Button variant="ghost" size="icon-sm">
                           <PencilIcon className="text-orange-500" />
                         </Button>
-                        <Button variant="ghost" size="icon-sm">
-                          <Trash2Icon className="text-red-500" />
-                        </Button>
+                        <DeleteSeller seller={seller} params={params} />
                       </div>
                     </TableCell>
                   )

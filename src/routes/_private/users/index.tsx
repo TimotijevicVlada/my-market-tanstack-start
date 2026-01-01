@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import {
-  ArrowRightIcon,
-  FilterIcon,
-  MailIcon,
-  SearchIcon,
-  TriangleAlertIcon,
-} from 'lucide-react'
+import { FilterIcon, MailIcon, TriangleAlertIcon } from 'lucide-react'
 import { getRole, statusFilterOptions, usersColumns } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
@@ -26,16 +20,11 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
 import { Button } from '@/components/custom/Button'
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
-} from '@/components/ui/input-group'
 import { Spinner } from '@/components/ui/spinner'
-import { ButtonGroup } from '@/components/ui/button-group'
 import { EmptyData } from '@/components/custom/EmptyData'
 import { formatDate } from '@/utils/format-date'
 import { DropdownMenu } from '@/components/custom/DropdownMenu'
+import { TableSearch } from '@/components/custom/TableSearch'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -45,7 +34,6 @@ function RouteComponent() {
   const [page, setPage] = useState(1)
   const limit = 10
 
-  const [searchInputValue, setSearchInputValue] = useState('')
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<UserStatus | null>(null)
 
@@ -60,8 +48,8 @@ function RouteComponent() {
   const users = data?.data ?? []
   const pagination = data?.pagination
 
-  const handleSearch = () => {
-    setKeyword(searchInputValue)
+  const handleSearch = (searchValue: string) => {
+    setKeyword(searchValue)
     setPage(1)
   }
 
@@ -92,31 +80,7 @@ function RouteComponent() {
     <div>
       <h1 className="text-xl font-bold">Lista korisnika</h1>
       <div className="flex justify-between items-center my-4">
-        <ButtonGroup className="w-[15rem]">
-          <InputGroup>
-            <InputGroupInput
-              type="text"
-              placeholder="Pretraga..."
-              value={searchInputValue}
-              onChange={(e) => setSearchInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  handleSearch()
-                }
-              }}
-            />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-          </InputGroup>
-          <Button
-            variant="outline"
-            aria-label="Search"
-            onClick={() => handleSearch()}
-          >
-            <ArrowRightIcon />
-          </Button>
-        </ButtonGroup>
+        <TableSearch onSearchClick={handleSearch} />
         <CreateUser params={params} />
       </div>
       <Table className="overflow-x-auto">
