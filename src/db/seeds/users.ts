@@ -4,10 +4,16 @@ import { users } from '../schema/users.ts'
 
 const fakeUsers = [
   {
+    username: 'Vlada',
+    email: 'timotijevicvlada@gmail.com',
+    passwordHash: 'Vladablok62',
+    role: 'admin' as const,
+  },
+  {
     username: 'john_doe',
     email: 'john.doe@example.com',
     passwordHash: 'password',
-    role: 'admin' as const,
+    role: 'super-admin' as const,
   },
   {
     username: 'jane_smith',

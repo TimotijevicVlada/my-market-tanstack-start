@@ -10,3 +10,9 @@ export interface GetSellerParams {
 }
 
 export type Seller = typeof sellers.$inferSelect
+
+export type VerifySellerParams = {
+  sellerId: string
+  status: Seller['status']
+  verificationNote?: string
+}
