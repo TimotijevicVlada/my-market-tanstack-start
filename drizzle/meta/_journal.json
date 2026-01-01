@@ -127,6 +127,20 @@
       "when": 1766919517028,
       "tag": "0017_loving_mad_thinker",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1767176289266,
+      "tag": "0018_amazing_barracuda",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1767267720606,
+      "tag": "0019_sudden_nitro",
+      "breakpoints": true
     }
   ]
 }

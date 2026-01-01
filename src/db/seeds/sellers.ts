@@ -26,22 +26,43 @@ export async function seedSellers() {
   const fakeSellers = sellerUsers.map((user, index) => {
     const fakeSellersData = [
       {
-        name: "Johnson's Organic Farm",
-        slug: 'johnsons-organic-farm',
+        displayName: "Johnson's Organic Farm",
         description:
           'Family-owned organic farm specializing in fresh vegetables, fruits, and herbs. We practice sustainable farming methods and deliver the freshest produce directly from our fields.',
-        location: '123 Farm Road, Rural Valley, State 12345',
-        phone: '+1-555-0101',
-        isVerified: true,
+        phone: '+381-11-123-4567',
+        email: 'johnson@organicfarm.rs',
+        website: 'https://johnsonorganic.rs',
+        country: 'Serbia',
+        city: 'Novi Sad',
+        address: '123 Farm Road, Rural Valley',
+        postalCode: '21000',
+        status: 'approved' as const,
       },
       {
-        name: "Brown's Fresh Market",
-        slug: 'browns-fresh-market',
+        displayName: "Brown's Fresh Market",
         description:
           'Local market providing fresh dairy products, meats, and pantry staples. Supporting local farmers and offering high-quality products to our community.',
-        location: '456 Market Street, Downtown, State 67890',
-        phone: '+1-555-0202',
-        isVerified: false,
+        phone: '+381-11-234-5678',
+        email: 'info@brownsmarket.rs',
+        website: 'https://brownsmarket.rs',
+        country: 'Serbia',
+        city: 'Belgrade',
+        address: '456 Market Street, Downtown',
+        postalCode: '11000',
+        status: 'pending' as const,
+      },
+      {
+        displayName: 'Green Acres Farm',
+        description:
+          'Family-owned farm specializing in fresh vegetables, fruits, and herbs. We practice sustainable farming methods and deliver the freshest produce directly from our fields.',
+        phone: '+381-11-345-6789',
+        email: 'greenacres@farm.rs',
+        website: 'https://greenacresfarm.rs',
+        country: 'Serbia',
+        city: 'Novi Sad',
+        address: '123 Farm Road, Rural Valley',
+        postalCode: '21000',
+        status: 'rejected' as const,
       },
     ]
 
@@ -64,9 +85,7 @@ export async function seedSellers() {
 
   console.log(`✅ Successfully inserted ${insertedSellers.length} sellers:`)
   insertedSellers.forEach((seller) => {
-    console.log(
-      `   - ${seller.name} (${seller.slug}) - Verified: ${seller.isVerified}`,
-    )
+    console.log(`   - ${seller.displayName} - Status: ${seller.status}`)
   })
 
   return { inserted: insertedSellers.length, skipped: false }

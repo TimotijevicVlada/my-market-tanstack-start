@@ -30,15 +30,15 @@ export async function seedProducts() {
   const findCategory = (slug: string) =>
     allCategories.find((cat) => cat.slug === slug)!
 
-  // Helper to find producer by slug
-  const findSeller = (slug: string) =>
-    allSellers.find((seller) => seller.slug === slug)!
+  // Helper to find seller by displayName
+  const findSeller = (displayName: string) =>
+    allSellers.find((seller) => seller.displayName === displayName)!
 
   // Create fake products data
   const fakeProducts = [
     // Johnson's Organic Farm - Fresh Produce
     {
-      sellerId: findSeller('johnsons-organic-farm').id,
+      sellerId: findSeller("Johnson's Organic Farm").id,
       categoryId: findCategory('fresh-produce').id,
       name: 'Organic Tomatoes',
       slug: 'organic-tomatoes',
@@ -54,7 +54,7 @@ export async function seedProducts() {
       status: 'published' as const,
     },
     {
-      sellerId: findSeller('johnsons-organic-farm').id,
+      sellerId: findSeller("Johnson's Organic Farm").id,
       categoryId: findCategory('fresh-produce').id,
       name: 'Fresh Lettuce Mix',
       slug: 'fresh-lettuce-mix',
@@ -70,7 +70,7 @@ export async function seedProducts() {
       status: 'published' as const,
     },
     {
-      sellerId: findSeller('johnsons-organic-farm').id,
+      sellerId: findSeller("Johnson's Organic Farm").id,
       categoryId: findCategory('fresh-produce').id,
       name: 'Organic Carrots',
       slug: 'organic-carrots',
@@ -87,7 +87,7 @@ export async function seedProducts() {
     },
     // Brown's Fresh Market - Dairy Products
     {
-      sellerId: findSeller('browns-fresh-market').id,
+      sellerId: findSeller("Brown's Fresh Market").id,
       categoryId: findCategory('dairy-products').id,
       name: 'Fresh Whole Milk',
       slug: 'fresh-whole-milk',
@@ -103,7 +103,7 @@ export async function seedProducts() {
       status: 'published' as const,
     },
     {
-      sellerId: findSeller('browns-fresh-market').id,
+      sellerId: findSeller("Brown's Fresh Market").id,
       categoryId: findCategory('dairy-products').id,
       name: 'Artisan Cheese Selection',
       slug: 'artisan-cheese-selection',
@@ -120,7 +120,7 @@ export async function seedProducts() {
     },
     // Brown's Fresh Market - Meat & Poultry
     {
-      sellerId: findSeller('browns-fresh-market').id,
+      sellerId: findSeller("Brown's Fresh Market").id,
       categoryId: findCategory('meat-poultry').id,
       name: 'Free-Range Chicken Eggs',
       slug: 'free-range-chicken-eggs',
@@ -136,7 +136,7 @@ export async function seedProducts() {
       status: 'published' as const,
     },
     {
-      sellerId: findSeller('browns-fresh-market').id,
+      sellerId: findSeller("Brown's Fresh Market").id,
       categoryId: findCategory('meat-poultry').id,
       name: 'Grass-Fed Ground Beef',
       slug: 'grass-fed-ground-beef',
@@ -153,7 +153,7 @@ export async function seedProducts() {
     },
     // Johnson's Organic Farm - Fresh Produce (more items)
     {
-      sellerId: findSeller('johnsons-organic-farm').id,
+      sellerId: findSeller("Johnson's Organic Farm").id,
       categoryId: findCategory('fresh-produce').id,
       name: 'Organic Strawberries',
       slug: 'organic-strawberries',
@@ -170,7 +170,7 @@ export async function seedProducts() {
     },
     // Brown's Fresh Market - Bakery & Bread
     {
-      sellerId: findSeller('browns-fresh-market').id,
+      sellerId: findSeller("Brown's Fresh Market").id,
       categoryId: findCategory('bakery-bread').id,
       name: 'Sourdough Bread',
       slug: 'sourdough-bread',
@@ -187,7 +187,7 @@ export async function seedProducts() {
     },
     // Brown's Fresh Market - Pantry Staples
     {
-      sellerId: findSeller('browns-fresh-market').id,
+      sellerId: findSeller("Brown's Fresh Market").id,
       categoryId: findCategory('pantry-staples').id,
       name: 'Local Honey',
       slug: 'local-honey',

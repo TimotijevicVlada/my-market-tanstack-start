@@ -33,6 +33,12 @@ const fakeUsers = [
     passwordHash: 'password',
     role: 'seller' as const,
   },
+  {
+    username: 'david_green',
+    email: 'david.green@example.com',
+    passwordHash: 'password',
+    role: 'seller' as const,
+  },
 ]
 
 export async function seedUsers() {
