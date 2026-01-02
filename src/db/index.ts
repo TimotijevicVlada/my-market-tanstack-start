@@ -7,6 +7,7 @@ import { sellers } from './schema/sellers.ts'
 import { products } from './schema/products.ts'
 import { productReviews } from './schema/product-reviews.ts'
 import { productImages } from './schema/product-images.ts'
+import { sellerCategories } from './schema/seller-categories.ts'
 
 config()
 
@@ -21,5 +22,6 @@ export const db = drizzle(pool, {
     products,
     productReviews,
     productImages,
+    sellerCategories,
   },
 })

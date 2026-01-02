@@ -141,6 +141,27 @@
       "when": 1767267720606,
       "tag": "0019_sudden_nitro",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1767389629267,
+      "tag": "0020_certain_zaran",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1767389676902,
+      "tag": "0021_loose_vampiro",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1767389762328,
+      "tag": "0022_brave_nocturne",
+      "breakpoints": true
     }
   ]
 }

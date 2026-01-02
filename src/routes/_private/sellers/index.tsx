@@ -4,18 +4,17 @@ import {
   Link2Icon,
   MailIcon,
   MessageSquareText,
-  PencilIcon,
-  PlusIcon,
   TriangleAlertIcon,
 } from 'lucide-react'
 import { sellersColumns } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { DeleteSeller } from './-components/DeleteSeller'
 import { VerifySeller } from './-components/VerifySeller'
+import { CreateSeller } from './-components/CreateSeller'
+import { UpdateSeller } from './-components/UpdateSeller'
 import type { GetSellerParams } from '@/api/sellers/types'
 import { useGetSellers } from '@/api/sellers/queries'
 import { Spinner } from '@/components/ui/spinner'
-import { Button } from '@/components/custom/Button'
 import {
   Table,
   TableBody,
@@ -76,10 +75,7 @@ function RouteComponent() {
       <h1 className="text-xl font-bold">Lista prodavaca</h1>
       <div className="flex justify-between items-center my-4">
         <TableSearch onSearchClick={handleSearch} />
-        <Button>
-          <PlusIcon />
-          Dodaj prodavca
-        </Button>
+        <CreateSeller params={params} />
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -124,10 +120,14 @@ function RouteComponent() {
                 if (key === 'email') {
                   return (
                     <TableCell key={key}>
-                      <Badge variant="secondary" className="rounded-sm">
-                        <MailIcon className="w-3.5! h-3.5!" />
-                        {seller[key]}
-                      </Badge>
+                      {seller[key] ? (
+                        <Badge variant="secondary" className="rounded-sm">
+                          <MailIcon className="w-3.5! h-3.5!" />
+                          {seller[key] ?? '/'}
+                        </Badge>
+                      ) : (
+                        '/'
+                      )}
                     </TableCell>
                   )
                 }
@@ -135,13 +135,15 @@ function RouteComponent() {
                   return (
                     <TableCell key={key}>
                       <div className="flex items-center gap-2 hover:underline hover:text-primary">
-                        <Link2Icon className="w-4 h-4 rotate-[-40deg]" />
+                        {seller[key] && (
+                          <Link2Icon className="w-4 h-4 rotate-[-40deg]" />
+                        )}
                         <Link
                           to={seller[key] ?? ''}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          {seller[key]}
+                          {seller[key] ?? '/'}
                         </Link>
                       </div>
                     </TableCell>
@@ -180,6 +182,35 @@ function RouteComponent() {
                     <TableCell key={key}>{formatDate(seller[key])}</TableCell>
                   )
                 }
+                if (key === 'categories') {
+                  return (
+                    <TableCell key={key}>
+                      <div className="flex items-center gap-2">
+                        {seller[key].slice(0, 2).map((category) => (
+                          <Badge
+                            key={category.id}
+                            variant="secondary"
+                            className="rounded-sm"
+                          >
+                            {category.name}
+                          </Badge>
+                        ))}
+                        {seller[key].length > 2 && (
+                          <Tooltip
+                            title={seller[key]
+                              .slice(2)
+                              .map((category) => category.name)
+                              .join(', ')}
+                          >
+                            <Badge variant="secondary" className="rounded-sm">
+                              +{seller[key].length - 2}
+                            </Badge>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </TableCell>
+                  )
+                }
                 if (key === 'actions') {
                   return (
                     <TableCell
@@ -188,15 +219,13 @@ function RouteComponent() {
                     >
                       <div className="flex justify-end gap-1">
                         <VerifySeller seller={seller} params={params} />
-                        <Button variant="ghost" size="icon-sm">
-                          <PencilIcon className="text-orange-500" />
-                        </Button>
+                        <UpdateSeller seller={seller} params={params} />
                         <DeleteSeller seller={seller} params={params} />
                       </div>
                     </TableCell>
                   )
                 }
-                return <TableCell key={key}>{seller[key] ?? '/'}</TableCell>
+                return <TableCell key={key}>{seller[key] || '/'}</TableCell>
               })}
             </TableRow>
           ))}

@@ -23,6 +23,7 @@ export const sellersColumns: Array<Column> = [
   { label: 'Prosečna ocena', key: 'ratingAvg' },
   { label: 'Broj ocena', key: 'ratingCount' },
   { label: 'Opis', key: 'description' },
+  { label: 'Kategorije', key: 'categories' },
   { label: 'Kreirano', key: 'createdAt' },
   { label: 'Ažurirano', key: 'updatedAt' },
   { label: 'Akcije', key: 'actions', options: { className: 'text-right' } },

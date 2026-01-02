@@ -5,7 +5,7 @@ export const baseSchema = z.object({
 })
 
 export const rejectedSchema = baseSchema.extend({
-  verificationNote: z.string().min(1, 'Poruka je obavezna'),
+  verificationNote: z.string().min(1, 'Razlog odbijanja je obavezan'),
 })
 
 export type BaseSchema = z.infer<typeof baseSchema>

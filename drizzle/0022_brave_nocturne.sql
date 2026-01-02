@@ -1,0 +1,1 @@
+ALTER TABLE "sellers" ALTER COLUMN "is_active" SET NOT NULL;

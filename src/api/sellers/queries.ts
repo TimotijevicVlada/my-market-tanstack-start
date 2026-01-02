@@ -1,12 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import {
+  createSeller,
   deleteSeller,
   getPagedSellers,
   toggleSellerActiveStatus,
+  updateSeller,
   verifySeller,
 } from './server'
-import type { GetSellerParams, VerifySellerParams } from './types'
+import type {
+  CreateSellerPayload,
+  GetSellerParams,
+  UpdateSellerPayload,
+  VerifySellerParams,
+} from './types'
 
 export const useGetSellers = (params: GetSellerParams) => {
   return useQuery({
@@ -58,6 +65,40 @@ export const useDeleteSeller = (params: GetSellerParams) => {
       toast.success(
         `Prodavac ${res.displayName.toUpperCase()} je uspesno obrisan`,
       )
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useCreateSeller = (params: GetSellerParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: CreateSellerPayload) => createSeller({ data }),
+    onSuccess: (res) => {
+      toast.success(
+        `Prodavac ${res.seller.displayName.toUpperCase()} je uspesno kreiran`,
+      )
+      queryClient.invalidateQueries({ queryKey: ['sellers', params] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateSeller = (params: GetSellerParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: UpdateSellerPayload) => updateSeller({ data }),
+    onSuccess: (res) => {
+      toast.success(
+        `Prodavac ${res.seller.displayName.toUpperCase()} je uspesno azuriran`,
+      )
+      queryClient.invalidateQueries({ queryKey: ['sellers', params] })
     },
     onError: (error) => {
       toast.error(error.message)

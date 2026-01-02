@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Check, ChevronsUpDown, XIcon } from 'lucide-react'
 import { Label } from '../ui/label'
+import { FieldDescription } from '../ui/field'
 import { Button } from './Button'
 import {
   Command,
@@ -27,6 +28,8 @@ interface SelectProps<T> {
     value: keyof T
   }
   onSelect: (value: T | null) => void
+  required?: boolean
+  error?: string
 }
 
 export const Select = <T extends { id: string }>({
@@ -36,12 +39,19 @@ export const Select = <T extends { id: string }>({
   value,
   keys,
   onSelect,
+  required = false,
+  error,
 }: SelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div>
-      {label && <Label className="mb-2">{label}</Label>}
+      {label && (
+        <Label className="mb-2">
+          {label}
+          {required && <span className="text-destructive font-bold">*</span>}
+        </Label>
+      )}
       <Popover open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
         <PopoverTrigger asChild>
           <Button
@@ -110,6 +120,11 @@ export const Select = <T extends { id: string }>({
           </Command>
         </PopoverContent>
       </Popover>
+      {error && (
+        <FieldDescription className="text-destructive">
+          {error}
+        </FieldDescription>
+      )}
     </div>
   )
 }

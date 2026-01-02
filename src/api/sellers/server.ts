@@ -1,9 +1,28 @@
-import { and, count, desc, eq, getTableColumns, ilike, or } from 'drizzle-orm'
+import {
+  and,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  or,
+  sql,
+} from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
 import { requireAdminMiddleware } from '../middleware'
-import type { GetSellerParams, VerifySellerParams } from './types'
+import type {
+  CreateSellerPayload,
+  GetSellerParams,
+  UpdateSellerPayload,
+  VerifySellerParams,
+} from './types'
 import { db } from '@/db'
-import { sellers, users } from '@/db/schema'
+import {
+  categories as categoriesTable,
+  sellerCategories,
+  sellers,
+  users,
+} from '@/db/schema'
 
 export const getPagedSellers = createServerFn({
   method: 'POST',
@@ -47,9 +66,20 @@ export const getPagedSellers = createServerFn({
       .select({
         ...getTableColumns(sellers),
         username: users.username,
+        categories: sql<
+          Array<{ id: string; name: string }>
+        >`COALESCE(json_agg(json_build_object('id', ${sellerCategories.categoryId}, 'name', ${categoriesTable.name})) FILTER (WHERE ${sellerCategories.categoryId} IS NOT NULL), '[]'::json)`.as(
+          'categories',
+        ),
       })
       .from(sellers)
       .leftJoin(users, eq(sellers.userId, users.id))
+      .leftJoin(sellerCategories, eq(sellers.id, sellerCategories.sellerId))
+      .leftJoin(
+        categoriesTable,
+        eq(sellerCategories.categoryId, categoriesTable.id),
+      )
+      .groupBy(sellers.id, users.id, users.username)
 
     if (conditions.length > 0) {
       query.where(and(...conditions))
@@ -132,4 +162,69 @@ export const deleteSeller = createServerFn({
       .returning()
 
     return deletedSeller
+  })
+
+export const createSeller = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: CreateSellerPayload) => data)
+  .handler(async ({ data }) => {
+    const { categories, ...sellerData } = data
+
+    const [seller] = await db.insert(sellers).values(sellerData).returning()
+
+    const [categoriesResult] = await db
+      .insert(sellerCategories)
+      .values(
+        categories.map((categoryId) => ({
+          sellerId: seller.id,
+          categoryId,
+        })),
+      )
+      .returning()
+
+    return {
+      seller,
+      categories: categoriesResult,
+    }
+  })
+
+export const updateSeller = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: UpdateSellerPayload) => data)
+  .handler(async ({ data }) => {
+    const { sellerId, categories, ...sellerData } = data
+
+    // If enything fails, the transaction will be rolled back
+    const result = await db.transaction(async (tx) => {
+      const [updatedSeller] = await tx
+        .update(sellers)
+        .set(sellerData)
+        .where(eq(sellers.id, sellerId))
+        .returning()
+
+      await tx
+        .delete(sellerCategories)
+        .where(eq(sellerCategories.sellerId, sellerId))
+
+      const [categoriesResult] = await tx
+        .insert(sellerCategories)
+        .values(
+          categories.map((categoryId) => ({
+            sellerId,
+            categoryId,
+          })),
+        )
+        .returning()
+
+      return {
+        seller: updatedSeller,
+        categories: categoriesResult,
+      }
+    })
+
+    return result
   })

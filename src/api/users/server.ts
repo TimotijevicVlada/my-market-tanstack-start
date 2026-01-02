@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { createServerFn } from '@tanstack/react-start'
-import { and, count, desc, eq, ilike, or } from 'drizzle-orm'
+import { and, asc, count, desc, eq, ilike, or } from 'drizzle-orm'
 import { requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
 import type {
@@ -12,6 +12,17 @@ import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { sellers } from '@/db/schema/sellers'
 import { products } from '@/db/schema/products'
+
+export const getAllUsers = createServerFn({
+  method: 'GET',
+})
+  .middleware([requireAdminMiddleware])
+  .handler(async () => {
+    const usersList = await db.query.users.findMany({
+      orderBy: (usersTable) => [asc(usersTable.username)],
+    })
+    return usersList
+  })
 
 export const getPagedUsers = createServerFn({
   method: 'POST',
