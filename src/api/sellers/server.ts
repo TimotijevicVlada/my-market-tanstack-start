@@ -17,7 +17,12 @@ import type {
   VerifySellerParams,
 } from './types'
 import { db } from '@/db'
-import { sellerCategories, sellers, users } from '@/db/schema'
+import {
+  categories as categoriesTable,
+  sellerCategories,
+  sellers,
+  users,
+} from '@/db/schema'
 
 export const getPagedSellers = createServerFn({
   method: 'POST',
@@ -62,14 +67,18 @@ export const getPagedSellers = createServerFn({
         ...getTableColumns(sellers),
         username: users.username,
         categories: sql<
-          Array<string>
-        >`COALESCE(array_agg(${sellerCategories.categoryId}) FILTER (WHERE ${sellerCategories.categoryId} IS NOT NULL), ARRAY[]::uuid[])`.as(
+          Array<{ id: string; name: string }>
+        >`COALESCE(json_agg(json_build_object('id', ${sellerCategories.categoryId}, 'name', ${categoriesTable.name})) FILTER (WHERE ${sellerCategories.categoryId} IS NOT NULL), '[]'::json)`.as(
           'categories',
         ),
       })
       .from(sellers)
       .leftJoin(users, eq(sellers.userId, users.id))
       .leftJoin(sellerCategories, eq(sellers.id, sellerCategories.sellerId))
+      .leftJoin(
+        categoriesTable,
+        eq(sellerCategories.categoryId, categoriesTable.id),
+      )
       .groupBy(sellers.id, users.id, users.username)
 
     if (conditions.length > 0) {

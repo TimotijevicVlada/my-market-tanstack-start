@@ -182,6 +182,35 @@ function RouteComponent() {
                     <TableCell key={key}>{formatDate(seller[key])}</TableCell>
                   )
                 }
+                if (key === 'categories') {
+                  return (
+                    <TableCell key={key}>
+                      <div className="flex items-center gap-2">
+                        {seller[key].slice(0, 2).map((category) => (
+                          <Badge
+                            key={category.id}
+                            variant="secondary"
+                            className="rounded-sm"
+                          >
+                            {category.name}
+                          </Badge>
+                        ))}
+                        {seller[key].length > 2 && (
+                          <Tooltip
+                            title={seller[key]
+                              .slice(2)
+                              .map((category) => category.name)
+                              .join(', ')}
+                          >
+                            <Badge variant="secondary" className="rounded-sm">
+                              +{seller[key].length - 2}
+                            </Badge>
+                          </Tooltip>
+                        )}
+                      </div>
+                    </TableCell>
+                  )
+                }
                 if (key === 'actions') {
                   return (
                     <TableCell

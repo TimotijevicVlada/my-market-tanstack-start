@@ -71,7 +71,7 @@ export const SellerForm = ({
       firstStepMethods.reset({
         userId: sellerToEdit.userId,
         displayName: sellerToEdit.displayName,
-        categories: sellerToEdit.categories,
+        categories: sellerToEdit.categories.map((cat) => cat.id),
         description: sellerToEdit.description,
       })
       secondStepMethods.reset({

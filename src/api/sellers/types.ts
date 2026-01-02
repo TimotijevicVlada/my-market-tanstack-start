@@ -13,7 +13,7 @@ export interface GetSellerParams {
 }
 
 export type Seller = typeof sellers.$inferSelect & {
-  categories: Array<string>
+  categories: Array<{ id: string; name: string }>
 }
 
 export type VerifySellerParams = {
