@@ -9,6 +9,7 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
 
 import { users } from './users'
 
@@ -42,7 +43,7 @@ export const sellers = pgTable('sellers', {
   status: sellerStatusEnum('status').notNull().default('pending'),
   verificationNote: text('verification_note'),
 
-  isActive: boolean('is_active').default(true).notNull(),
+  isActive: boolean('is_active').notNull().default(true),
   commissionRate: numeric('commission_rate', {
     precision: 5,
     scale: 2,
@@ -51,6 +52,8 @@ export const sellers = pgTable('sellers', {
   ratingAvg: numeric('rating_avg', { precision: 3, scale: 2 }).default('0.00'),
   ratingCount: integer('rating_count').default(0),
 
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at')
+    .default(sql`NULL`)
+    .$onUpdate(() => new Date()),
 })

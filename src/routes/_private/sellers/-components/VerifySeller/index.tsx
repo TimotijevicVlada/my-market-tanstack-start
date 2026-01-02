@@ -23,6 +23,7 @@ import { Label } from '@/components/ui/label'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { FieldDescription } from '@/components/ui/field'
 import { useVerifySeller } from '@/api/sellers/queries'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 interface VerifySellerProps {
   seller: Seller
@@ -70,16 +71,18 @@ export const VerifySeller = ({ seller, params }: VerifySellerProps) => {
 
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        disabled={seller.status !== 'pending'}
-        onClick={() => setIsOpen(true)}
-      >
-        <ShieldCheck
-          className={`${seller.status === 'pending' ? 'text-blue-500' : 'text-muted-foreground'}`}
-        />
-      </Button>
+      <Tooltip title="Verifikacija prodavca">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          disabled={seller.status !== 'pending'}
+          onClick={() => setIsOpen(true)}
+        >
+          <ShieldCheck
+            className={`${seller.status === 'pending' ? 'text-blue-500' : 'text-muted-foreground'}`}
+          />
+        </Button>
+      </Tooltip>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
         <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>

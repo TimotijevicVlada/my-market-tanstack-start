@@ -5,6 +5,7 @@ import {
   deleteUser,
   editUser,
   editUserPassword,
+  getAllUsers,
   getPagedUsers,
   toggleUserActiveStatus,
 } from './server'
@@ -14,6 +15,14 @@ import type {
 } from '@/routes/_private/users/-components/zod-schema'
 import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
 import type { GetUsersParams } from './types'
+
+export const useGetAllUsers = () => {
+  return useQuery({
+    queryKey: ['users-all'],
+    queryFn: () => getAllUsers(),
+    placeholderData: (prev) => prev,
+  })
+}
 
 export const useGetUsers = (params: GetUsersParams) => {
   return useQuery({
