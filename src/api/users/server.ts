@@ -30,7 +30,7 @@ export const getPagedUsers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetUsersParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword, status, role } = data
+    const { page, limit, keyword, status, role, sort } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
@@ -80,8 +80,12 @@ export const getPagedUsers = createServerFn({
       query.where(and(...conditions))
     }
 
+    const orderByColumn = users[sort.key]
     const result = await query
-      .orderBy(desc(users.createdAt), desc(users.id))
+      .orderBy(
+        sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
+        desc(users.id),
+      )
       .limit(limit)
       .offset(offset)
 

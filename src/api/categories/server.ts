@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import {
   and,
+  asc,
   count,
   desc,
   eq,
@@ -39,7 +40,7 @@ export const getPagedCategories = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetCategoriesParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword, status } = data
+    const { page, limit, keyword, status, sort } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
@@ -81,8 +82,12 @@ export const getPagedCategories = createServerFn({
       query.where(and(...conditions))
     }
 
+    const orderByColumn = categories[sort.key]
     const result = await query
-      .orderBy(desc(categories.createdAt), desc(categories.id))
+      .orderBy(
+        sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
+        desc(categories.id),
+      )
       .limit(limit)
       .offset(offset)
 

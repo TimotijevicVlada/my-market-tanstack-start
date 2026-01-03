@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { FilterIcon, MailIcon, TriangleAlertIcon } from 'lucide-react'
+import { MailIcon } from 'lucide-react'
 import {
   getRole,
   roleFilterOptions,
@@ -12,7 +12,13 @@ import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
 import { EditUser } from './-components/EditUser'
 import { EditPassword } from './-components/EditPassword'
-import type { GetUsersParams, UserRole, UserStatus } from '@/api/users/types'
+import type {
+  GetUsersParams,
+  SortableUserColumns,
+  UserRole,
+  UserSort,
+  UserStatus,
+} from '@/api/users/types'
 import { useGetUsers } from '@/api/users/queries'
 import {
   Table,
@@ -24,12 +30,13 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
-import { Button } from '@/components/custom/Button'
-import { Spinner } from '@/components/ui/spinner'
-import { EmptyData } from '@/components/custom/EmptyData'
 import { formatDate } from '@/utils/format-date'
-import { DropdownMenu } from '@/components/custom/DropdownMenu'
 import { TableSearch } from '@/components/custom/TableSearch'
+import { TableFilter } from '@/components/custom/Table/TableFilter'
+import { TableSort } from '@/components/custom/Table/TableSort'
+import { TableLoading } from '@/components/custom/Table/TableLoading'
+import { TableError } from '@/components/custom/Table/TableError'
+import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -42,8 +49,12 @@ function RouteComponent() {
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<UserStatus | null>(null)
   const [role, setRole] = useState<UserRole | null>(null)
+  const [sort, setSort] = useState<UserSort>({
+    key: 'createdAt',
+    order: 'desc',
+  })
 
-  const params: GetUsersParams = { page, limit, keyword, status, role }
+  const params: GetUsersParams = { page, limit, keyword, status, role, sort }
 
   const { data, isLoading, error, refetch } = useGetUsers(params)
 
@@ -65,22 +76,20 @@ function RouteComponent() {
     setPage(1)
   }
 
+  const handleSort = (key: SortableUserColumns) => {
+    setSort((prev) => ({
+      key,
+      order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
+    }))
+    setPage(1)
+  }
+
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <Spinner className="w-7 h-7" />
-        <span className="text-lg">Ucitavanje korisnika...</span>
-      </div>
-    )
+    return <TableLoading label="Učitavanje korisnika..." />
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <TriangleAlertIcon className="w-7 h-7 text-destructive" />
-        <span className="text-lg text-destructive">{error.message}</span>
-      </div>
-    )
+    return <TableError error={error.message} />
   }
 
   return (
@@ -96,63 +105,46 @@ function RouteComponent() {
             {usersColumns.map(({ label, key, options }) => {
               if (key === 'isActive') {
                 return (
-                  <TableHead
-                    key={key}
-                    {...options}
-                    className="flex items-center gap-3"
-                  >
-                    {label}
-                    <DropdownMenu
-                      options={statusFilterOptions}
-                      handleOptionChange={handleStatusChange}
-                      labelKey="label"
-                      active={{ key: 'id', value: status }}
-                      triggerButton={
-                        <Button
-                          variant="ghost"
-                          aria-label="Open menu"
-                          size="icon-sm"
-                        >
-                          <FilterIcon
-                            className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
-                          />
-                        </Button>
-                      }
-                    />
-                  </TableHead>
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: statusFilterOptions,
+                      handleOptionChange: handleStatusChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: status },
+                    }}
+                  />
                 )
               }
               if (key === 'role') {
                 return (
-                  <TableHead
-                    key={key}
-                    {...options}
-                    className="flex items-center gap-3"
-                  >
-                    {label}
-                    <DropdownMenu
-                      options={roleFilterOptions}
-                      handleOptionChange={handleRoleChange}
-                      labelKey="label"
-                      active={{ key: 'id', value: role }}
-                      triggerButton={
-                        <Button
-                          variant="ghost"
-                          aria-label="Open menu"
-                          size="icon-sm"
-                        >
-                          <FilterIcon
-                            className={`w-3.5 h-3.5 text-${role ? 'primary' : 'muted-foreground'}`}
-                          />
-                        </Button>
-                      }
-                    />
-                  </TableHead>
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: roleFilterOptions,
+                      handleOptionChange: handleRoleChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: role },
+                    }}
+                  />
                 )
               }
               return (
                 <TableHead key={key} {...options}>
-                  {label}
+                  <div
+                    className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
+                  >
+                    {label}
+                    {key !== 'productCount' &&
+                      key !== 'order' &&
+                      key !== 'actions' && (
+                        <TableSort
+                          sort={sort}
+                          columnKey={key}
+                          handleSort={handleSort}
+                        />
+                      )}
+                  </div>
                 </TableHead>
               )
             })}
@@ -160,14 +152,10 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {users.length === 0 && (
-            <TableRow>
-              <TableCell
-                colSpan={9}
-                className="text-center text-muted-foreground"
-              >
-                <EmptyData title="Nema korisnika" />
-              </TableCell>
-            </TableRow>
+            <TableEmptyHolder
+              colSpan={usersColumns.length}
+              title="Nema korisnika"
+            />
           )}
           {users.map((user, index) => (
             <TableRow key={user.id}>

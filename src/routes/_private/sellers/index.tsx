@@ -1,12 +1,6 @@
 import { useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import {
-  FilterIcon,
-  Link2Icon,
-  MailIcon,
-  MessageSquareText,
-  TriangleAlertIcon,
-} from 'lucide-react'
+import { Link2Icon, MailIcon, MessageSquareText } from 'lucide-react'
 import {
   sellersColumns,
   statusFilterOptions,
@@ -19,11 +13,12 @@ import { CreateSeller } from './-components/CreateSeller'
 import { UpdateSeller } from './-components/UpdateSeller'
 import type {
   GetSellerParams,
+  SellerSort,
   SellerStatus,
+  SortableSellerColumns,
   VerificationStatus,
 } from '@/api/sellers/types'
 import { useGetSellers } from '@/api/sellers/queries'
-import { Spinner } from '@/components/ui/spinner'
 import {
   Table,
   TableBody,
@@ -32,15 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { EmptyData } from '@/components/custom/EmptyData'
 import { formatDate } from '@/utils/format-date'
 import { Pagination } from '@/components/custom/Pagination'
 import { Badge } from '@/components/ui/badge'
 import { truncateText } from '@/utils/truncate-text'
 import { Tooltip } from '@/components/custom/Tooltip'
 import { TableSearch } from '@/components/custom/TableSearch'
-import { DropdownMenu } from '@/components/custom/DropdownMenu'
-import { Button } from '@/components/custom/Button'
+import { TableSort } from '@/components/custom/Table/TableSort'
+import { TableFilter } from '@/components/custom/Table/TableFilter'
+import { TableLoading } from '@/components/custom/Table/TableLoading'
+import { TableError } from '@/components/custom/Table/TableError'
+import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 
 export const Route = createFileRoute('/_private/sellers/')({
   component: RouteComponent,
@@ -54,6 +51,10 @@ function RouteComponent() {
   const [status, setStatus] = useState<SellerStatus | null>(null)
   const [verificationStatus, setVerificationStatus] =
     useState<VerificationStatus | null>(null)
+  const [sort, setSort] = useState<SellerSort>({
+    key: 'createdAt',
+    order: 'desc',
+  })
 
   const params: GetSellerParams = {
     page,
@@ -61,6 +62,7 @@ function RouteComponent() {
     keyword,
     status,
     verificationStatus,
+    sort,
   }
 
   const { data, isLoading, error, refetch } = useGetSellers(params)
@@ -91,22 +93,20 @@ function RouteComponent() {
     setPage(1)
   }
 
+  const handleSort = (key: SortableSellerColumns) => {
+    setSort((prev) => ({
+      key,
+      order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
+    }))
+    setPage(1)
+  }
+
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <Spinner className="w-7 h-7" />
-        <span className="text-lg">Ucitavanje prodavaca...</span>
-      </div>
-    )
+    return <TableLoading label="Učitavanje prodavaca..." />
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <TriangleAlertIcon className="w-7 h-7 text-destructive" />
-        <span className="text-lg text-destructive">{error.message}</span>
-      </div>
-    )
+    return <TableError error={error.message} />
   }
   return (
     <div>
@@ -121,63 +121,47 @@ function RouteComponent() {
             {sellersColumns.map(({ key, options, label }) => {
               if (key === 'isActive') {
                 return (
-                  <TableHead
-                    key={key}
-                    {...options}
-                    className="flex items-center gap-3"
-                  >
-                    {label}
-                    <DropdownMenu
-                      options={statusFilterOptions}
-                      handleOptionChange={handleStatusChange}
-                      labelKey="label"
-                      active={{ key: 'id', value: status }}
-                      triggerButton={
-                        <Button
-                          variant="ghost"
-                          aria-label="Open menu"
-                          size="icon-sm"
-                        >
-                          <FilterIcon
-                            className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
-                          />
-                        </Button>
-                      }
-                    />
-                  </TableHead>
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: statusFilterOptions,
+                      handleOptionChange: handleStatusChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: status },
+                    }}
+                  />
                 )
               }
               if (key === 'status') {
                 return (
-                  <TableHead
-                    key={key}
-                    {...options}
-                    className="flex items-center gap-3"
-                  >
-                    {label}
-                    <DropdownMenu
-                      options={verificationStatusFilterOptions}
-                      handleOptionChange={handleVerificationStatusChange}
-                      labelKey="label"
-                      active={{ key: 'id', value: verificationStatus }}
-                      triggerButton={
-                        <Button
-                          variant="ghost"
-                          aria-label="Open menu"
-                          size="icon-sm"
-                        >
-                          <FilterIcon
-                            className={`w-3.5 h-3.5 text-${verificationStatus ? 'primary' : 'muted-foreground'}`}
-                          />
-                        </Button>
-                      }
-                    />
-                  </TableHead>
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: verificationStatusFilterOptions,
+                      handleOptionChange: handleVerificationStatusChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: verificationStatus },
+                    }}
+                  />
                 )
               }
               return (
                 <TableHead key={key} {...options}>
-                  {label}
+                  <div
+                    className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
+                  >
+                    {label}
+                    {key !== 'actions' &&
+                      key !== 'order' &&
+                      key !== 'username' &&
+                      key !== 'categories' && (
+                        <TableSort
+                          sort={sort}
+                          columnKey={key}
+                          handleSort={handleSort}
+                        />
+                      )}
+                  </div>
                 </TableHead>
               )
             })}
@@ -185,14 +169,10 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {sellers.length === 0 && (
-            <TableRow>
-              <TableCell
-                colSpan={sellersColumns.length}
-                className="text-center text-muted-foreground"
-              >
-                <EmptyData title="Nema prodavaca" />
-              </TableCell>
-            </TableRow>
+            <TableEmptyHolder
+              colSpan={sellersColumns.length}
+              title="Nema prodavaca"
+            />
           )}
           {sellers.map((seller, index) => (
             <TableRow key={seller.id} className="group">

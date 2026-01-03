@@ -1,5 +1,6 @@
 import {
   and,
+  asc,
   count,
   desc,
   eq,
@@ -30,7 +31,7 @@ export const getPagedSellers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetSellerParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword, status, verificationStatus } = data
+    const { page, limit, keyword, status, verificationStatus, sort } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
@@ -90,8 +91,12 @@ export const getPagedSellers = createServerFn({
       query.where(and(...conditions))
     }
 
+    const orderByColumn = sellers[sort.key]
     const result = await query
-      .orderBy(desc(sellers.createdAt), desc(sellers.id))
+      .orderBy(
+        sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
+        desc(sellers.id),
+      )
       .limit(limit)
       .offset(offset)
 
