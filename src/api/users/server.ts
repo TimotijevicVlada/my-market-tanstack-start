@@ -30,25 +30,27 @@ export const getPagedUsers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetUsersParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword, status } = data
+    const { page, limit, keyword, status, role } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
     const offset = (page - 1) * limit
 
-    const conditions = [
-      ...(hasKeyword
-        ? [
-            or(
-              ilike(users.username, `%${trimmedKeyword}%`),
-              ilike(users.email, `%${trimmedKeyword}%`),
-            ),
-          ]
-        : []),
-      ...(status
-        ? [eq(users.isActive, status === 'active' ? true : false)]
-        : []),
-    ]
+    const conditions = []
+    if (hasKeyword) {
+      conditions.push(
+        or(
+          ilike(users.username, `%${trimmedKeyword}%`),
+          ilike(users.email, `%${trimmedKeyword}%`),
+        ),
+      )
+    }
+    if (status) {
+      conditions.push(eq(users.isActive, status === 'active' ? true : false))
+    }
+    if (role) {
+      conditions.push(eq(users.role, role))
+    }
 
     const totalQuery = db.select({ count: count() }).from(users)
 

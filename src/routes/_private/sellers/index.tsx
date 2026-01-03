@@ -7,13 +7,21 @@ import {
   MessageSquareText,
   TriangleAlertIcon,
 } from 'lucide-react'
-import { sellersColumns, statusFilterOptions } from './-data'
+import {
+  sellersColumns,
+  statusFilterOptions,
+  verificationStatusFilterOptions,
+} from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { DeleteSeller } from './-components/DeleteSeller'
 import { VerifySeller } from './-components/VerifySeller'
 import { CreateSeller } from './-components/CreateSeller'
 import { UpdateSeller } from './-components/UpdateSeller'
-import type { GetSellerParams, SellerStatus } from '@/api/sellers/types'
+import type {
+  GetSellerParams,
+  SellerStatus,
+  VerificationStatus,
+} from '@/api/sellers/types'
 import { useGetSellers } from '@/api/sellers/queries'
 import { Spinner } from '@/components/ui/spinner'
 import {
@@ -44,8 +52,16 @@ function RouteComponent() {
 
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<SellerStatus | null>(null)
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus | null>(null)
 
-  const params: GetSellerParams = { page, limit, keyword, status }
+  const params: GetSellerParams = {
+    page,
+    limit,
+    keyword,
+    status,
+    verificationStatus,
+  }
 
   const { data, isLoading, error, refetch } = useGetSellers(params)
 
@@ -62,6 +78,16 @@ function RouteComponent() {
     label: string
   }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
+    setPage(1)
+  }
+
+  const handleVerificationStatusChange = (newStatus: {
+    id: VerificationStatus
+    label: string
+  }) => {
+    setVerificationStatus(
+      newStatus.id === verificationStatus ? null : newStatus.id,
+    )
     setPage(1)
   }
 
@@ -114,6 +140,34 @@ function RouteComponent() {
                         >
                           <FilterIcon
                             className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
+                          />
+                        </Button>
+                      }
+                    />
+                  </TableHead>
+                )
+              }
+              if (key === 'status') {
+                return (
+                  <TableHead
+                    key={key}
+                    {...options}
+                    className="flex items-center gap-3"
+                  >
+                    {label}
+                    <DropdownMenu
+                      options={verificationStatusFilterOptions}
+                      handleOptionChange={handleVerificationStatusChange}
+                      labelKey="label"
+                      active={{ key: 'id', value: verificationStatus }}
+                      triggerButton={
+                        <Button
+                          variant="ghost"
+                          aria-label="Open menu"
+                          size="icon-sm"
+                        >
+                          <FilterIcon
+                            className={`w-3.5 h-3.5 text-${verificationStatus ? 'primary' : 'muted-foreground'}`}
                           />
                         </Button>
                       }

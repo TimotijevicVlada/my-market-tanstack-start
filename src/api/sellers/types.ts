@@ -4,12 +4,13 @@ import type { ThirdStepSchema } from '@/routes/_private/sellers/-components/Sell
 import type { SecondStepSchema } from '@/routes/_private/sellers/-components/SellerForm/StepTwo/zod-schema-step-two'
 
 export type SellerStatus = 'active' | 'inactive'
-
+export type VerificationStatus = 'pending' | 'approved' | 'rejected'
 export interface GetSellerParams {
   page: number
   limit: number
   keyword?: string
   status?: SellerStatus | null
+  verificationStatus?: VerificationStatus | null
 }
 
 export type Seller = typeof sellers.$inferSelect & {

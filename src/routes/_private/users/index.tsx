@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { FilterIcon, MailIcon, TriangleAlertIcon } from 'lucide-react'
-import { getRole, statusFilterOptions, usersColumns } from './-data'
+import {
+  getRole,
+  roleFilterOptions,
+  statusFilterOptions,
+  usersColumns,
+} from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
 import { EditUser } from './-components/EditUser'
 import { EditPassword } from './-components/EditPassword'
-import type { GetUsersParams, UserStatus } from '@/api/users/types'
+import type { GetUsersParams, UserRole, UserStatus } from '@/api/users/types'
 import { useGetUsers } from '@/api/users/queries'
 import {
   Table,
@@ -36,8 +41,9 @@ function RouteComponent() {
 
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<UserStatus | null>(null)
+  const [role, setRole] = useState<UserRole | null>(null)
 
-  const params: GetUsersParams = { page, limit, keyword, status }
+  const params: GetUsersParams = { page, limit, keyword, status, role }
 
   const { data, isLoading, error, refetch } = useGetUsers(params)
 
@@ -51,6 +57,11 @@ function RouteComponent() {
 
   const handleStatusChange = (newStatus: { id: UserStatus; label: string }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
+    setPage(1)
+  }
+
+  const handleRoleChange = (newRole: { id: UserRole; label: string }) => {
+    setRole(newRole.id === role ? null : newRole.id)
     setPage(1)
   }
 
@@ -104,6 +115,34 @@ function RouteComponent() {
                         >
                           <FilterIcon
                             className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
+                          />
+                        </Button>
+                      }
+                    />
+                  </TableHead>
+                )
+              }
+              if (key === 'role') {
+                return (
+                  <TableHead
+                    key={key}
+                    {...options}
+                    className="flex items-center gap-3"
+                  >
+                    {label}
+                    <DropdownMenu
+                      options={roleFilterOptions}
+                      handleOptionChange={handleRoleChange}
+                      labelKey="label"
+                      active={{ key: 'id', value: role }}
+                      triggerButton={
+                        <Button
+                          variant="ghost"
+                          aria-label="Open menu"
+                          size="icon-sm"
+                        >
+                          <FilterIcon
+                            className={`w-3.5 h-3.5 text-${role ? 'primary' : 'muted-foreground'}`}
                           />
                         </Button>
                       }

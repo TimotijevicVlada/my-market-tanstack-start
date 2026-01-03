@@ -45,19 +45,20 @@ export const getPagedCategories = createServerFn({
 
     const offset = (page - 1) * limit
 
-    const conditions = [
-      ...(hasKeyword
-        ? [
-            or(
-              ilike(categories.name, `%${trimmedKeyword}%`),
-              ilike(categories.slug, `%${trimmedKeyword}%`),
-            ),
-          ]
-        : []),
-      ...(status
-        ? [eq(categories.isActive, status === 'active' ? true : false)]
-        : []),
-    ]
+    const conditions = []
+    if (hasKeyword) {
+      conditions.push(
+        or(
+          ilike(categories.name, `%${trimmedKeyword}%`),
+          ilike(categories.slug, `%${trimmedKeyword}%`),
+        ),
+      )
+    }
+    if (status) {
+      conditions.push(
+        eq(categories.isActive, status === 'active' ? true : false),
+      )
+    }
 
     const totalQuery = db.select({ count: count() }).from(categories)
     if (conditions.length > 0) {
