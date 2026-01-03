@@ -38,7 +38,4 @@ export interface UpdateSellerPayload extends CreateSellerPayload {
   sellerId: string
 }
 
-export type SortableSellerColumns = Exclude<
-  keyof Seller,
-  'username' | 'categories'
->
+export type SortableSellerColumns = Exclude<keyof Seller, 'categories'>

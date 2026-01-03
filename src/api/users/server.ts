@@ -80,7 +80,8 @@ export const getPagedUsers = createServerFn({
       query.where(and(...conditions))
     }
 
-    const orderByColumn = users[sort.key]
+    const orderByColumn =
+      sort.key === 'productCount' ? count(products.id) : users[sort.key]
     const result = await query
       .orderBy(
         sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),

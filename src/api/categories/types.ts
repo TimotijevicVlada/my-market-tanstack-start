@@ -1,8 +1,15 @@
 import type { categories } from '@/db/schema/categories'
 
 export type CategoryStatus = 'active' | 'inactive'
+
+export type Category = typeof categories.$inferSelect & {
+  parentName: string | null
+}
+
+export type SortableCategoryColumns = keyof Category
+
 export type CategorySort = {
-  key: keyof Category
+  key: SortableCategoryColumns
   order: 'asc' | 'desc'
 }
 
@@ -20,7 +27,3 @@ export interface CreateCategoryPayload {
   parentId: string | null
   description: string
 }
-
-export type Category = typeof categories.$inferSelect
-
-export type SortableCategoryColumns = Exclude<keyof Category, 'parentName'>

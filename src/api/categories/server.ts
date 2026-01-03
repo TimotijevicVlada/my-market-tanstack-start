@@ -82,7 +82,8 @@ export const getPagedCategories = createServerFn({
       query.where(and(...conditions))
     }
 
-    const orderByColumn = categories[sort.key]
+    const orderByColumn =
+      sort.key === 'parentName' ? parentCategory.name : categories[sort.key]
     const result = await query
       .orderBy(
         sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),

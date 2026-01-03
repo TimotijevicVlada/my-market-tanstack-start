@@ -153,7 +153,6 @@ function RouteComponent() {
                     {label}
                     {key !== 'actions' &&
                       key !== 'order' &&
-                      key !== 'username' &&
                       key !== 'categories' && (
                         <TableSort
                           sort={sort}

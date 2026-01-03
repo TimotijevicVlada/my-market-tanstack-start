@@ -91,7 +91,8 @@ export const getPagedSellers = createServerFn({
       query.where(and(...conditions))
     }
 
-    const orderByColumn = sellers[sort.key]
+    const orderByColumn =
+      sort.key === 'username' ? users.username : sellers[sort.key]
     const result = await query
       .orderBy(
         sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),

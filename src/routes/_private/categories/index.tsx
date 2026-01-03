@@ -118,15 +118,13 @@ function RouteComponent() {
                     className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
                   >
                     {label}
-                    {key !== 'actions' &&
-                      key !== 'order' &&
-                      key !== 'parentName' && (
-                        <TableSort
-                          sort={sort}
-                          columnKey={key}
-                          handleSort={handleSort}
-                        />
-                      )}
+                    {key !== 'actions' && key !== 'order' && (
+                      <TableSort
+                        sort={sort}
+                        columnKey={key}
+                        handleSort={handleSort}
+                      />
+                    )}
                   </div>
                 </TableHead>
               )
