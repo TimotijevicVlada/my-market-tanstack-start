@@ -30,7 +30,7 @@ export const getPagedSellers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetSellerParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword } = data
+    const { page, limit, keyword, status } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
@@ -50,6 +50,9 @@ export const getPagedSellers = createServerFn({
               ilike(sellers.postalCode, `%${trimmedKeyword}%`),
             ),
           ]
+        : []),
+      ...(status
+        ? [eq(sellers.isActive, status === 'active' ? true : false)]
         : []),
     ]
 

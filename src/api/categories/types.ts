@@ -6,7 +6,7 @@ export interface GetCategoriesParams {
   page: number
   limit: number
   keyword?: string
-  status?: CategoryStatus
+  status?: CategoryStatus | null
 }
 
 export interface CreateCategoryPayload {

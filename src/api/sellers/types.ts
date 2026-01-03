@@ -9,7 +9,7 @@ export interface GetSellerParams {
   page: number
   limit: number
   keyword?: string
-  status?: SellerStatus
+  status?: SellerStatus | null
 }
 
 export type Seller = typeof sellers.$inferSelect & {

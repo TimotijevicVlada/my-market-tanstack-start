@@ -44,10 +44,7 @@ function RouteComponent() {
     page,
     limit,
     keyword,
-  }
-
-  if (status) {
-    params.status = status
+    status,
   }
 
   const { data, isLoading, error, refetch } = useGetCategories(params)

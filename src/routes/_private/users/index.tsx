@@ -37,11 +37,7 @@ function RouteComponent() {
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<UserStatus | null>(null)
 
-  const params: GetUsersParams = { page, limit, keyword }
-
-  if (status) {
-    params.status = status
-  }
+  const params: GetUsersParams = { page, limit, keyword, status }
 
   const { data, isLoading, error, refetch } = useGetUsers(params)
 

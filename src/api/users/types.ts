@@ -6,7 +6,7 @@ export interface GetUsersParams {
   page: number
   limit: number
   keyword?: string
-  status?: UserStatus
+  status?: UserStatus | null
 }
 
 export type User = Omit<typeof users.$inferSelect, 'passwordHash'>

@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import {
+  FilterIcon,
   Link2Icon,
   MailIcon,
   MessageSquareText,
   TriangleAlertIcon,
 } from 'lucide-react'
-import { sellersColumns } from './-data'
+import { sellersColumns, statusFilterOptions } from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { DeleteSeller } from './-components/DeleteSeller'
 import { VerifySeller } from './-components/VerifySeller'
 import { CreateSeller } from './-components/CreateSeller'
 import { UpdateSeller } from './-components/UpdateSeller'
-import type { GetSellerParams } from '@/api/sellers/types'
+import type { GetSellerParams, SellerStatus } from '@/api/sellers/types'
 import { useGetSellers } from '@/api/sellers/queries'
 import { Spinner } from '@/components/ui/spinner'
 import {
@@ -30,6 +31,8 @@ import { Badge } from '@/components/ui/badge'
 import { truncateText } from '@/utils/truncate-text'
 import { Tooltip } from '@/components/custom/Tooltip'
 import { TableSearch } from '@/components/custom/TableSearch'
+import { DropdownMenu } from '@/components/custom/DropdownMenu'
+import { Button } from '@/components/custom/Button'
 
 export const Route = createFileRoute('/_private/sellers/')({
   component: RouteComponent,
@@ -40,8 +43,9 @@ function RouteComponent() {
   const limit = 10
 
   const [keyword, setKeyword] = useState('')
+  const [status, setStatus] = useState<SellerStatus | null>(null)
 
-  const params: GetSellerParams = { page, limit, keyword }
+  const params: GetSellerParams = { page, limit, keyword, status }
 
   const { data, isLoading, error, refetch } = useGetSellers(params)
 
@@ -50,6 +54,14 @@ function RouteComponent() {
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
+    setPage(1)
+  }
+
+  const handleStatusChange = (newStatus: {
+    id: SellerStatus
+    label: string
+  }) => {
+    setStatus(newStatus.id === status ? null : newStatus.id)
     setPage(1)
   }
 
@@ -81,6 +93,34 @@ function RouteComponent() {
         <TableHeader className="bg-muted">
           <TableRow>
             {sellersColumns.map(({ key, options, label }) => {
+              if (key === 'isActive') {
+                return (
+                  <TableHead
+                    key={key}
+                    {...options}
+                    className="flex items-center gap-3"
+                  >
+                    {label}
+                    <DropdownMenu
+                      options={statusFilterOptions}
+                      handleOptionChange={handleStatusChange}
+                      labelKey="label"
+                      active={{ key: 'id', value: status }}
+                      triggerButton={
+                        <Button
+                          variant="ghost"
+                          aria-label="Open menu"
+                          size="icon-sm"
+                        >
+                          <FilterIcon
+                            className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
+                          />
+                        </Button>
+                      }
+                    />
+                  </TableHead>
+                )
+              }
               return (
                 <TableHead key={key} {...options}>
                   {label}
