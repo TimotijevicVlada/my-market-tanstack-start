@@ -1,6 +1,11 @@
 import { useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { Link2Icon, MailIcon, MessageSquareText } from 'lucide-react'
+import {
+  BrushCleaningIcon,
+  Link2Icon,
+  MailIcon,
+  MessageSquareText,
+} from 'lucide-react'
 import {
   sellersColumns,
   statusFilterOptions,
@@ -38,6 +43,7 @@ import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
+import { Button } from '@/components/custom/Button'
 
 export const Route = createFileRoute('/_private/sellers/')({
   component: RouteComponent,
@@ -55,6 +61,13 @@ function RouteComponent() {
     key: 'createdAt',
     order: 'desc',
   })
+
+  const hasFilters =
+    status !== null ||
+    verificationStatus !== null ||
+    keyword !== '' ||
+    sort.key !== 'createdAt' ||
+    sort.order !== 'desc'
 
   const params: GetSellerParams = {
     page,
@@ -112,7 +125,23 @@ function RouteComponent() {
     <div>
       <h1 className="text-xl font-bold">Lista prodavaca</h1>
       <div className="flex justify-between items-center my-4">
-        <TableSearch onSearchClick={handleSearch} />
+        <div className="flex items-center gap-2">
+          <TableSearch onSearchClick={handleSearch} />
+          {hasFilters && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setKeyword('')
+                setStatus(null)
+                setVerificationStatus(null)
+                setSort({ key: 'createdAt', order: 'desc' })
+              }}
+            >
+              <BrushCleaningIcon />
+              Očisti filtere
+            </Button>
+          )}
+        </div>
         <CreateSeller params={params} />
       </div>
       <Table>

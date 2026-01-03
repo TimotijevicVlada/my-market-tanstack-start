@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import { MailIcon } from 'lucide-react'
+import { BrushCleaningIcon, MailIcon } from 'lucide-react'
 import {
   getRole,
   roleFilterOptions,
@@ -37,6 +37,7 @@ import { TableSort } from '@/components/custom/Table/TableSort'
 import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
+import { Button } from '@/components/custom/Button'
 
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
@@ -53,6 +54,13 @@ function RouteComponent() {
     key: 'createdAt',
     order: 'desc',
   })
+
+  const hasFilters =
+    status !== null ||
+    role !== null ||
+    keyword !== '' ||
+    sort.key !== 'createdAt' ||
+    sort.order !== 'desc'
 
   const params: GetUsersParams = { page, limit, keyword, status, role, sort }
 
@@ -96,7 +104,23 @@ function RouteComponent() {
     <div>
       <h1 className="text-xl font-bold">Lista korisnika</h1>
       <div className="flex justify-between items-center my-4">
-        <TableSearch onSearchClick={handleSearch} />
+        <div className="flex items-center gap-2">
+          <TableSearch onSearchClick={handleSearch} />
+          {hasFilters && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setKeyword('')
+                setStatus(null)
+                setRole(null)
+                setSort({ key: 'createdAt', order: 'desc' })
+              }}
+            >
+              <BrushCleaningIcon />
+              Očisti filtere
+            </Button>
+          )}
+        </div>
         <CreateUser params={params} />
       </div>
       <Table className="overflow-x-auto">

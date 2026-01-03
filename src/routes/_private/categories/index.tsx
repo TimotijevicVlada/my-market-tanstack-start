@@ -1,3 +1,4 @@
+import { BrushCleaningIcon } from 'lucide-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
 import { StatusColumn } from './-components/StatusColumn'
@@ -30,6 +31,7 @@ import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableSort } from '@/components/custom/Table/TableSort'
+import { Button } from '@/components/custom/Button'
 
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
@@ -45,6 +47,12 @@ function RouteComponent() {
     key: 'createdAt',
     order: 'desc',
   })
+
+  const hasFilters =
+    status !== null ||
+    keyword !== '' ||
+    sort.key !== 'createdAt' ||
+    sort.order !== 'desc'
 
   const params: GetCategoriesParams = {
     page,
@@ -92,7 +100,22 @@ function RouteComponent() {
     <div>
       <h1 className="text-xl font-bold">Lista kategorija</h1>
       <div className="flex justify-between items-center my-4">
-        <TableSearch onSearchClick={handleSearch} />
+        <div className="flex items-center gap-2">
+          <TableSearch onSearchClick={handleSearch} />
+          {hasFilters && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setKeyword('')
+                setStatus(null)
+                setSort({ key: 'createdAt', order: 'desc' })
+              }}
+            >
+              <BrushCleaningIcon />
+              Očisti filtere
+            </Button>
+          )}
+        </div>
         <CreateCategory params={params} />
       </div>
       <Table>
