@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { useUpdateSeller } from '@/api/sellers/queries'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 interface UpdateSellerProps {
   params: GetSellerParams
@@ -40,16 +41,22 @@ export const UpdateSeller = ({ params, seller }: UpdateSellerProps) => {
     )
   }
 
+  const disabled = !seller.isActive || seller.status === 'rejected'
+
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon-sm"
-        onClick={() => setIsOpen(true)}
-        disabled={!seller.isActive || seller.status === 'rejected'}
-      >
-        <PencilIcon className="text-orange-500" />
-      </Button>
+      <Tooltip title="Izmena prodavca">
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setIsOpen(true)}
+          disabled={disabled}
+        >
+          <PencilIcon
+            className={`${disabled ? 'text-muted-foreground' : 'text-orange-500'}`}
+          />
+        </Button>
+      </Tooltip>
       <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
         <DialogContent className="max-w-sm sm:max-w-lg">
           <DialogHeader>

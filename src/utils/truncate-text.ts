@@ -3,7 +3,7 @@ export const truncateText = (
   maxLength: number = 50,
 ) => {
   if (!text) {
-    return null
+    return '/'
   }
   if (text.length <= maxLength) {
     return text

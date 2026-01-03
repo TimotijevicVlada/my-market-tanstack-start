@@ -59,11 +59,17 @@ export const SellerForm = ({
     const secondStepData = secondStepMethods.getValues()
     const thirdStepData = formValues
 
-    onFormSubmit({
+    const payload = {
       ...firstStepData,
       ...secondStepData,
       ...thirdStepData,
-    })
+    }
+
+    const convertEmptyStringToNull = Object.fromEntries(
+      Object.entries(payload).map(([key, value]) => [key, value || null]),
+    ) as CreateSellerPayload
+
+    onFormSubmit(convertEmptyStringToNull)
   }
 
   useEffect(() => {

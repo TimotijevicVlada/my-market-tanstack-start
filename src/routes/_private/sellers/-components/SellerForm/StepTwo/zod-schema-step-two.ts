@@ -1,21 +1,9 @@
 import z from 'zod'
 
 export const secondStepSchema = z.object({
-  email: z
-    .email('Neispravna email adresa')
-    .trim()
-    .nullable()
-    .transform((val) => val || null),
-  phone: z
-    .string()
-    .trim()
-    .nullable()
-    .transform((val) => val || null),
-  website: z
-    .url('Neispravna URL adresa')
-    .trim()
-    .nullable()
-    .transform((val) => val || null),
+  email: z.email('Neispravna email adresa').trim().nullable(),
+  phone: z.string().trim().nullable(),
+  website: z.url('Neispravna URL adresa').trim().nullable(),
 })
 
 export type SecondStepSchema = z.infer<typeof secondStepSchema>
