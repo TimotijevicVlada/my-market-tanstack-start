@@ -1,5 +1,6 @@
 import {
   and,
+  asc,
   count,
   desc,
   eq,
@@ -30,28 +31,33 @@ export const getPagedSellers = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetSellerParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword } = data
+    const { page, limit, keyword, status, verificationStatus, sort } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
     const offset = (page - 1) * limit
 
-    const conditions = [
-      ...(hasKeyword
-        ? [
-            or(
-              ilike(sellers.displayName, `%${trimmedKeyword}%`),
-              ilike(sellers.email, `%${trimmedKeyword}%`),
-              ilike(sellers.phone, `%${trimmedKeyword}%`),
-              ilike(sellers.website, `%${trimmedKeyword}%`),
-              ilike(sellers.country, `%${trimmedKeyword}%`),
-              ilike(sellers.city, `%${trimmedKeyword}%`),
-              ilike(sellers.address, `%${trimmedKeyword}%`),
-              ilike(sellers.postalCode, `%${trimmedKeyword}%`),
-            ),
-          ]
-        : []),
-    ]
+    const conditions = []
+    if (hasKeyword) {
+      conditions.push(
+        or(
+          ilike(sellers.displayName, `%${trimmedKeyword}%`),
+          ilike(sellers.email, `%${trimmedKeyword}%`),
+          ilike(sellers.phone, `%${trimmedKeyword}%`),
+          ilike(sellers.website, `%${trimmedKeyword}%`),
+          ilike(sellers.country, `%${trimmedKeyword}%`),
+          ilike(sellers.city, `%${trimmedKeyword}%`),
+          ilike(sellers.address, `%${trimmedKeyword}%`),
+          ilike(sellers.postalCode, `%${trimmedKeyword}%`),
+        ),
+      )
+    }
+    if (status) {
+      conditions.push(eq(sellers.isActive, status === 'active' ? true : false))
+    }
+    if (verificationStatus) {
+      conditions.push(eq(sellers.status, verificationStatus))
+    }
 
     const totalQuery = db.select({ count: count() }).from(sellers)
 
@@ -85,8 +91,12 @@ export const getPagedSellers = createServerFn({
       query.where(and(...conditions))
     }
 
+    const orderByColumn = sellers[sort.key]
     const result = await query
-      .orderBy(desc(sellers.createdAt), desc(sellers.id))
+      .orderBy(
+        sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
+        desc(sellers.id),
+      )
       .limit(limit)
       .offset(offset)
 

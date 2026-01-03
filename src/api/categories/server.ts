@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import {
   and,
+  asc,
   count,
   desc,
   eq,
@@ -39,25 +40,26 @@ export const getPagedCategories = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: GetCategoriesParams) => data)
   .handler(async ({ data }) => {
-    const { page, limit, keyword, status } = data
+    const { page, limit, keyword, status, sort } = data
     const trimmedKeyword = keyword?.trim()
     const hasKeyword = trimmedKeyword !== ''
 
     const offset = (page - 1) * limit
 
-    const conditions = [
-      ...(hasKeyword
-        ? [
-            or(
-              ilike(categories.name, `%${trimmedKeyword}%`),
-              ilike(categories.slug, `%${trimmedKeyword}%`),
-            ),
-          ]
-        : []),
-      ...(status
-        ? [eq(categories.isActive, status === 'active' ? true : false)]
-        : []),
-    ]
+    const conditions = []
+    if (hasKeyword) {
+      conditions.push(
+        or(
+          ilike(categories.name, `%${trimmedKeyword}%`),
+          ilike(categories.slug, `%${trimmedKeyword}%`),
+        ),
+      )
+    }
+    if (status) {
+      conditions.push(
+        eq(categories.isActive, status === 'active' ? true : false),
+      )
+    }
 
     const totalQuery = db.select({ count: count() }).from(categories)
     if (conditions.length > 0) {
@@ -80,8 +82,12 @@ export const getPagedCategories = createServerFn({
       query.where(and(...conditions))
     }
 
+    const orderByColumn = categories[sort.key]
     const result = await query
-      .orderBy(desc(categories.createdAt), desc(categories.id))
+      .orderBy(
+        sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
+        desc(categories.id),
+      )
       .limit(limit)
       .offset(offset)
 

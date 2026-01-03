@@ -1,20 +1,24 @@
 import { useState } from 'react'
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link2Icon, MailIcon, MessageSquareText } from 'lucide-react'
 import {
-  Link2Icon,
-  MailIcon,
-  MessageSquareText,
-  TriangleAlertIcon,
-} from 'lucide-react'
-import { sellersColumns } from './-data'
+  sellersColumns,
+  statusFilterOptions,
+  verificationStatusFilterOptions,
+} from './-data'
 import { StatusColumn } from './-components/StatusColumn'
 import { DeleteSeller } from './-components/DeleteSeller'
 import { VerifySeller } from './-components/VerifySeller'
 import { CreateSeller } from './-components/CreateSeller'
 import { UpdateSeller } from './-components/UpdateSeller'
-import type { GetSellerParams } from '@/api/sellers/types'
+import type {
+  GetSellerParams,
+  SellerSort,
+  SellerStatus,
+  SortableSellerColumns,
+  VerificationStatus,
+} from '@/api/sellers/types'
 import { useGetSellers } from '@/api/sellers/queries'
-import { Spinner } from '@/components/ui/spinner'
 import {
   Table,
   TableBody,
@@ -23,13 +27,17 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { EmptyData } from '@/components/custom/EmptyData'
 import { formatDate } from '@/utils/format-date'
 import { Pagination } from '@/components/custom/Pagination'
 import { Badge } from '@/components/ui/badge'
 import { truncateText } from '@/utils/truncate-text'
 import { Tooltip } from '@/components/custom/Tooltip'
 import { TableSearch } from '@/components/custom/TableSearch'
+import { TableSort } from '@/components/custom/Table/TableSort'
+import { TableFilter } from '@/components/custom/Table/TableFilter'
+import { TableLoading } from '@/components/custom/Table/TableLoading'
+import { TableError } from '@/components/custom/Table/TableError'
+import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 
 export const Route = createFileRoute('/_private/sellers/')({
   component: RouteComponent,
@@ -40,8 +48,22 @@ function RouteComponent() {
   const limit = 10
 
   const [keyword, setKeyword] = useState('')
+  const [status, setStatus] = useState<SellerStatus | null>(null)
+  const [verificationStatus, setVerificationStatus] =
+    useState<VerificationStatus | null>(null)
+  const [sort, setSort] = useState<SellerSort>({
+    key: 'createdAt',
+    order: 'desc',
+  })
 
-  const params: GetSellerParams = { page, limit, keyword }
+  const params: GetSellerParams = {
+    page,
+    limit,
+    keyword,
+    status,
+    verificationStatus,
+    sort,
+  }
 
   const { data, isLoading, error, refetch } = useGetSellers(params)
 
@@ -53,22 +75,38 @@ function RouteComponent() {
     setPage(1)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <Spinner className="w-7 h-7" />
-        <span className="text-lg">Ucitavanje prodavaca...</span>
-      </div>
+  const handleStatusChange = (newStatus: {
+    id: SellerStatus
+    label: string
+  }) => {
+    setStatus(newStatus.id === status ? null : newStatus.id)
+    setPage(1)
+  }
+
+  const handleVerificationStatusChange = (newStatus: {
+    id: VerificationStatus
+    label: string
+  }) => {
+    setVerificationStatus(
+      newStatus.id === verificationStatus ? null : newStatus.id,
     )
+    setPage(1)
+  }
+
+  const handleSort = (key: SortableSellerColumns) => {
+    setSort((prev) => ({
+      key,
+      order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
+    }))
+    setPage(1)
+  }
+
+  if (isLoading) {
+    return <TableLoading label="Učitavanje prodavaca..." />
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <TriangleAlertIcon className="w-7 h-7 text-destructive" />
-        <span className="text-lg text-destructive">{error.message}</span>
-      </div>
-    )
+    return <TableError error={error.message} />
   }
   return (
     <div>
@@ -81,9 +119,49 @@ function RouteComponent() {
         <TableHeader className="bg-muted">
           <TableRow>
             {sellersColumns.map(({ key, options, label }) => {
+              if (key === 'isActive') {
+                return (
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: statusFilterOptions,
+                      handleOptionChange: handleStatusChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: status },
+                    }}
+                  />
+                )
+              }
+              if (key === 'status') {
+                return (
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: verificationStatusFilterOptions,
+                      handleOptionChange: handleVerificationStatusChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: verificationStatus },
+                    }}
+                  />
+                )
+              }
               return (
                 <TableHead key={key} {...options}>
-                  {label}
+                  <div
+                    className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
+                  >
+                    {label}
+                    {key !== 'actions' &&
+                      key !== 'order' &&
+                      key !== 'username' &&
+                      key !== 'categories' && (
+                        <TableSort
+                          sort={sort}
+                          columnKey={key}
+                          handleSort={handleSort}
+                        />
+                      )}
+                  </div>
                 </TableHead>
               )
             })}
@@ -91,14 +169,10 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {sellers.length === 0 && (
-            <TableRow>
-              <TableCell
-                colSpan={sellersColumns.length}
-                className="text-center text-muted-foreground"
-              >
-                <EmptyData title="Nema prodavaca" />
-              </TableCell>
-            </TableRow>
+            <TableEmptyHolder
+              colSpan={sellersColumns.length}
+              title="Nema prodavaca"
+            />
           )}
           {sellers.map((seller, index) => (
             <TableRow key={seller.id} className="group">

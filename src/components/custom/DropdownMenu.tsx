@@ -6,7 +6,7 @@ import {
   DropdownMenu as DropdownMenuUI,
 } from '../ui/dropdown-menu'
 
-interface DropdownMenuProps<T> {
+export interface DropdownMenuProps<T> {
   options: Array<T>
   handleOptionChange: (option: T) => void
   triggerButton: React.ReactNode

@@ -1,4 +1,8 @@
-import type { Seller, SellerStatus } from '@/api/sellers/types'
+import type {
+  Seller,
+  SellerStatus,
+  VerificationStatus,
+} from '@/api/sellers/types'
 
 type Column = {
   label: string
@@ -35,4 +39,13 @@ export const statusFilterOptions: Array<{
 }> = [
   { id: 'active', label: 'Aktivne' },
   { id: 'inactive', label: 'Neaktivne' },
+]
+
+export const verificationStatusFilterOptions: Array<{
+  id: VerificationStatus
+  label: string
+}> = [
+  { id: 'pending', label: 'Na čekanju' },
+  { id: 'approved', label: 'Odobreno' },
+  { id: 'rejected', label: 'Odbijeno' },
 ]

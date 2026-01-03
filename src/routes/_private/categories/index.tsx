@@ -1,18 +1,17 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { FilterIcon, TriangleAlertIcon } from 'lucide-react'
 import { StatusColumn } from './-components/StatusColumn'
 import { categoriesColumns, statusFilterOptions } from './-data'
 import { CreateCategory } from './-components/CreateCategory'
 import { EditCategory } from './-components/EditCategory'
 import { DeleteCategory } from './-components/DeleteCategory'
 import type {
+  CategorySort,
   CategoryStatus,
   GetCategoriesParams,
+  SortableCategoryColumns,
 } from '@/api/categories/types'
 import { useGetCategories } from '@/api/categories/queries'
-import { Spinner } from '@/components/ui/spinner'
-import { Button } from '@/components/custom/Button'
 import {
   Table,
   TableBody,
@@ -21,13 +20,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { EmptyData } from '@/components/custom/EmptyData'
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
 import { formatDate } from '@/utils/format-date'
-import { DropdownMenu } from '@/components/custom/DropdownMenu'
 import { truncateText } from '@/utils/truncate-text'
 import { TableSearch } from '@/components/custom/TableSearch'
+import { TableLoading } from '@/components/custom/Table/TableLoading'
+import { TableError } from '@/components/custom/Table/TableError'
+import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
+import { TableFilter } from '@/components/custom/Table/TableFilter'
+import { TableSort } from '@/components/custom/Table/TableSort'
 
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
@@ -39,15 +41,17 @@ function RouteComponent() {
 
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<CategoryStatus | null>(null)
+  const [sort, setSort] = useState<CategorySort>({
+    key: 'createdAt',
+    order: 'desc',
+  })
 
   const params: GetCategoriesParams = {
     page,
     limit,
     keyword,
-  }
-
-  if (status) {
-    params.status = status
+    status,
+    sort,
   }
 
   const { data, isLoading, error, refetch } = useGetCategories(params)
@@ -68,22 +72,20 @@ function RouteComponent() {
     setPage(1)
   }
 
+  const handleSort = (key: SortableCategoryColumns) => {
+    setSort((prev) => ({
+      key,
+      order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
+    }))
+    setPage(1)
+  }
+
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <Spinner className="w-7 h-7" />
-        <span className="text-lg">Ucitavanje kategorija...</span>
-      </div>
-    )
+    return <TableLoading label="Učitavanje kategorija..." />
   }
 
   if (error) {
-    return (
-      <div className="flex justify-center items-center gap-2 mt-70">
-        <TriangleAlertIcon className="w-7 h-7 text-destructive" />
-        <span className="text-lg text-destructive">{error.message}</span>
-      </div>
-    )
+    return <TableError error={error.message} />
   }
 
   return (
@@ -99,35 +101,33 @@ function RouteComponent() {
             {categoriesColumns.map(({ key, options, label }) => {
               if (key === 'isActive') {
                 return (
-                  <TableHead
-                    key={key}
-                    {...options}
-                    className="flex items-center gap-3"
-                  >
-                    {label}
-                    <DropdownMenu
-                      options={statusFilterOptions}
-                      handleOptionChange={handleStatusChange}
-                      labelKey="label"
-                      active={{ key: 'id', value: status }}
-                      triggerButton={
-                        <Button
-                          variant="ghost"
-                          aria-label="Open menu"
-                          size="icon-sm"
-                        >
-                          <FilterIcon
-                            className={`w-3.5 h-3.5 text-${status ? 'primary' : 'muted-foreground'}`}
-                          />
-                        </Button>
-                      }
-                    />
-                  </TableHead>
+                  <TableFilter
+                    label={label}
+                    dropdownProps={{
+                      options: statusFilterOptions,
+                      handleOptionChange: handleStatusChange,
+                      labelKey: 'label',
+                      active: { key: 'id', value: status },
+                    }}
+                  />
                 )
               }
               return (
                 <TableHead key={key} {...options}>
-                  {label}
+                  <div
+                    className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
+                  >
+                    {label}
+                    {key !== 'actions' &&
+                      key !== 'order' &&
+                      key !== 'parentName' && (
+                        <TableSort
+                          sort={sort}
+                          columnKey={key}
+                          handleSort={handleSort}
+                        />
+                      )}
+                  </div>
                 </TableHead>
               )
             })}
@@ -135,14 +135,10 @@ function RouteComponent() {
         </TableHeader>
         <TableBody>
           {categories.length === 0 && (
-            <TableRow>
-              <TableCell
-                colSpan={9}
-                className="text-center text-muted-foreground"
-              >
-                <EmptyData title="Nema kategorija" />
-              </TableCell>
-            </TableRow>
+            <TableEmptyHolder
+              colSpan={categoriesColumns.length}
+              title="Nema kategorija"
+            />
           )}
           {categories.map((category, index) => (
             <TableRow key={category.id} className="group">
