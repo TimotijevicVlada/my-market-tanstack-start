@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useSearch } from '@tanstack/react-router'
+import { z } from 'zod'
 import {
   BrushCleaningIcon,
   Link2Icon,
@@ -45,12 +46,19 @@ import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
 
+const sellersSearchSchema = z.object({
+  page: z.coerce.number().optional(),
+})
+
 export const Route = createFileRoute('/_private/sellers/')({
+  validateSearch: sellersSearchSchema,
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const [page, setPage] = useState(1)
+  const { page = 1 } = useSearch({ from: '/_private/sellers/' })
+  const navigate = Route.useNavigate()
+
   const limit = 10
 
   const [keyword, setKeyword] = useState('')
@@ -85,7 +93,7 @@ function RouteComponent() {
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
-    setPage(1)
+    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleStatusChange = (newStatus: {
@@ -93,7 +101,7 @@ function RouteComponent() {
     label: string
   }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
-    setPage(1)
+    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleVerificationStatusChange = (newStatus: {
@@ -103,7 +111,7 @@ function RouteComponent() {
     setVerificationStatus(
       newStatus.id === verificationStatus ? null : newStatus.id,
     )
-    setPage(1)
+    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleSort = (key: SortableSellerColumns) => {
@@ -111,7 +119,7 @@ function RouteComponent() {
       key,
       order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
     }))
-    setPage(1)
+    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   if (isLoading) {
@@ -338,7 +346,12 @@ function RouteComponent() {
           <Pagination
             currentPage={page}
             totalPages={pagination.totalPages}
-            onPageChange={setPage}
+            onPageChange={(newPage) =>
+              navigate({
+                to: '/sellers',
+                search: (prev) => ({ ...prev, page: newPage }),
+              })
+            }
             maxVisiblePages={5}
           />
         </div>

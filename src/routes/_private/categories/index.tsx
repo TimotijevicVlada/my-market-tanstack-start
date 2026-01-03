@@ -1,5 +1,6 @@
+import z from 'zod'
 import { BrushCleaningIcon } from 'lucide-react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
 import { StatusColumn } from './-components/StatusColumn'
 import { categoriesColumns, statusFilterOptions } from './-data'
@@ -33,12 +34,19 @@ import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Button } from '@/components/custom/Button'
 
+const categoriesSearchSchema = z.object({
+  page: z.coerce.number().optional(),
+})
+
 export const Route = createFileRoute('/_private/categories/')({
   component: RouteComponent,
+  validateSearch: categoriesSearchSchema,
 })
 
 function RouteComponent() {
-  const [page, setPage] = useState(1)
+  const { page = 1 } = useSearch({ from: '/_private/categories/' })
+  const navigate = Route.useNavigate()
+
   const limit = 10
 
   const [keyword, setKeyword] = useState('')
@@ -69,7 +77,7 @@ function RouteComponent() {
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
-    setPage(1)
+    navigate({ to: '/categories', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleStatusChange = (newStatus: {
@@ -77,7 +85,7 @@ function RouteComponent() {
     label: string
   }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
-    setPage(1)
+    navigate({ to: '/categories', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleSort = (key: SortableCategoryColumns) => {
@@ -85,7 +93,7 @@ function RouteComponent() {
       key,
       order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
     }))
-    setPage(1)
+    navigate({ to: '/categories', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   if (isLoading) {
@@ -229,7 +237,12 @@ function RouteComponent() {
           <Pagination
             currentPage={page}
             totalPages={pagination.totalPages}
-            onPageChange={setPage}
+            onPageChange={(newPage) =>
+              navigate({
+                to: '/categories',
+                search: (prev) => ({ ...prev, page: newPage }),
+              })
+            }
             maxVisiblePages={5}
           />
         </div>

@@ -1,5 +1,6 @@
+import { z } from 'zod'
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 import { BrushCleaningIcon, MailIcon } from 'lucide-react'
 import {
   getRole,
@@ -39,12 +40,19 @@ import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
 
+const usersSearchSchema = z.object({
+  page: z.coerce.number().optional(),
+})
+
 export const Route = createFileRoute('/_private/users/')({
   component: RouteComponent,
+  validateSearch: usersSearchSchema,
 })
 
 function RouteComponent() {
-  const [page, setPage] = useState(1)
+  const { page = 1 } = useSearch({ from: '/_private/users/' })
+  const navigate = Route.useNavigate()
+
   const limit = 10
 
   const [keyword, setKeyword] = useState('')
@@ -71,17 +79,17 @@ function RouteComponent() {
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
-    setPage(1)
+    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleStatusChange = (newStatus: { id: UserStatus; label: string }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
-    setPage(1)
+    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleRoleChange = (newRole: { id: UserRole; label: string }) => {
     setRole(newRole.id === role ? null : newRole.id)
-    setPage(1)
+    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleSort = (key: SortableUserColumns) => {
@@ -89,7 +97,7 @@ function RouteComponent() {
       key,
       order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
     }))
-    setPage(1)
+    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   if (isLoading) {
@@ -244,7 +252,12 @@ function RouteComponent() {
           <Pagination
             currentPage={page}
             totalPages={pagination.totalPages}
-            onPageChange={setPage}
+            onPageChange={(newPage) =>
+              navigate({
+                to: '/users',
+                search: (prev) => ({ ...prev, page: newPage }),
+              })
+            }
             maxVisiblePages={5}
           />
         </div>
