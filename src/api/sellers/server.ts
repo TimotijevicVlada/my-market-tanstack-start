@@ -49,6 +49,7 @@ export const getPagedSellers = createServerFn({
           ilike(sellers.city, `%${trimmedKeyword}%`),
           ilike(sellers.address, `%${trimmedKeyword}%`),
           ilike(sellers.postalCode, `%${trimmedKeyword}%`),
+          ilike(users.username, `%${trimmedKeyword}%`),
         ),
       )
     }
@@ -59,7 +60,10 @@ export const getPagedSellers = createServerFn({
       conditions.push(eq(sellers.status, verificationStatus))
     }
 
-    const totalQuery = db.select({ count: count() }).from(sellers)
+    const totalQuery = db
+      .select({ count: count(sellers.id) })
+      .from(sellers)
+      .leftJoin(users, eq(sellers.userId, users.id))
 
     if (conditions.length > 0) {
       totalQuery.where(and(...conditions))

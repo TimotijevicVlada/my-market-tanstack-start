@@ -46,12 +46,15 @@ export const getPagedCategories = createServerFn({
 
     const offset = (page - 1) * limit
 
+    const parentCategory = alias(categories, 'parent_category')
+
     const conditions = []
     if (hasKeyword) {
       conditions.push(
         or(
           ilike(categories.name, `%${trimmedKeyword}%`),
           ilike(categories.slug, `%${trimmedKeyword}%`),
+          ilike(parentCategory.name, `%${trimmedKeyword}%`),
         ),
       )
     }
@@ -61,7 +64,10 @@ export const getPagedCategories = createServerFn({
       )
     }
 
-    const totalQuery = db.select({ count: count() }).from(categories)
+    const totalQuery = db
+      .select({ count: count() })
+      .from(categories)
+      .leftJoin(parentCategory, eq(categories.parentId, parentCategory.id))
     if (conditions.length > 0) {
       totalQuery.where(and(...conditions))
     }
@@ -69,7 +75,6 @@ export const getPagedCategories = createServerFn({
     const [totalResult] = await totalQuery
     const total = totalResult.count
 
-    const parentCategory = alias(categories, 'parent_category')
     const query = db
       .select({
         ...getTableColumns(categories),
