@@ -1,20 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { uploadToR2 } from '@/lib/uploadToR2'
+import type { ChangeEvent } from 'react'
+import { useUploadToR2 } from '@/api/uploads/queries'
 
 export const Route = createFileRoute('/_private/profile/')({
-  component: RouteComponent,
+  component: ProfileComponent,
 })
 
-function RouteComponent() {
+function ProfileComponent() {
   const [url, setUrl] = useState<string | null>(null)
+  const { mutate: uploadImage } = useUploadToR2()
 
-  async function onChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    const uploadedUrl = await uploadToR2(file, 'test')
-    setUrl(uploadedUrl)
+    uploadImage(
+      { file, folder: 'test' },
+      {
+        onSuccess: (data) => {
+          setUrl(data)
+        },
+      },
+    )
   }
 
   return (
