@@ -232,7 +232,7 @@ function RouteComponent() {
                 }
                 if (key === 'actions') {
                   return (
-                    <TableCell key={key}>
+                    <TableCell key={key} className="sticky right-0 text-right">
                       <div className="flex justify-end gap-1">
                         <EditPassword userId={user.id} params={params} />
                         <EditUser user={user} params={params} />

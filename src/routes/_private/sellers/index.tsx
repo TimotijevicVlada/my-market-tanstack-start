@@ -323,10 +323,7 @@ function RouteComponent() {
                 }
                 if (key === 'actions') {
                   return (
-                    <TableCell
-                      key={key}
-                      className="sticky right-0 z-10 bg-background group-hover:bg-muted-background text-right"
-                    >
+                    <TableCell key={key} className="sticky right-0 text-right">
                       <div className="flex justify-end gap-1">
                         <VerifySeller seller={seller} params={params} />
                         <UpdateSeller seller={seller} params={params} />
