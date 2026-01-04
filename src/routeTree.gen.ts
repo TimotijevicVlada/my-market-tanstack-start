@@ -18,6 +18,7 @@ import { Route as PrivateProfileIndexRouteImport } from './routes/_private/profi
 import { Route as PrivateCategoriesIndexRouteImport } from './routes/_private/categories/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as ApiUploadsPresignRouteImport } from './routes/api/uploads/presign'
 
 const PrivateRouteRoute = PrivateRouteRouteImport.update({
   id: '/_private',
@@ -62,9 +63,15 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const ApiUploadsPresignRoute = ApiUploadsPresignRouteImport.update({
+  id: '/api/uploads/presign',
+  path: '/api/uploads/presign',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/uploads/presign': typeof ApiUploadsPresignRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/categories': typeof PrivateCategoriesIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/uploads/presign': typeof ApiUploadsPresignRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/categories': typeof PrivateCategoriesIndexRoute
@@ -86,6 +94,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_private': typeof PrivateRouteRouteWithChildren
+  '/api/uploads/presign': typeof ApiUploadsPresignRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_private/categories/': typeof PrivateCategoriesIndexRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/api/uploads/presign'
     | '/login'
     | '/register'
     | '/categories'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/api/uploads/presign'
     | '/login'
     | '/register'
     | '/categories'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_private'
+    | '/api/uploads/presign'
     | '/_auth/login/'
     | '/_auth/register/'
     | '/_private/categories/'
@@ -129,6 +141,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   PrivateRouteRoute: typeof PrivateRouteRouteWithChildren
+  ApiUploadsPresignRoute: typeof ApiUploadsPresignRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/api/uploads/presign': {
+      id: '/api/uploads/presign'
+      path: '/api/uploads/presign'
+      fullPath: '/api/uploads/presign'
+      preLoaderRoute: typeof ApiUploadsPresignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -235,6 +255,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRouteRoute: AuthRouteRouteWithChildren,
   PrivateRouteRoute: PrivateRouteRouteWithChildren,
+  ApiUploadsPresignRoute: ApiUploadsPresignRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
