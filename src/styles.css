@@ -135,4 +135,42 @@ code {
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Firefox */
+  * {
+    scrollbar-color: oklch(0.5 0 0 / 0.2) transparent;
+  }
+
+  .dark * {
+    scrollbar-color: oklch(0.6 0 0 / 0.3) transparent;
+  }
+
+  /* Webkit browsers (Chrome, Safari, Edge) */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: oklch(0.5 0 0 / 0.2);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.4 0 0 / 0.4);
+  }
+
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: oklch(0.6 0 0 / 0.3);
+  }
+
+  .dark *::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.5 0 0 / 0.5);
+  }
 }

@@ -58,7 +58,9 @@ export const EditUser = ({ user, params }: EditUserProps) => {
           disabled={!user.isActive}
           onClick={() => setUserToEdit(user)}
         >
-          <PencilIcon className="text-orange-500" />
+          <PencilIcon
+            className={`${!user.isActive ? 'text-muted-foreground' : 'text-orange-500'}`}
+          />
         </Button>
       </Tooltip>
       <Dialog open={!!userToEdit} onOpenChange={() => setUserToEdit(null)}>

@@ -58,7 +58,9 @@ export const EditCategory = ({ params, category }: EditCategoryProps) => {
           onClick={() => setCategoryToEdit(category)}
           disabled={!category.isActive}
         >
-          <PencilIcon className="text-orange-500" />
+          <PencilIcon
+            className={`${!category.isActive ? 'text-muted-foreground' : 'text-orange-500'}`}
+          />
         </Button>
       </Tooltip>
       <Dialog
