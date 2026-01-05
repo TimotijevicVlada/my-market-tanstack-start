@@ -45,6 +45,8 @@ import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
+import { getImageUrl } from '@/utils/get-image-url'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const sellersSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -224,6 +226,25 @@ function RouteComponent() {
                   return (
                     <TableCell key={key}>
                       <StatusColumn seller={seller} refetchSellers={refetch} />
+                    </TableCell>
+                  )
+                }
+                if (key === 'displayName') {
+                  return (
+                    <TableCell key={key}>
+                      <div className="flex items-center gap-2">
+                        <Avatar>
+                          <AvatarImage
+                            src={getImageUrl(seller.avatarUrl)}
+                            alt={seller.displayName}
+                            className="object-cover"
+                          />
+                          <AvatarFallback>
+                            {seller.displayName.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {seller[key]}
+                      </div>
                     </TableCell>
                   )
                 }

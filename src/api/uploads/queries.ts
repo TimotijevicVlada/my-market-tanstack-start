@@ -11,7 +11,7 @@ export function useUploadToR2() {
   return useMutation({
     mutationFn: async (data: UploadToR2Input) => {
       const { file, folder } = data
-      const { uploadUrl, publicUrl } = await presignUpload({
+      const { uploadUrl, publicUrl, key } = await presignUpload({
         data: {
           fileName: file.name,
           fileType: file.type,
@@ -29,7 +29,7 @@ export function useUploadToR2() {
         throw new Error('Upload failed')
       }
 
-      return publicUrl
+      return { uploadUrl, publicUrl, key }
     },
     onSuccess: () => {
       toast.success('Fajl je uspešno učitavan')

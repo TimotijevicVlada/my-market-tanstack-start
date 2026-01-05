@@ -3,7 +3,14 @@ import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { r2 } from '@/server/r2'
 
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const ALLOWED_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/jpg',
+  'image/jfif',
+  'image/avif',
+]
 const ALLOWED_FOLDERS = [
   'sellers/avatars',
   'sellers/covers',
@@ -33,7 +40,7 @@ export const presignUpload = createServerFn({
     }
 
     const ext = fileName.split('.').pop() || 'jpg'
-    const key = `${folder}/${crypto.randomUUID()}.${ext}`
+    const key = `test/${crypto.randomUUID()}.${ext}`
 
     const command = new PutObjectCommand({
       Bucket: process.env.R2_BUCKET_NAME!,

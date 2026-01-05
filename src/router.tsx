@@ -6,6 +6,12 @@ import { routeTree } from './routeTree.gen'
 export const getRouter = () => {
   const rqContext = TanstackQuery.getContext()
 
+  rqContext.queryClient.setDefaultOptions({
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  })
+
   const router = createRouter({
     routeTree,
     context: { ...rqContext },

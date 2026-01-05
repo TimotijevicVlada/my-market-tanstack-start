@@ -1,4 +1,4 @@
-import { ChevronLeft } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { UseFormReturn } from 'react-hook-form'
 import type { ThirdStepSchema } from './zod-schema-step-tree'
 import { DialogFooter } from '@/components/ui/dialog'
@@ -7,23 +7,17 @@ import { FormField } from '@/components/custom/FormField'
 
 interface StepThreeProps {
   setActiveStep: (step: number) => void
-  isSubmitting: boolean
-  type: 'create' | 'edit'
   thirdStepMethods: UseFormReturn<ThirdStepSchema>
-  onThirdStepSubmit: (formValues: ThirdStepSchema) => void
 }
 
 export const StepThree = ({
   setActiveStep,
-  isSubmitting,
-  type,
   thirdStepMethods,
-  onThirdStepSubmit,
 }: StepThreeProps) => {
-  const { handleSubmit, register } = thirdStepMethods
+  const { handleSubmit, register, reset } = thirdStepMethods
 
-  const onFormSubmit = (formValues: ThirdStepSchema) => {
-    onThirdStepSubmit(formValues)
+  const onFormSubmit = () => {
+    setActiveStep(4)
   }
 
   return (
@@ -53,15 +47,15 @@ export const StepThree = ({
           <ChevronLeft />
           Nazad
         </Button>
-        <Button
-          type="submit"
-          loading={{
-            state: isSubmitting,
-            text: type === 'create' ? 'Kreiranje...' : 'Izmena...',
-          }}
-        >
-          {type === 'create' ? 'Sacuvaj' : 'Izmeni'}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="ghost" type="button" onClick={() => reset()}>
+            Poništi
+          </Button>
+          <Button variant="ghost" type="submit">
+            Dalje
+            <ChevronRight />
+          </Button>
+        </div>
       </DialogFooter>
     </form>
   )

@@ -15,6 +15,7 @@ export const StepTwo = ({ setActiveStep, secondStepMethods }: StepTwoProps) => {
     handleSubmit,
     register,
     formState: { errors },
+    reset,
   } = secondStepMethods
 
   const onFormSubmit = () => {
@@ -45,10 +46,15 @@ export const StepTwo = ({ setActiveStep, secondStepMethods }: StepTwoProps) => {
           <ChevronLeft />
           Nazad
         </Button>
-        <Button variant="ghost" type="submit">
-          Dalje
-          <ChevronRight />
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="ghost" type="button" onClick={() => reset()}>
+            Poništi
+          </Button>
+          <Button variant="ghost" type="submit">
+            Dalje
+            <ChevronRight />
+          </Button>
+        </div>
       </DialogFooter>
     </form>
   )

@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { StepOne } from './StepOne'
 import { StepTwo } from './StepTwo'
 import { StepThree } from './StepThree'
+import { StepFour } from './StepFour'
 import {
   firstStepDefaultValues,
   firstStepSchema,
@@ -16,10 +17,15 @@ import {
   thirdStepDefaultValues,
   thirdStepSchema,
 } from './StepThree/zod-schema-step-tree'
+import {
+  fourthStepDefaultValues,
+  fourthStepSchema,
+} from './StepFour/zod-schema-step-four'
 import type { FirstStepSchema } from './StepOne/zod-schema-step-one'
 import type { SecondStepSchema } from './StepTwo/zod-schema-step-two'
 import type { ThirdStepSchema } from './StepThree/zod-schema-step-tree'
 import type { CreateSellerPayload, Seller } from '@/api/sellers/types'
+import type { FourthStepSchema } from './StepFour/zod-schema-step-four'
 import { Stepper } from '@/components/custom/Stepper'
 
 interface SellerFormProps {
@@ -29,7 +35,7 @@ interface SellerFormProps {
   sellerToEdit?: Seller
 }
 
-const steps = ['Opšte', 'Kontakt', 'Lokacija']
+const steps = ['Opšte', 'Kontakt', 'Lokacija', 'Slike']
 
 export const SellerForm = ({
   isSubmitting,
@@ -54,15 +60,22 @@ export const SellerForm = ({
     defaultValues: thirdStepDefaultValues,
   })
 
-  const onThirdStepSubmit = (formValues: ThirdStepSchema) => {
+  const fourthStepMethods = useForm<FourthStepSchema>({
+    resolver: zodResolver(fourthStepSchema),
+    defaultValues: fourthStepDefaultValues,
+  })
+
+  const onFourthStepSubmit = (formValues: FourthStepSchema) => {
     const firstStepData = firstStepMethods.getValues()
     const secondStepData = secondStepMethods.getValues()
-    const thirdStepData = formValues
+    const thirdStepData = thirdStepMethods.getValues()
+    const fourthStepData = formValues
 
     const payload = {
       ...firstStepData,
       ...secondStepData,
       ...thirdStepData,
+      ...fourthStepData,
     }
 
     const convertEmptyStringToNull = Object.fromEntries(
@@ -91,6 +104,10 @@ export const SellerForm = ({
         address: sellerToEdit.address,
         postalCode: sellerToEdit.postalCode,
       })
+      fourthStepMethods.reset({
+        avatarUrl: sellerToEdit.avatarUrl,
+        coverImageUrl: sellerToEdit.coverImageUrl,
+      })
     }
   }, [sellerToEdit])
 
@@ -113,9 +130,15 @@ export const SellerForm = ({
         <StepThree
           setActiveStep={setActiveStep}
           thirdStepMethods={thirdStepMethods}
-          onThirdStepSubmit={onThirdStepSubmit}
+        />
+      )}
+      {activeStep === 4 && (
+        <StepFour
+          setActiveStep={setActiveStep}
+          fourthStepMethods={fourthStepMethods}
           isSubmitting={isSubmitting}
           type={type}
+          onFourthStepSubmit={onFourthStepSubmit}
         />
       )}
     </div>

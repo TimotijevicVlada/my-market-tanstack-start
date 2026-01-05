@@ -25,6 +25,7 @@ export const StepOne = ({ setActiveStep, firstStepMethods }: StepOneProps) => {
     register,
     formState: { errors },
     control,
+    reset,
   } = firstStepMethods
 
   const { field: userIfField } = useController({
@@ -77,7 +78,10 @@ export const StepOne = ({ setActiveStep, firstStepMethods }: StepOneProps) => {
         placeholder="Primer: Prodavnica koja se bavi prodajom televizora..."
         {...register('description')}
       />
-      <DialogFooter className="flex justify-end">
+      <DialogFooter className="flex justify-end gap-2">
+        <Button variant="ghost" type="button" onClick={() => reset()}>
+          Poništi
+        </Button>
         <Button variant="ghost" type="submit">
           Dalje
           <ChevronRight />
