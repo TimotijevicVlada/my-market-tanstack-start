@@ -23,11 +23,17 @@ const setThemeToHTML = (mode: ThemeMode) => {
 
 export const useThemeStore = create<ThemeState & ThemeActions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...INITIAL_THEME_STATE,
       setThemeMode: (mode) => {
         set({ themeMode: mode })
         setThemeToHTML(mode)
+      },
+      toggleTheme: () => {
+        const currentTheme = get().themeMode
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light'
+        set({ themeMode: newTheme })
+        setThemeToHTML(newTheme)
       },
     }),
     { name: 'theme' },

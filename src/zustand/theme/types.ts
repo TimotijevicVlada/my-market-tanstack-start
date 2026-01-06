@@ -6,4 +6,5 @@ export interface ThemeState {
 
 export interface ThemeActions {
   setThemeMode: (mode: ThemeMode) => void
+  toggleTheme: () => void
 }
