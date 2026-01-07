@@ -1,4 +1,11 @@
-import { LogOutIcon, Moon, PaletteIcon, Sun, UserIcon } from 'lucide-react'
+import {
+  LogOutIcon,
+  Moon,
+  PaletteIcon,
+  StoreIcon,
+  Sun,
+  UserIcon,
+} from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 import { toast } from 'sonner'
 import type { User } from '@/api/users/types'
@@ -14,12 +21,18 @@ import { useLoggedInUser } from '@/api/auth/queries'
 import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { getRole } from '@/routes/_private/users/-data'
+// import { Button } from '@/components/custom/Button'
 
 interface UserMenuDropdownProps {
   loggedInUser: User
+  setIsCreateSellerOpen: (isOpen: boolean) => void
 }
 
-export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
+export const UserMenuDropdown = ({
+  loggedInUser,
+  setIsCreateSellerOpen,
+}: UserMenuDropdownProps) => {
   const { data: user, refetch: refetchLoggedInUser } = useLoggedInUser({
     initialData: loggedInUser,
   })
@@ -45,18 +58,27 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-50" align="end">
-        <div className="flex flex-col py-2 px-3">
+        <div className="flex flex-col p-2">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-ellipsis overflow-hidden whitespace-nowrap">
               {user?.username}
             </span>
-            <span className="text-xs font-bold text-white bg-primary rounded-full px-2 py-0 capitalize">
-              {user?.role}
+            <span
+              className={`text-xs font-bold text-white rounded-full px-2 py-0 capitalize ${user?.role ? getRole[user.role].color : ''}`}
+            >
+              {user?.role ? getRole[user.role].name : ''}
             </span>
           </div>
           <span className="text-xs text-muted-foreground text-ellipsis overflow-hidden whitespace-nowrap">
             {user?.email}
           </span>
+          <DropdownMenuItem
+            onClick={() => setIsCreateSellerOpen(true)}
+            className="mt-3 bg-primary text-white hover:bg-primary/90! hover:text-white!"
+          >
+            <StoreIcon className="text-white" />
+            Postanite prodavac
+          </DropdownMenuItem>
         </div>
 
         <DropdownMenuSeparator />
