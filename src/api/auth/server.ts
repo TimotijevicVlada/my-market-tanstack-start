@@ -22,7 +22,6 @@ export const login = createServerFn({
 })
   .inputValidator((data: LoginPayload) => data)
   .handler(async ({ data }) => {
-    // Find user by email
     const user = await db.query.users.findFirst({
       where: (userTable, { eq }) => eq(userTable.email, data.email),
     })
@@ -31,7 +30,6 @@ export const login = createServerFn({
       throw new Error('Neispravna email adresa')
     }
 
-    // Verify password
     const isValidPassword = await bcrypt.compare(
       data.password,
       user.passwordHash,
@@ -41,10 +39,8 @@ export const login = createServerFn({
       throw new Error('Neispravna lozinka')
     }
 
-    // Generate JWT token
     const token = signJWTToken(user.id)
 
-    // Return token and user (without password hash)
     const { passwordHash: _, ...userWithoutPassword } = user
     return {
       token,
@@ -57,7 +53,6 @@ export const register = createServerFn({
 })
   .inputValidator((data: RegisterPayload) => data)
   .handler(async ({ data }) => {
-    // Check if email already exists
     const existingUserByEmail = await db.query.users.findFirst({
       where: (userTable, { eq }) => eq(userTable.email, data.email),
     })
@@ -66,7 +61,6 @@ export const register = createServerFn({
       throw new Error('Email je već zauzet')
     }
 
-    // Check if username already exists
     const existingUserByUsername = await db.query.users.findFirst({
       where: (userTable, { eq }) => eq(userTable.username, data.username),
     })
@@ -75,24 +69,19 @@ export const register = createServerFn({
       throw new Error('Korisničko ime je već zauzeto')
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(data.password, 10)
 
-    // Create user
     const [user] = await db
       .insert(users)
       .values({
         username: data.username,
         email: data.email,
         passwordHash,
-        role: data.role || 'buyer',
+        role: 'buyer',
       })
       .returning()
 
-    // Generate JWT token
     const token = signJWTToken(user.id)
-
-    // Return token and user (without password hash)
 
     const { passwordHash: _, ...userWithoutPassword } = user
     return {

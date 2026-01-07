@@ -9,7 +9,6 @@ export interface RegisterPayload {
   username: string
   email: string
   password: string
-  role?: UserRole
 }
 
 export interface LoginData {
@@ -21,5 +20,4 @@ export interface RegisterData {
   username: string
   email: string
   password: string
-  role?: UserRole
 }

@@ -1,7 +1,7 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { registerSchema } from './-schema'
+import { defaultValues, registerSchema } from './-schema'
 import type { RegisterFormData } from './-schema'
 import { Button } from '@/components/custom/Button'
 import { useRegister } from '@/api/auth/queries'
@@ -21,9 +21,7 @@ function RegisterComponent() {
     setError,
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      role: 'buyer',
-    },
+    defaultValues,
   })
 
   const onSubmit = (data: RegisterFormData) => {
@@ -32,7 +30,6 @@ function RegisterComponent() {
         username: data.username,
         email: data.email,
         password: data.password,
-        role: data.role,
       },
       {
         onError: (err) => {
@@ -70,13 +67,6 @@ function RegisterComponent() {
           placeholder="Unesite vašu email adresu"
           error={errors.email?.message}
           {...registerField('email')}
-        />
-
-        <FormField
-          label="Uloga"
-          placeholder="Izaberite vašu ulogu"
-          error={errors.role?.message}
-          {...registerField('role')}
         />
 
         <FormField
