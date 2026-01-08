@@ -27,6 +27,7 @@ export type Seller = typeof sellers.$inferSelect & {
 
 export type VerifySellerParams = {
   sellerId: string
+  userId: string
   status: Seller['status']
   verificationNote?: string
 }

@@ -44,7 +44,7 @@ export const Multiselect = <T,>({
         </Label>
       )}
       <MultiSelect values={values} onValuesChange={onValuesChange}>
-        <MultiSelectTrigger className="w-full max-w-[30rem]">
+        <MultiSelectTrigger className="w-full">
           <MultiSelectValue
             placeholder={placeholder}
             overflowBehavior={overflowBehavior}

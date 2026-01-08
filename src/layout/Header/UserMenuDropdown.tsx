@@ -80,9 +80,11 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
             {user?.email}
           </span>
           {seller?.status === 'pending' && (
-            <div className="mt-3 text-xs border border-orange-500 rounded-sm p-2 bg-orange-500/10">
-              Vaša prodavnica je u procesu verifikacije, obično je potrebno do
-              24 sata.
+            <div className="mt-3 text-xs border border-amber-500 rounded-sm p-2 bg-amber-500/10">
+              <p className="text-amber-500">
+                Vaša prodavnica je u procesu verifikacije, obično je potrebno do
+                24 sata.
+              </p>
             </div>
           )}
           {user?.role === 'buyer' && seller?.status !== 'pending' && (

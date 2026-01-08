@@ -24,7 +24,7 @@ export default function Header({ initialUser }: HeaderProps) {
   })
 
   return (
-    <header className="h-14 flex items-center justify-between px-20 border-b border-border bg-muted-hover">
+    <header className="h-14 flex items-center justify-between px-20 border-b border-border bg-sidebar">
       <div className="flex items-center">
         <Link to="/" className="cursor-pointer">
           <img src="/logo.png" alt="Logo" className="h-9" />
