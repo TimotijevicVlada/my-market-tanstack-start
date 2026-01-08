@@ -11,7 +11,7 @@ export const Sidebar = () => {
 
   return (
     <div className="flex flex-col gap-2">
-      <Link to="/profile">
+      <Link to="/profile" search={{ tab: 'profile' }}>
         <Button
           variant={getButtonVariant('/profile')}
           className="justify-start w-full"

@@ -10,7 +10,7 @@ import {
   sql,
 } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
-import { requireAdminMiddleware } from '../middleware'
+import { authMiddleware, requireAdminMiddleware } from '../middleware'
 import type {
   CreateSellerPayload,
   GetSellerParams,
@@ -116,6 +116,21 @@ export const getPagedSellers = createServerFn({
     }
   })
 
+export const getSellerByUserId = createServerFn({
+  method: 'GET',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data }) => {
+    const { userId } = data
+
+    const seller = await db.query.sellers.findFirst({
+      where: (sellersTable) => eq(sellersTable.userId, userId),
+    })
+
+    return seller
+  })
+
 export const toggleSellerActiveStatus = createServerFn({
   method: 'POST',
 })
@@ -182,7 +197,7 @@ export const deleteSeller = createServerFn({
 export const createSeller = createServerFn({
   method: 'POST',
 })
-  .middleware([requireAdminMiddleware])
+  // .middleware([requireAdminMiddleware])
   .inputValidator((data: CreateSellerPayload) => data)
   .handler(async ({ data }) => {
     const { categories, ...sellerData } = data

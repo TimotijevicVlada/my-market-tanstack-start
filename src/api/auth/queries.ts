@@ -46,14 +46,10 @@ export const useLoggedInUser = (options?: { initialData?: User | null }) => {
   return useQuery({
     queryKey: ['loggedInUser'],
     queryFn: async () => {
-      try {
-        return await getLoggedInUser()
-      } catch {
-        // User is not authenticated
-        return null
-      }
+      const user = await getLoggedInUser()
+      return user
     },
     initialData: options?.initialData,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    staleTime: 5 * 60 * 1000,
   })
 }

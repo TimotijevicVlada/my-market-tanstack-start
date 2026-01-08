@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { PencilIcon } from 'lucide-react'
-import { SellerForm } from '../SellerForm'
 import type {
   CreateSellerPayload,
   GetSellerParams,
@@ -16,6 +15,7 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { useUpdateSeller } from '@/api/sellers/queries'
 import { Tooltip } from '@/components/custom/Tooltip'
+import { SellerForm } from '@/components/shared/SellerForm'
 
 interface UpdateSellerProps {
   params: GetSellerParams

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { PlusIcon } from 'lucide-react'
-import { SellerForm } from '../SellerForm'
 import type { CreateSellerPayload, GetSellerParams } from '@/api/sellers/types'
+import { SellerForm } from '@/components/shared/SellerForm'
 import { Button } from '@/components/custom/Button'
 import {
   Dialog,
