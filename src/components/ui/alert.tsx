@@ -138,13 +138,13 @@ const alertVariants = cva(
         variant: 'destructive',
         appearance: 'light',
         className:
-          'bg-[var(--color-destructive-soft,var(--color-red-50))] border border-[var(--color-destructive-alpha,var(--color-red-100))] text-foreground [&_[data-slot=alert-icon]]:text-destructive dark:bg-[var(--color-destructive-soft,var(--color-red-950))] dark:border-[var(--color-destructive-alpha,var(--color-red-900))] ',
+          'items-start gap-3 bg-red-500/10 border border-red-500/30 text-red-500 [&>[data-slot=alert-icon]>svg]:size-4 [&_[data-slot=alert-icon]]:bg-red-500/20 [&_[data-slot=alert-icon]]:rounded-lg [&_[data-slot=alert-icon]]:flex [&_[data-slot=alert-icon]]:size-8 [&_[data-slot=alert-icon]]:shrink-0 [&_[data-slot=alert-icon]]:items-center [&_[data-slot=alert-icon]]:justify-center [&_[data-slot=alert-icon]]:text-red-500 [&_[data-slot=alert-title]]:text-red-500 [&_[data-slot=alert-title]]:font-medium [&_[data-slot=alert-title]]:text-base [&_[data-slot=alert-description]]:text-red-500/70',
       },
       {
         variant: 'success',
         appearance: 'light',
         className:
-          'bg-[var(--color-success-soft,var(--color-green-50))] border border-[var(--color-success-alpha,var(--color-green-200))] text-foreground [&_[data-slot=alert-icon]]:text-[var(--color-success-foreground,var(--color-green-600))] dark:bg-[var(--color-success-soft,var(--color-green-950))] dark:border-[var(--color-success-alpha,var(--color-green-900))]',
+          'items-start gap-3 bg-green-500/10 border border-green-500/30 text-green-500 [&>[data-slot=alert-icon]>svg]:size-4 [&_[data-slot=alert-icon]]:bg-green-500/20 [&_[data-slot=alert-icon]]:rounded-lg [&_[data-slot=alert-icon]]:flex [&_[data-slot=alert-icon]]:size-8 [&_[data-slot=alert-icon]]:shrink-0 [&_[data-slot=alert-icon]]:items-center [&_[data-slot=alert-icon]]:justify-center [&_[data-slot=alert-icon]]:text-green-500 [&_[data-slot=alert-title]]:text-green-500 [&_[data-slot=alert-title]]:font-medium [&_[data-slot=alert-title]]:text-base [&_[data-slot=alert-description]]:text-green-500/70',
       },
       {
         variant: 'info',
@@ -156,7 +156,7 @@ const alertVariants = cva(
         variant: 'warning',
         appearance: 'light',
         className:
-          'bg-[var(--color-warning-soft,var(--color-yellow-50))] border border-[var(--color-warning-alpha,var(--color-yellow-200))] text-foreground [&_[data-slot=alert-icon]]:text-[var(--color-warning-foreground,var(--color-yellow-600))] dark:bg-[var(--color-warning-soft,var(--color-yellow-950))] dark:border-[var(--color-warning-alpha,var(--color-yellow-900))]',
+          'items-start gap-3 bg-amber-500/10 border border-amber-500/30 text-amber-500 [&>[data-slot=alert-icon]>svg]:size-4 [&_[data-slot=alert-icon]]:bg-amber-500/20 [&_[data-slot=alert-icon]]:rounded-lg [&_[data-slot=alert-icon]]:flex [&_[data-slot=alert-icon]]:size-8 [&_[data-slot=alert-icon]]:shrink-0 [&_[data-slot=alert-icon]]:items-center [&_[data-slot=alert-icon]]:justify-center [&_[data-slot=alert-icon]]:text-amber-500 [&_[data-slot=alert-title]]:text-amber-500 [&_[data-slot=alert-title]]:font-medium [&_[data-slot=alert-title]]:text-base [&_[data-slot=alert-description]]:text-amber-500/70',
       },
 
       /* Mono */

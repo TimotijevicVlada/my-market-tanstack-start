@@ -41,7 +41,7 @@ export const UpdateSeller = ({ params, seller }: UpdateSellerProps) => {
     )
   }
 
-  const disabled = !seller.isActive || seller.status === 'rejected'
+  const disabled = !seller.isActive
 
   return (
     <>
