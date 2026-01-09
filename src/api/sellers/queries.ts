@@ -4,6 +4,7 @@ import {
   createSeller,
   deleteSeller,
   getPagedSellers,
+  getSellerByUserId,
   toggleSellerActiveStatus,
   updateSeller,
   verifySeller,
@@ -20,6 +21,15 @@ export const useGetSellers = (params: GetSellerParams) => {
     queryKey: ['sellers', params],
     queryFn: () => getPagedSellers({ data: params }),
     placeholderData: (prev) => prev,
+  })
+}
+
+export const useGetSellerByUserId = (userId: string | undefined) => {
+  return useQuery({
+    queryKey: ['seller', userId],
+    queryFn: () => getSellerByUserId({ data: { userId: userId ?? '' } }),
+    placeholderData: (prev) => prev,
+    enabled: !!userId,
   })
 }
 

@@ -1,7 +1,7 @@
 import type { User, UserRole, UserStatus } from '@/api/users/types'
 
 export const getRole = {
-  seller: { name: 'Prodavač', color: `bg-blue-500` },
+  seller: { name: 'Prodavac', color: `bg-blue-500` },
   buyer: { name: 'Kupac', color: `bg-yellow-500` },
   admin: { name: 'Admin', color: `bg-purple-500` },
   'super-admin': { name: 'Super Admin', color: `bg-red-500` },

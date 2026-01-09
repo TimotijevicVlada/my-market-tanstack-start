@@ -20,22 +20,24 @@ import { removeAuthToken } from '@/lib/auth'
 import { useLoggedInUser } from '@/api/auth/queries'
 import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarIndicator,
+  AvatarStatus,
+} from '@/components/ui/avatar'
 import { getRole } from '@/routes/_private/users/-data'
-// import { Button } from '@/components/custom/Button'
+import { useGetSellerByUserId } from '@/api/sellers/queries'
 
 interface UserMenuDropdownProps {
   loggedInUser: User
-  setIsCreateSellerOpen: (isOpen: boolean) => void
 }
 
-export const UserMenuDropdown = ({
-  loggedInUser,
-  setIsCreateSellerOpen,
-}: UserMenuDropdownProps) => {
+export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
   const { data: user, refetch: refetchLoggedInUser } = useLoggedInUser({
     initialData: loggedInUser,
   })
+  const { data: seller } = useGetSellerByUserId(user?.id)
 
   const { themeMode, toggleTheme } = useThemeStore()
 
@@ -55,6 +57,11 @@ export const UserMenuDropdown = ({
           <AvatarFallback className="bg-muted-foreground/20 cursor-pointer">
             {user?.username.charAt(0)}
           </AvatarFallback>
+          {seller?.status === 'pending' && (
+            <AvatarIndicator className="-end-1.5 -bottom-1.5">
+              <AvatarStatus variant="busy" className="size-3.5" />
+            </AvatarIndicator>
+          )}
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-50" align="end">
@@ -72,17 +79,33 @@ export const UserMenuDropdown = ({
           <span className="text-xs text-muted-foreground text-ellipsis overflow-hidden whitespace-nowrap">
             {user?.email}
           </span>
-          <DropdownMenuItem
-            onClick={() => setIsCreateSellerOpen(true)}
-            className="mt-3 bg-primary text-white hover:bg-primary/90! hover:text-white!"
-          >
-            <StoreIcon className="text-white" />
-            Postanite prodavac
-          </DropdownMenuItem>
+          {seller?.status === 'pending' && (
+            <div className="mt-3 text-xs border border-amber-500 rounded-sm p-2 bg-amber-500/10">
+              <p className="text-amber-500">
+                Vaša prodavnica je u procesu verifikacije, obično je potrebno do
+                24 sata.
+              </p>
+            </div>
+          )}
+          {user?.role === 'buyer' && seller?.status !== 'pending' && (
+            <DropdownMenuItem
+              onClick={() =>
+                navigate({ to: '/profile', search: { tab: 'create-seller' } })
+              }
+              className="mt-3 bg-primary text-white hover:bg-primary/90! hover:text-white!"
+            >
+              <StoreIcon className="text-white" />
+              Postanite prodavac
+            </DropdownMenuItem>
+          )}
         </div>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate({ to: '/profile' })}>
+        <DropdownMenuItem
+          onClick={() =>
+            navigate({ to: '/profile', search: { tab: 'profile' } })
+          }
+        >
           <UserIcon />
           Moj profil
         </DropdownMenuItem>

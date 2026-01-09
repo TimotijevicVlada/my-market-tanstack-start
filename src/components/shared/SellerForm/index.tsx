@@ -33,11 +33,13 @@ interface SellerFormProps {
   isSubmitting: boolean
   type: 'create' | 'edit'
   sellerToEdit?: Seller
+  userId?: string
 }
 
 const steps = ['Opšte', 'Kontakt', 'Lokacija', 'Slike']
 
 export const SellerForm = ({
+  userId,
   isSubmitting,
   type,
   onFormSubmit,
@@ -86,6 +88,12 @@ export const SellerForm = ({
   }
 
   useEffect(() => {
+    if (userId) {
+      firstStepMethods.reset({ userId })
+    }
+  }, [userId])
+
+  useEffect(() => {
     if (sellerToEdit) {
       firstStepMethods.reset({
         userId: sellerToEdit.userId,
@@ -118,6 +126,7 @@ export const SellerForm = ({
         <StepOne
           setActiveStep={setActiveStep}
           firstStepMethods={firstStepMethods}
+          userId={userId}
         />
       )}
       {activeStep === 2 && (

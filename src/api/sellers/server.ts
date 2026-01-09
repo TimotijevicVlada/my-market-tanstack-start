@@ -10,7 +10,7 @@ import {
   sql,
 } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
-import { requireAdminMiddleware } from '../middleware'
+import { authMiddleware, requireAdminMiddleware } from '../middleware'
 import type {
   CreateSellerPayload,
   GetSellerParams,
@@ -116,6 +116,46 @@ export const getPagedSellers = createServerFn({
     }
   })
 
+export const getSellerByUserId = createServerFn({
+  method: 'GET',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { userId: string }) => data)
+  .handler(async ({ data }) => {
+    const { userId } = data
+
+    const seller = await db.query.sellers.findFirst({
+      where: (sellersTable) => eq(sellersTable.userId, userId),
+    })
+
+    if (!seller) {
+      return undefined
+    }
+
+    const user = await db.query.users.findFirst({
+      where: (usersTable) => eq(usersTable.id, seller.userId),
+      columns: { username: true },
+    })
+
+    const sellerCategoriesList = await db
+      .select({
+        id: categoriesTable.id,
+        name: categoriesTable.name,
+      })
+      .from(sellerCategories)
+      .innerJoin(
+        categoriesTable,
+        eq(sellerCategories.categoryId, categoriesTable.id),
+      )
+      .where(eq(sellerCategories.sellerId, seller.id))
+
+    return {
+      ...seller,
+      username: user?.username ?? null,
+      categories: sellerCategoriesList,
+    }
+  })
+
 export const toggleSellerActiveStatus = createServerFn({
   method: 'POST',
 })
@@ -149,18 +189,29 @@ export const verifySeller = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: VerifySellerParams) => data)
   .handler(async ({ data }) => {
-    const { sellerId, status, verificationNote } = data
+    const { sellerId, status, verificationNote, userId } = data
 
-    const [verifiedSeller] = await db
-      .update(sellers)
-      .set({
-        status,
-        verificationNote: verificationNote ?? null,
-      })
-      .where(eq(sellers.id, sellerId))
-      .returning()
+    const result = await db.transaction(async (tx) => {
+      if (status === 'approved') {
+        await tx
+          .update(users)
+          .set({ role: 'seller' })
+          .where(eq(users.id, userId))
+      }
 
-    return verifiedSeller
+      const [verifiedSeller] = await tx
+        .update(sellers)
+        .set({
+          status,
+          verificationNote: verificationNote ?? null,
+        })
+        .where(eq(sellers.id, sellerId))
+        .returning()
+
+      return verifiedSeller
+    })
+
+    return result
   })
 
 export const deleteSeller = createServerFn({
@@ -182,7 +233,7 @@ export const deleteSeller = createServerFn({
 export const createSeller = createServerFn({
   method: 'POST',
 })
-  .middleware([requireAdminMiddleware])
+  // .middleware([requireAdminMiddleware])
   .inputValidator((data: CreateSellerPayload) => data)
   .handler(async ({ data }) => {
     const { categories, ...sellerData } = data

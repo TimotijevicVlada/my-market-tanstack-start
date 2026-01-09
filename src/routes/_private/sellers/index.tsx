@@ -237,7 +237,6 @@ function RouteComponent() {
                           <AvatarImage
                             src={getImageUrl(seller.avatarUrl)}
                             alt={seller.displayName}
-                            className="object-cover"
                           />
                           <AvatarFallback>
                             {seller.displayName.charAt(0)}

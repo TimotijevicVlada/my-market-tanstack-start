@@ -14,9 +14,14 @@ import { useGetAllCategories } from '@/api/categories/queries'
 interface StepOneProps {
   setActiveStep: (step: number) => void
   firstStepMethods: UseFormReturn<FirstStepSchema>
+  userId?: string
 }
 
-export const StepOne = ({ setActiveStep, firstStepMethods }: StepOneProps) => {
+export const StepOne = ({
+  setActiveStep,
+  firstStepMethods,
+  userId,
+}: StepOneProps) => {
   const { data: usersList } = useGetAllUsers()
   const { data: categoriesList } = useGetAllCategories()
 
@@ -44,16 +49,18 @@ export const StepOne = ({ setActiveStep, firstStepMethods }: StepOneProps) => {
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onFormSubmit)}>
-      <Select
-        required
-        options={usersList ?? []}
-        label="Korisnik"
-        placeholder="Izaberite korisnika"
-        value={userIfField.value}
-        keys={{ label: 'username', value: 'id' }}
-        onSelect={(selectedValue) => userIfField.onChange(selectedValue?.id)}
-        error={errors.userId?.message}
-      />
+      {!userId && (
+        <Select
+          required
+          options={usersList ?? []}
+          label="Korisnik"
+          placeholder="Izaberite korisnika"
+          value={userIfField.value}
+          keys={{ label: 'username', value: 'id' }}
+          onSelect={(selectedValue) => userIfField.onChange(selectedValue?.id)}
+          error={errors.userId?.message}
+        />
+      )}
       <FormField
         required
         label="Naziv prodavca"

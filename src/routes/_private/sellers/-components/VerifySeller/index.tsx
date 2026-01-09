@@ -59,6 +59,7 @@ export const VerifySeller = ({ seller, params }: VerifySellerProps) => {
         sellerId: seller.id,
         status: data.status as Seller['status'],
         verificationNote: data.verificationNote,
+        userId: seller.userId,
       },
       {
         onSuccess: () => {

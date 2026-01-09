@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import {
   BellIcon,
@@ -9,7 +8,6 @@ import {
   SearchIcon,
 } from 'lucide-react'
 import { UserMenuDropdown } from './UserMenuDropdown'
-import { CreateSeller } from './CreateSeller'
 import type { User } from '@/api/users/types'
 import { useLoggedInUser } from '@/api/auth/queries'
 import { Button } from '@/components/ui/button'
@@ -25,10 +23,8 @@ export default function Header({ initialUser }: HeaderProps) {
     initialData: initialUser,
   })
 
-  const [isCreateSellerOpen, setIsCreateSellerOpen] = useState(false)
-
   return (
-    <header className="h-14 flex items-center justify-between px-20 border-b border-border bg-muted-hover">
+    <header className="h-14 flex items-center justify-between px-20 border-b border-border bg-sidebar">
       <div className="flex items-center">
         <Link to="/" className="cursor-pointer">
           <img src="/logo.png" alt="Logo" className="h-9" />
@@ -61,10 +57,7 @@ export default function Header({ initialUser }: HeaderProps) {
           <BellIcon className="size-5" />
         </Button>
         {loggedInUser ? (
-          <UserMenuDropdown
-            loggedInUser={loggedInUser}
-            setIsCreateSellerOpen={setIsCreateSellerOpen}
-          />
+          <UserMenuDropdown loggedInUser={loggedInUser} />
         ) : (
           <>
             <Link to="/login">
@@ -76,10 +69,6 @@ export default function Header({ initialUser }: HeaderProps) {
           </>
         )}
       </div>
-      {/* <CreateSeller
-        isOpen={isCreateSellerOpen}
-        setIsOpen={setIsCreateSellerOpen}
-      /> */}
     </header>
   )
 }
