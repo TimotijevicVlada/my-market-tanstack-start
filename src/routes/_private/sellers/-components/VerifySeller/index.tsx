@@ -76,11 +76,11 @@ export const VerifySeller = ({ seller, params }: VerifySellerProps) => {
         <Button
           variant="ghost"
           size="icon-sm"
-          disabled={seller.status !== 'pending'}
+          disabled={!seller.isActive}
           onClick={() => setIsOpen(true)}
         >
           <ShieldCheck
-            className={`${seller.status === 'pending' ? 'text-blue-500' : 'text-muted-foreground'}`}
+            className={`${!seller.isActive ? 'text-muted-foreground' : 'text-blue-500'}`}
           />
         </Button>
       </Tooltip>

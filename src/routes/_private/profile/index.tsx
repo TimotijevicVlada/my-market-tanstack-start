@@ -1,13 +1,19 @@
 import { useMemo } from 'react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
 import z from 'zod'
-import { Building2 } from 'lucide-react'
+import { Ban, Building2 } from 'lucide-react'
 import { tabs } from './-data'
 import { ProfileSection } from './-components/ProfileSection'
 import { SellerStepperForm } from './-components/CreateSellerSection'
 import { useLoggedInUser } from '@/api/auth/queries'
 import { useGetSellerByUserId } from '@/api/sellers/queries'
 import { Tabs } from '@/components/custom/Tabs'
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+} from '@/components/ui/alert'
 
 export const Route = createFileRoute('/_private/profile/')({
   component: ProfileComponent,
@@ -47,19 +53,32 @@ function ProfileComponent() {
         }
       />
       {seller?.status === 'pending' && (
-        <div className="mb-6 flex items-start gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/20">
-            <Building2 className="size-4 text-amber-500" />
-          </div>
+        <Alert variant="warning" appearance="light">
+          <AlertIcon>
+            <Building2 className="size-4 text-yellow-500" />
+          </AlertIcon>
           <div>
-            <p className="font-medium text-amber-500">
-              Vaša prodavnica je u procesu verifikacije.
-            </p>
-            <p className="text-sm text-amber-500/70">
+            <AlertTitle>Vaša prodavnica je u procesu verifikacije.</AlertTitle>
+            <AlertDescription>
               Molimo Vas da sačekate, obično je potrebno do 24 sata.
-            </p>
+            </AlertDescription>
           </div>
-        </div>
+        </Alert>
+      )}
+      {seller?.status === 'rejected' && (
+        <Alert variant="destructive" appearance="light">
+          <AlertIcon>
+            <Ban />
+          </AlertIcon>
+          <div>
+            <AlertTitle>Vaša prodavnica je odbijena.</AlertTitle>
+            {seller.verificationNote && (
+              <AlertDescription>
+                Razlog odbijanja: {seller.verificationNote}
+              </AlertDescription>
+            )}
+          </div>
+        </Alert>
       )}
       {tab === 'profile' && <ProfileSection />}
       {tab === 'create-seller' && <SellerStepperForm />}

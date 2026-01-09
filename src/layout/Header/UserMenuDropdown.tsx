@@ -20,14 +20,10 @@ import { removeAuthToken } from '@/lib/auth'
 import { useLoggedInUser } from '@/api/auth/queries'
 import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarIndicator,
-  AvatarStatus,
-} from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getRole } from '@/routes/_private/users/-data'
 import { useGetSellerByUserId } from '@/api/sellers/queries'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 interface UserMenuDropdownProps {
   loggedInUser: User
@@ -57,11 +53,6 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
           <AvatarFallback className="bg-muted-foreground/20 cursor-pointer">
             {user?.username.charAt(0)}
           </AvatarFallback>
-          {seller?.status === 'pending' && (
-            <AvatarIndicator className="-end-1.5 -bottom-1.5">
-              <AvatarStatus variant="busy" className="size-3.5" />
-            </AvatarIndicator>
-          )}
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-50" align="end">
@@ -80,24 +71,44 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
             {user?.email}
           </span>
           {seller?.status === 'pending' && (
-            <div className="mt-3 text-xs border border-amber-500 rounded-sm p-2 bg-amber-500/10">
-              <p className="text-amber-500">
+            <Alert variant="warning" appearance="light" className="mt-3 p-2">
+              <AlertTitle className="text-xs!">
                 Vaša prodavnica je u procesu verifikacije, obično je potrebno do
                 24 sata.
-              </p>
-            </div>
+              </AlertTitle>
+            </Alert>
           )}
-          {user?.role === 'buyer' && seller?.status !== 'pending' && (
-            <DropdownMenuItem
-              onClick={() =>
-                navigate({ to: '/profile', search: { tab: 'create-seller' } })
-              }
-              className="mt-3 bg-primary text-white hover:bg-primary/90! hover:text-white!"
+          {seller?.status === 'rejected' && (
+            <Alert
+              variant="destructive"
+              appearance="light"
+              className="mt-3 p-2"
             >
-              <StoreIcon className="text-white" />
-              Postanite prodavac
-            </DropdownMenuItem>
+              <div>
+                <AlertTitle className="text-xs!">
+                  Vaša prodavnica je odbijena.
+                </AlertTitle>
+                {seller.verificationNote && (
+                  <AlertDescription className="text-xs!">
+                    Razlog odbijanja: {seller.verificationNote}
+                  </AlertDescription>
+                )}
+              </div>
+            </Alert>
           )}
+          {user?.role === 'buyer' &&
+            seller?.status !== 'pending' &&
+            seller?.status !== 'rejected' && (
+              <DropdownMenuItem
+                onClick={() =>
+                  navigate({ to: '/profile', search: { tab: 'create-seller' } })
+                }
+                className="mt-3 bg-primary text-white hover:bg-primary/90! hover:text-white!"
+              >
+                <StoreIcon className="text-white" />
+                Postanite prodavac
+              </DropdownMenuItem>
+            )}
         </div>
 
         <DropdownMenuSeparator />
