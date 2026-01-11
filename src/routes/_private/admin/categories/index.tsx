@@ -1,26 +1,19 @@
-import { z } from 'zod'
-import { useState } from 'react'
+import z from 'zod'
+import { BrushCleaningIcon } from 'lucide-react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
-import { BrushCleaningIcon, MailIcon } from 'lucide-react'
-import {
-  getRole,
-  roleFilterOptions,
-  statusFilterOptions,
-  usersColumns,
-} from './-data'
+import { useState } from 'react'
 import { StatusColumn } from './-components/StatusColumn'
-import { CreateUser } from './-components/CreateUser'
-import { DeleteUser } from './-components/DeleteUser'
-import { EditUser } from './-components/EditUser'
-import { EditPassword } from './-components/EditPassword'
+import { categoriesColumns, statusFilterOptions } from './-data'
+import { CreateCategory } from './-components/CreateCategory'
+import { EditCategory } from './-components/EditCategory'
+import { DeleteCategory } from './-components/DeleteCategory'
 import type {
-  GetUsersParams,
-  SortableUserColumns,
-  UserRole,
-  UserSort,
-  UserStatus,
-} from '@/api/users/types'
-import { useGetUsers } from '@/api/users/queries'
+  CategorySort,
+  CategoryStatus,
+  GetCategoriesParams,
+  SortableCategoryColumns,
+} from '@/api/categories/types'
+import { useGetCategories } from '@/api/categories/queries'
 import {
   Table,
   TableBody,
@@ -32,76 +25,88 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
 import { formatDate } from '@/utils/format-date'
+import { truncateText } from '@/utils/truncate-text'
 import { TableSearch } from '@/components/custom/TableSearch'
-import { TableFilter } from '@/components/custom/Table/TableFilter'
-import { TableSort } from '@/components/custom/Table/TableSort'
 import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
+import { TableFilter } from '@/components/custom/Table/TableFilter'
+import { TableSort } from '@/components/custom/Table/TableSort'
 import { Button } from '@/components/custom/Button'
 
-const usersSearchSchema = z.object({
+const categoriesSearchSchema = z.object({
   page: z.coerce.number().optional(),
 })
 
-export const Route = createFileRoute('/_private/users/')({
-  component: RouteComponent,
-  validateSearch: usersSearchSchema,
+export const Route = createFileRoute('/_private/admin/categories/')({
+  component: CategoriesPage,
+  validateSearch: categoriesSearchSchema,
 })
 
-function RouteComponent() {
-  const { page = 1 } = useSearch({ from: '/_private/users/' })
+function CategoriesPage() {
+  const { page = 1 } = useSearch({ from: '/_private/admin/categories/' })
   const navigate = Route.useNavigate()
 
   const limit = 10
 
   const [keyword, setKeyword] = useState('')
-  const [status, setStatus] = useState<UserStatus | null>(null)
-  const [role, setRole] = useState<UserRole | null>(null)
-  const [sort, setSort] = useState<UserSort>({
+  const [status, setStatus] = useState<CategoryStatus | null>(null)
+  const [sort, setSort] = useState<CategorySort>({
     key: 'createdAt',
     order: 'desc',
   })
 
   const hasFilters =
     status !== null ||
-    role !== null ||
     keyword !== '' ||
     sort.key !== 'createdAt' ||
     sort.order !== 'desc'
 
-  const params: GetUsersParams = { page, limit, keyword, status, role, sort }
+  const params: GetCategoriesParams = {
+    page,
+    limit,
+    keyword,
+    status,
+    sort,
+  }
 
-  const { data, isLoading, error, refetch } = useGetUsers(params)
+  const { data, isLoading, error, refetch } = useGetCategories(params)
 
-  const users = data?.data ?? []
+  const categories = data?.data ?? []
   const pagination = data?.pagination
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
-    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({
+      to: '/admin/categories',
+      search: (prev) => ({ ...prev, page: 1 }),
+    })
   }
 
-  const handleStatusChange = (newStatus: { id: UserStatus; label: string }) => {
+  const handleStatusChange = (newStatus: {
+    id: CategoryStatus
+    label: string
+  }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
-    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({
+      to: '/admin/categories',
+      search: (prev) => ({ ...prev, page: 1 }),
+    })
   }
 
-  const handleRoleChange = (newRole: { id: UserRole; label: string }) => {
-    setRole(newRole.id === role ? null : newRole.id)
-    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
-  }
-
-  const handleSort = (key: SortableUserColumns) => {
+  const handleSort = (key: SortableCategoryColumns) => {
     setSort((prev) => ({
       key,
       order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
     }))
-    navigate({ to: '/users', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({
+      to: '/admin/categories',
+      search: (prev) => ({ ...prev, page: 1 }),
+    })
   }
 
   if (isLoading) {
-    return <TableLoading label="Učitavanje korisnika..." />
+    return <TableLoading label="Učitavanje kategorija..." />
   }
 
   if (error) {
@@ -110,7 +115,7 @@ function RouteComponent() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold">Lista korisnika</h1>
+      <h1 className="text-xl font-bold">Lista kategorija</h1>
       <div className="flex justify-between items-center my-4">
         <div className="flex items-center gap-2">
           <TableSearch onSearchClick={handleSearch} />
@@ -120,7 +125,6 @@ function RouteComponent() {
               onClick={() => {
                 setKeyword('')
                 setStatus(null)
-                setRole(null)
                 setSort({ key: 'createdAt', order: 'desc' })
               }}
             >
@@ -129,12 +133,12 @@ function RouteComponent() {
             </Button>
           )}
         </div>
-        <CreateUser params={params} />
+        <CreateCategory params={params} />
       </div>
-      <Table className="overflow-x-auto">
+      <Table>
         <TableHeader className="bg-muted">
           <TableRow>
-            {usersColumns.map(({ label, key, options }) => {
+            {categoriesColumns.map(({ key, options, label }) => {
               if (key === 'isActive') {
                 return (
                   <TableFilter
@@ -148,26 +152,13 @@ function RouteComponent() {
                   />
                 )
               }
-              if (key === 'role') {
-                return (
-                  <TableFilter
-                    label={label}
-                    dropdownProps={{
-                      options: roleFilterOptions,
-                      handleOptionChange: handleRoleChange,
-                      labelKey: 'label',
-                      active: { key: 'id', value: role },
-                    }}
-                  />
-                )
-              }
               return (
                 <TableHead key={key} {...options}>
                   <div
                     className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
                   >
                     {label}
-                    {key !== 'order' && key !== 'actions' && (
+                    {key !== 'actions' && key !== 'order' && (
                       <TableSort
                         sort={sort}
                         columnKey={key}
@@ -181,15 +172,15 @@ function RouteComponent() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.length === 0 && (
+          {categories.length === 0 && (
             <TableEmptyHolder
-              colSpan={usersColumns.length}
-              title="Nema korisnika"
+              colSpan={categoriesColumns.length}
+              title="Nema kategorija"
             />
           )}
-          {users.map((user, index) => (
-            <TableRow key={user.id}>
-              {usersColumns.map(({ key }) => {
+          {categories.map((category, index) => (
+            <TableRow key={category.id} className="group">
+              {categoriesColumns.map(({ key }) => {
                 if (key === 'order') {
                   return (
                     <TableCell key={key}>
@@ -200,48 +191,48 @@ function RouteComponent() {
                 if (key === 'isActive') {
                   return (
                     <TableCell key={key}>
-                      <StatusColumn user={user} refetchUsers={refetch} />
+                      <StatusColumn
+                        category={category}
+                        refetchCategories={refetch}
+                      />
                     </TableCell>
                   )
                 }
-                if (key === 'email') {
+                if (key === 'parentName') {
+                  return <TableCell key={key}>{category[key] ?? '/'}</TableCell>
+                }
+                if (key === 'slug') {
                   return (
                     <TableCell key={key}>
                       <Badge variant="secondary" className="rounded-sm">
-                        <MailIcon className="w-3.5! h-3.5!" />
-                        {user[key]}
-                      </Badge>
-                    </TableCell>
-                  )
-                }
-                if (key === 'role') {
-                  return (
-                    <TableCell key={key}>
-                      <Badge
-                        className={`${getRole[user[key]].color} text-white`}
-                      >
-                        {getRole[user[key]].name}
+                        {category[key]}
                       </Badge>
                     </TableCell>
                   )
                 }
                 if (key === 'createdAt' || key === 'updatedAt') {
                   return (
-                    <TableCell key={key}>{formatDate(user[key])}</TableCell>
+                    <TableCell key={key}>{formatDate(category[key])}</TableCell>
+                  )
+                }
+                if (key === 'description') {
+                  return (
+                    <TableCell key={key}>
+                      {truncateText(category[key])}
+                    </TableCell>
                   )
                 }
                 if (key === 'actions') {
                   return (
                     <TableCell key={key} className="sticky right-0 text-right">
                       <div className="flex justify-end gap-1">
-                        <EditPassword userId={user.id} params={params} />
-                        <EditUser user={user} params={params} />
-                        <DeleteUser user={user} params={params} />
+                        <EditCategory category={category} params={params} />
+                        <DeleteCategory category={category} params={params} />
                       </div>
                     </TableCell>
                   )
                 }
-                return <TableCell key={key}>{user[key]}</TableCell>
+                return <TableCell key={key}>{category[key] || '/'}</TableCell>
               })}
             </TableRow>
           ))}
@@ -254,7 +245,7 @@ function RouteComponent() {
             totalPages={pagination.totalPages}
             onPageChange={(newPage) =>
               navigate({
-                to: '/users',
+                to: '/admin/categories',
                 search: (prev) => ({ ...prev, page: newPage }),
               })
             }

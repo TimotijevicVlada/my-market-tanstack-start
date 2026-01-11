@@ -52,13 +52,13 @@ const sellersSearchSchema = z.object({
   page: z.coerce.number().optional(),
 })
 
-export const Route = createFileRoute('/_private/sellers/')({
+export const Route = createFileRoute('/_private/admin/sellers/')({
   validateSearch: sellersSearchSchema,
-  component: RouteComponent,
+  component: SellersPage,
 })
 
-function RouteComponent() {
-  const { page = 1 } = useSearch({ from: '/_private/sellers/' })
+function SellersPage() {
+  const { page = 1 } = useSearch({ from: '/_private/admin/sellers/' })
   const navigate = Route.useNavigate()
 
   const limit = 10
@@ -95,7 +95,7 @@ function RouteComponent() {
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
-    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({ to: '/admin/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleStatusChange = (newStatus: {
@@ -103,7 +103,7 @@ function RouteComponent() {
     label: string
   }) => {
     setStatus(newStatus.id === status ? null : newStatus.id)
-    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({ to: '/admin/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleVerificationStatusChange = (newStatus: {
@@ -113,7 +113,7 @@ function RouteComponent() {
     setVerificationStatus(
       newStatus.id === verificationStatus ? null : newStatus.id,
     )
-    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({ to: '/admin/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   const handleSort = (key: SortableSellerColumns) => {
@@ -121,7 +121,7 @@ function RouteComponent() {
       key,
       order: prev.key === key ? (prev.order === 'asc' ? 'desc' : 'asc') : 'asc',
     }))
-    navigate({ to: '/sellers', search: (prev) => ({ ...prev, page: 1 }) })
+    navigate({ to: '/admin/sellers', search: (prev) => ({ ...prev, page: 1 }) })
   }
 
   if (isLoading) {
@@ -365,7 +365,7 @@ function RouteComponent() {
             totalPages={pagination.totalPages}
             onPageChange={(newPage) =>
               navigate({
-                to: '/sellers',
+                to: '/admin/sellers',
                 search: (prev) => ({ ...prev, page: newPage }),
               })
             }

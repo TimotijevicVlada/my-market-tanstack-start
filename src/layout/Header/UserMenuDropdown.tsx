@@ -21,7 +21,7 @@ import { useLoggedInUser } from '@/api/auth/queries'
 import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { getRole } from '@/routes/_private/users/-data'
+import { getRole } from '@/routes/_private/admin/users/-data'
 import { useGetSellerByUserId } from '@/api/sellers/queries'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
@@ -100,9 +100,7 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
             seller?.status !== 'pending' &&
             seller?.status !== 'rejected' && (
               <DropdownMenuItem
-                onClick={() =>
-                  navigate({ to: '/profile', search: { tab: 'create-seller' } })
-                }
+                onClick={() => navigate({ to: '/seller-apply' })}
                 className="mt-3 bg-primary text-primary-foreground hover:bg-primary/90! hover:text-primary-foreground!"
               >
                 <StoreIcon className="text-primary-foreground" />
@@ -112,11 +110,7 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
         </div>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={() =>
-            navigate({ to: '/profile', search: { tab: 'profile' } })
-          }
-        >
+        <DropdownMenuItem onClick={() => navigate({ to: '/account' })}>
           <UserIcon />
           Moj profil
         </DropdownMenuItem>

@@ -1,19 +1,63 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router'
-import { Sidebar } from './-components/sidebar'
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar'
+import { AppSidebar } from '@/components/custom/Sidebar/app-sidebar'
+import { Separator } from '@/components/ui/separator'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import { getLoggedInUser } from '@/api/auth/server'
 
 export const Route = createFileRoute('/_private')({
-  component: RouteComponent,
+  component: PrivateLayout,
+  beforeLoad: async () => {
+    const user = await getLoggedInUser()
+    if (!user) {
+      throw redirect({ to: '/login' })
+    }
+    return { user }
+  },
 })
 
-function RouteComponent() {
+function PrivateLayout() {
   return (
-    <div className="min-h-screen flex overflow-hidden">
-      <div className="w-70 bg-sidebar p-4 flex-shrink-0">
-        <Sidebar />
-      </div>
-      <div className="flex-1 p-4 min-w-0 overflow-hidden">
-        <Outlet />
-      </div>
-    </div>
+    <SidebarProvider>
+      <AppSidebar collapsible="icon" />
+      <SidebarInset>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="#">
+                    Building Your Application
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="p-5">
+          <Outlet />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }
