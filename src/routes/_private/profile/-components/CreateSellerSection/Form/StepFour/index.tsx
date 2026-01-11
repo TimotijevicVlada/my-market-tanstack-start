@@ -1,34 +1,32 @@
 import { useState } from 'react'
 import { ChevronLeft, ImageIcon, UserIcon } from 'lucide-react'
 import { useController } from 'react-hook-form'
-import type { FourthStepSchema } from './zod-schema-step-four'
+import type { Dispatch, SetStateAction } from 'react'
+import type { FourthStepSchema } from './step-four-schema'
 import type { UseFormReturn } from 'react-hook-form'
 import { Button } from '@/components/custom/Button'
-import { DialogFooter } from '@/components/ui/dialog'
-import { useUploadToR2 } from '@/api/uploads/queries'
+import { SectionHead } from '@/components/custom/SectionHead'
 import { UploadFileArea } from '@/components/custom/UploadFileArea'
 import { getImageUrl } from '@/utils/get-image-url'
+import { useUploadToR2 } from '@/api/uploads/queries'
+import { DialogFooter } from '@/components/ui/dialog'
+
+type UploadingType = 'avatar' | 'cover'
 
 interface StepFourProps {
-  setActiveStep: (step: number) => void
-  isSubmitting: boolean
-  type: 'create' | 'edit'
+  setActiveStep: Dispatch<SetStateAction<number>>
   fourthStepMethods: UseFormReturn<FourthStepSchema>
   onFourthStepSubmit: (formValues: FourthStepSchema) => void
+  isSubmitting: boolean
 }
 
 export const StepFour = ({
   setActiveStep,
-  isSubmitting,
-  type,
   fourthStepMethods,
   onFourthStepSubmit,
+  isSubmitting,
 }: StepFourProps) => {
-  const { handleSubmit, control, reset } = fourthStepMethods
-
-  const [uploadingType, setUploadingType] = useState<'avatar' | 'cover'>(
-    'avatar',
-  )
+  const { control, handleSubmit, reset } = fourthStepMethods
 
   const { field: avatarUrlField } = useController({
     control,
@@ -40,9 +38,11 @@ export const StepFour = ({
     name: 'coverImageUrl',
   })
 
+  const [uploadingType, setUploadingType] = useState<UploadingType>('avatar')
+
   const { mutate: uploadImage, isPending: isUploadingImage } = useUploadToR2()
 
-  const onChange = (file: File | null, imageType: 'avatar' | 'cover') => {
+  const onChange = (file: File | null, imageType: UploadingType) => {
     if (!file) return
 
     setUploadingType(imageType)
@@ -62,11 +62,15 @@ export const StepFour = ({
   }
 
   return (
-    <form
-      className="flex flex-col gap-4"
-      onSubmit={handleSubmit(onFourthStepSubmit)}
-    >
-      <div className="py-4 flex gap-4">
+    <form onSubmit={handleSubmit(onFourthStepSubmit)} className="space-y-6">
+      <SectionHead
+        Icon={ImageIcon}
+        title="Slike"
+        description="Dodajte logo i naslovnu sliku"
+        className="pb-2"
+      />
+
+      <div className="flex gap-4">
         <div className="flex-1">
           <UploadFileArea
             label="Logo"
@@ -75,6 +79,7 @@ export const StepFour = ({
             onFileChange={(file) => onChange(file, 'avatar')}
             onClear={() => avatarUrlField.onChange(null)}
             isUploading={uploadingType === 'avatar' && isUploadingImage}
+            footerText="Preporučena veličina: 600x600"
           />
         </div>
         <div className="flex-1">
@@ -85,6 +90,7 @@ export const StepFour = ({
             onFileChange={(file) => onChange(file, 'cover')}
             onClear={() => coverImageUrlField.onChange(null)}
             isUploading={uploadingType === 'cover' && isUploadingImage}
+            footerText="Preporučena veličina: 1200x400"
           />
         </div>
       </div>
@@ -101,10 +107,10 @@ export const StepFour = ({
             type="submit"
             loading={{
               state: isSubmitting,
-              text: type === 'create' ? 'Kreiranje...' : 'Izmena...',
+              text: 'Čuvanje...',
             }}
           >
-            {type === 'create' ? 'Sacuvaj' : 'Izmeni'}
+            Sačuvaj
           </Button>
         </div>
       </DialogFooter>

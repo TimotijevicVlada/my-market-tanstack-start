@@ -82,7 +82,7 @@ export const useDeleteSeller = (params: GetSellerParams) => {
   })
 }
 
-export const useCreateSeller = (params: GetSellerParams) => {
+export const useCreateSeller = (params?: GetSellerParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
