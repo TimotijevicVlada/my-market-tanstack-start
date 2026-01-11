@@ -6,8 +6,8 @@ import type { GetUsersParams } from './types'
 import type {
   CreateUserSchema,
   EditUserSchema,
-} from '@/routes/_private/users/-components/zod-schema'
-import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
+} from '@/routes/_private/admin/users/-components/zod-schema'
+import type { EditPasswordSchema } from '@/routes/_private/admin/users/-components/EditPassword/zod-schema'
 import { db } from '@/db'
 import { users } from '@/db/schema/users'
 import { sellers } from '@/db/schema/sellers'

@@ -9,14 +9,14 @@ import {
 } from '@/components/ui/carousel.tsx'
 import { Card } from '@/components/ui/card'
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute('/_public/')({
   component: App,
   loader: async () =>
     await getCategories({ data: { rootCategoriesOnly: true } }),
 })
 
 export function App() {
-  const categories = useLoaderData({ from: '/' })
+  const categories = useLoaderData({ from: '/_public/' })
 
   return (
     <div className="min-h-screen flex justify-center">

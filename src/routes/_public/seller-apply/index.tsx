@@ -1,40 +1,45 @@
 import { useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { FormStepper } from './FormStepper'
-import { StepOne } from './Form/StepOne'
-import { StepTwo } from './Form/StepTwo'
-import { StepThree } from './Form/StepThree'
-import { StepFour } from './Form/StepFour'
+import { FormStepper } from './-components/FormStepper'
+import { StepFour } from './-components/Form/StepFour'
 import {
   firstStepDefaultValues,
   firstStepSchema,
-} from './Form/StepOne/step-one-schema'
-import {
-  secondStepDefaultValues,
-  secondStepSchema,
-} from './Form/StepTwo/step-two-schema'
-import {
-  thirdStepDefaultValues,
-  thirdStepSchema,
-} from './Form/StepThree/step-three-schema'
+} from './-components/Form/StepOne/step-one-schema'
+import { StepOne } from './-components/Form/StepOne'
 import {
   fourthStepDefaultValues,
   fourthStepSchema,
-} from './Form/StepFour/step-four-schema'
-import type { FirstStepSchema } from './Form/StepOne/step-one-schema'
-import type { SecondStepSchema } from './Form/StepTwo/step-two-schema'
-import type { ThirdStepSchema } from './Form/StepThree/step-three-schema'
-import type { FourthStepSchema } from './Form/StepFour/step-four-schema'
+} from './-components/Form/StepFour/step-four-schema'
+import {
+  secondStepDefaultValues,
+  secondStepSchema,
+} from './-components/Form/StepTwo/step-two-schema'
+import { StepTwo } from './-components/Form/StepTwo'
+import {
+  thirdStepDefaultValues,
+  thirdStepSchema,
+} from './-components/Form/StepThree/step-three-schema'
+import { StepThree } from './-components/Form/StepThree'
+import type { FirstStepSchema } from './-components/Form/StepOne/step-one-schema'
+import type { FourthStepSchema } from './-components/Form/StepFour/step-four-schema'
+import type { SecondStepSchema } from './-components/Form/StepTwo/step-two-schema'
+import type { ThirdStepSchema } from './-components/Form/StepThree/step-three-schema'
 import type { CreateSellerPayload } from '@/api/sellers/types'
-import { Card, CardContent } from '@/components/ui/card'
+import { useLoggedInUser } from '@/api/auth/queries'
 import { useCreateSeller } from '@/api/sellers/queries'
+import { Card, CardContent } from '@/components/ui/card'
 
-interface SellerStepperFormProps {
-  userId: string | undefined
-}
+export const Route = createFileRoute('/_public/seller-apply/')({
+  component: SellerApplyPage,
+})
 
-export function SellerStepperForm({ userId }: SellerStepperFormProps) {
+function SellerApplyPage() {
+  const { data: user } = useLoggedInUser()
+  const userId = user?.id
+
   const firstStepMethods = useForm<FirstStepSchema>({
     resolver: zodResolver(firstStepSchema),
     defaultValues: firstStepDefaultValues,
@@ -88,7 +93,7 @@ export function SellerStepperForm({ userId }: SellerStepperFormProps) {
   }
 
   return (
-    <Card className="overflow-hidden border-border/50 gap-0">
+    <Card className="overflow-hidden border-border/50 gap-0 w-3xl mx-auto">
       <div className="bg-card/50 px-6 pb-5">
         <h1 className="text-xl font-semibold tracking-tight">
           Kreiranje prodavnice

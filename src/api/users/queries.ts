@@ -12,8 +12,8 @@ import {
 import type {
   CreateUserSchema,
   EditUserSchema,
-} from '@/routes/_private/users/-components/zod-schema'
-import type { EditPasswordSchema } from '@/routes/_private/users/-components/EditPassword/zod-schema'
+} from '@/routes/_private/admin/users/-components/zod-schema'
+import type { EditPasswordSchema } from '@/routes/_private/admin/users/-components/EditPassword/zod-schema'
 import type { GetUsersParams } from './types'
 
 export const useGetAllUsers = () => {
