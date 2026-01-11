@@ -81,7 +81,7 @@ function ProfileComponent() {
         </Alert>
       )}
       {tab === 'profile' && <ProfileSection />}
-      {tab === 'create-seller' && <SellerStepperForm />}
+      {tab === 'create-seller' && <SellerStepperForm userId={user?.id} />}
     </div>
   )
 }

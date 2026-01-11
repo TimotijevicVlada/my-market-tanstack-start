@@ -10,16 +10,11 @@ import { useLoggedInUser } from '@/api/auth/queries'
 import { Button } from '@/components/custom/Button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { getRole } from '@/routes/_private/users/-data'
+import { SectionHead } from '@/components/custom/SectionHead'
 
 export const ProfileSection = () => {
   const { data: user } = useLoggedInUser()
@@ -63,15 +58,11 @@ export const ProfileSection = () => {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="border-border/50">
           <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                <UserIcon className="size-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Lični podaci</CardTitle>
-                <CardDescription>Vaše osnovne informacije</CardDescription>
-              </div>
-            </div>
+            <SectionHead
+              Icon={UserIcon}
+              title="Lični podaci"
+              description="Vaše osnovne informacije"
+            />
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -102,15 +93,12 @@ export const ProfileSection = () => {
 
         <Card className="border-border/50">
           <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                <MailIcon className="size-5 text-primary" />
-              </div>
-              <div>
-                <CardTitle className="text-lg">Promena email adrese</CardTitle>
-                <CardDescription>Ažurirajte vašu email adresu</CardDescription>
-              </div>
-            </div>
+            <SectionHead
+              Icon={MailIcon}
+              title="Promena email adrese"
+              description="Ažurirajte vašu email adresu"
+              className="pb-2"
+            />
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
@@ -132,17 +120,12 @@ export const ProfileSection = () => {
 
       <Card className="border-border/50">
         <CardHeader className="pb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-              <LockIcon className="size-5 text-primary" />
-            </div>
-            <div>
-              <CardTitle className="text-lg">Promena lozinke</CardTitle>
-              <CardDescription>
-                Zaštitite vaš nalog sa novom lozinkom
-              </CardDescription>
-            </div>
-          </div>
+          <SectionHead
+            Icon={LockIcon}
+            title="Promena lozinke"
+            description="Zaštitite vaš nalog sa novom lozinkom"
+            className="pb-2"
+          />
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-3">

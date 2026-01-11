@@ -103,9 +103,9 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
                 onClick={() =>
                   navigate({ to: '/profile', search: { tab: 'create-seller' } })
                 }
-                className="mt-3 bg-primary text-white hover:bg-primary/90! hover:text-white!"
+                className="mt-3 bg-primary text-primary-foreground hover:bg-primary/90! hover:text-primary-foreground!"
               >
-                <StoreIcon className="text-white" />
+                <StoreIcon className="text-primary-foreground" />
                 Postanite prodavac
               </DropdownMenuItem>
             )}
