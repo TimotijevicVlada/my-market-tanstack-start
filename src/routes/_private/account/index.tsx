@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { getRole } from '@/routes/_private/admin/users/-data'
 import { useLoggedInUser } from '@/api/auth/queries'
-import { useGetSellerByUserId } from '@/api/sellers/queries'
+import { useGetMySeller } from '@/api/sellers/queries'
 import {
   Alert,
   AlertDescription,
@@ -32,7 +32,7 @@ export const Route = createFileRoute('/_private/account/')({
 
 function AccountPage() {
   const { data: user } = useLoggedInUser()
-  const { data: seller } = useGetSellerByUserId(user?.id)
+  const { data: seller } = useGetMySeller()
 
   return (
     <div className="mx-auto max-w-4xl w-full space-y-6">

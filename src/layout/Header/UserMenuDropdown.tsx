@@ -22,7 +22,7 @@ import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getRole } from '@/routes/_private/admin/users/-data'
-import { useGetSellerByUserId } from '@/api/sellers/queries'
+import { useGetMySeller } from '@/api/sellers/queries'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 interface UserMenuDropdownProps {
@@ -33,7 +33,7 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
   const { data: user, refetch: refetchLoggedInUser } = useLoggedInUser({
     initialData: loggedInUser,
   })
-  const { data: seller } = useGetSellerByUserId(user?.id)
+  const { data: seller } = useGetMySeller()
 
   const { themeMode, toggleTheme } = useThemeStore()
 

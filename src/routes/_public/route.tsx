@@ -16,7 +16,9 @@ function PublicLayout() {
   return (
     <div className="min-h-screen">
       <Header initialUser={user} />
-      <Outlet />
+      <div className="py-5">
+        <Outlet />
+      </div>
     </div>
   )
 }
