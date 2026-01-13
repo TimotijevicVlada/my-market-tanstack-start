@@ -1,6 +1,7 @@
 import {
   FolderTreeIcon,
   HandbagIcon,
+  PackageIcon,
   StoreIcon,
   UserIcon,
   UsersIcon,
@@ -76,6 +77,11 @@ const sidebarLinks: Record<User['role'], Array<SidebarLink>> = {
       name: 'Moja prodavnica',
       url: '/seller/info',
       icon: StoreIcon,
+    },
+    {
+      name: 'Moji proizvodi',
+      url: '/seller/products',
+      icon: PackageIcon,
     },
   ],
   admin: [

@@ -21,6 +21,7 @@ import { Route as PublicSellerApplyIndexRouteImport } from './routes/_public/sel
 import { Route as PrivateAccountIndexRouteImport } from './routes/_private/account/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as PrivateSellerProductsIndexRouteImport } from './routes/_private/seller/products/index'
 import { Route as PrivateSellerInfoIndexRouteImport } from './routes/_private/seller/info/index'
 import { Route as PrivateBuyerOrdersIndexRouteImport } from './routes/_private/buyer/orders/index'
 import { Route as PrivateAdminUsersIndexRouteImport } from './routes/_private/admin/users/index'
@@ -84,6 +85,12 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const PrivateSellerProductsIndexRoute =
+  PrivateSellerProductsIndexRouteImport.update({
+    id: '/products/',
+    path: '/products/',
+    getParentRoute: () => PrivateSellerRouteRoute,
+  } as any)
 const PrivateSellerInfoIndexRoute = PrivateSellerInfoIndexRouteImport.update({
   id: '/info/',
   path: '/info/',
@@ -127,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/admin/users': typeof PrivateAdminUsersIndexRoute
   '/buyer/orders': typeof PrivateBuyerOrdersIndexRoute
   '/seller/info': typeof PrivateSellerInfoIndexRoute
+  '/seller/products': typeof PrivateSellerProductsIndexRoute
 }
 export interface FileRoutesByTo {
   '/admin': typeof PrivateAdminRouteRouteWithChildren
@@ -143,6 +151,7 @@ export interface FileRoutesByTo {
   '/admin/users': typeof PrivateAdminUsersIndexRoute
   '/buyer/orders': typeof PrivateBuyerOrdersIndexRoute
   '/seller/info': typeof PrivateSellerInfoIndexRoute
+  '/seller/products': typeof PrivateSellerProductsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -163,6 +172,7 @@ export interface FileRoutesById {
   '/_private/admin/users/': typeof PrivateAdminUsersIndexRoute
   '/_private/buyer/orders/': typeof PrivateBuyerOrdersIndexRoute
   '/_private/seller/info/': typeof PrivateSellerInfoIndexRoute
+  '/_private/seller/products/': typeof PrivateSellerProductsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/buyer/orders'
     | '/seller/info'
+    | '/seller/products'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/admin'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/admin/users'
     | '/buyer/orders'
     | '/seller/info'
+    | '/seller/products'
   id:
     | '__root__'
     | '/_auth'
@@ -216,6 +228,7 @@ export interface FileRouteTypes {
     | '/_private/admin/users/'
     | '/_private/buyer/orders/'
     | '/_private/seller/info/'
+    | '/_private/seller/products/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_private/seller/products/': {
+      id: '/_private/seller/products/'
+      path: '/products'
+      fullPath: '/seller/products'
+      preLoaderRoute: typeof PrivateSellerProductsIndexRouteImport
+      parentRoute: typeof PrivateSellerRouteRoute
+    }
     '/_private/seller/info/': {
       id: '/_private/seller/info/'
       path: '/info'
@@ -390,10 +410,12 @@ const PrivateBuyerRouteRouteWithChildren =
 
 interface PrivateSellerRouteRouteChildren {
   PrivateSellerInfoIndexRoute: typeof PrivateSellerInfoIndexRoute
+  PrivateSellerProductsIndexRoute: typeof PrivateSellerProductsIndexRoute
 }
 
 const PrivateSellerRouteRouteChildren: PrivateSellerRouteRouteChildren = {
   PrivateSellerInfoIndexRoute: PrivateSellerInfoIndexRoute,
+  PrivateSellerProductsIndexRoute: PrivateSellerProductsIndexRoute,
 }
 
 const PrivateSellerRouteRouteWithChildren =
