@@ -1,6 +1,6 @@
 import {
+  FolderTreeIcon,
   HandbagIcon,
-  ListIcon,
   StoreIcon,
   UserIcon,
   UsersIcon,
@@ -21,6 +21,36 @@ interface SidebarLink {
   name: string
   url: FileRouteTypes['to']
   icon: React.ElementType
+}
+
+export function SidebarLinks() {
+  const { data: user } = useLoggedInUser()
+
+  const location = useLocation()
+
+  const links = user ? sidebarLinks[user.role] : []
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Opste</SidebarGroupLabel>
+      <SidebarMenu>
+        {links.map((link) => (
+          <SidebarMenuItem key={link.name}>
+            <SidebarMenuButton
+              asChild
+              isActive={location.pathname === link.url}
+              tooltip={link.name}
+            >
+              <Link to={link.url}>
+                <link.icon />
+                <span>{link.name}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
+      </SidebarMenu>
+    </SidebarGroup>
+  )
 }
 
 const sidebarLinks: Record<User['role'], Array<SidebarLink>> = {
@@ -62,7 +92,7 @@ const sidebarLinks: Record<User['role'], Array<SidebarLink>> = {
     {
       name: 'Kategorije',
       url: '/admin/categories',
-      icon: ListIcon,
+      icon: FolderTreeIcon,
     },
     {
       name: 'Prodavci',
@@ -77,61 +107,4 @@ const sidebarLinks: Record<User['role'], Array<SidebarLink>> = {
       icon: UserIcon,
     },
   ],
-}
-
-export function SidebarLinks() {
-  const { data: user } = useLoggedInUser()
-
-  const location = useLocation()
-
-  const links = user ? sidebarLinks[user.role] : []
-
-  return (
-    <SidebarGroup>
-      <SidebarGroupLabel>Opste</SidebarGroupLabel>
-      <SidebarMenu>
-        {links.map((link) => (
-          <SidebarMenuItem key={link.name}>
-            <SidebarMenuButton
-              asChild
-              isActive={location.pathname === link.url}
-              tooltip={link.name}
-            >
-              <Link to={link.url}>
-                <link.icon />
-                <span>{link.name}</span>
-              </Link>
-            </SidebarMenuButton>
-            {/* <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className="sr-only">More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48 rounded-lg"
-                side={isMobile ? 'bottom' : 'right'}
-                align={isMobile ? 'end' : 'start'}
-              >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu> */}
-          </SidebarMenuItem>
-        ))}
-      </SidebarMenu>
-    </SidebarGroup>
-  )
 }
