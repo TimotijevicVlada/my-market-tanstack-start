@@ -11,6 +11,7 @@ import {
 } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
 import { authMiddleware, requireAdminMiddleware } from '../middleware'
+import { createSellerFn } from './shared'
 import type {
   CreateSellerPayload,
   GetSellerParams,
@@ -116,44 +117,18 @@ export const getPagedSellers = createServerFn({
     }
   })
 
-export const getSellerByUserId = createServerFn({
+export const getMySeller = createServerFn({
   method: 'GET',
 })
   .middleware([authMiddleware])
-  .inputValidator((data: { userId: string }) => data)
-  .handler(async ({ data }) => {
-    const { userId } = data
+  .handler(async ({ context }) => {
+    const { user } = context
 
     const seller = await db.query.sellers.findFirst({
-      where: (sellersTable) => eq(sellersTable.userId, userId),
+      where: (sellersTable) => eq(sellersTable.userId, user?.id ?? ''),
     })
 
-    if (!seller) {
-      return undefined
-    }
-
-    const user = await db.query.users.findFirst({
-      where: (usersTable) => eq(usersTable.id, seller.userId),
-      columns: { username: true },
-    })
-
-    const sellerCategoriesList = await db
-      .select({
-        id: categoriesTable.id,
-        name: categoriesTable.name,
-      })
-      .from(sellerCategories)
-      .innerJoin(
-        categoriesTable,
-        eq(sellerCategories.categoryId, categoriesTable.id),
-      )
-      .where(eq(sellerCategories.sellerId, seller.id))
-
-    return {
-      ...seller,
-      username: user?.username ?? null,
-      categories: sellerCategoriesList,
-    }
+    return seller
   })
 
 export const toggleSellerActiveStatus = createServerFn({
@@ -211,6 +186,8 @@ export const verifySeller = createServerFn({
       return verifiedSeller
     })
 
+    // TODO: Send emal and notification to the seller
+
     return result
   })
 
@@ -230,30 +207,24 @@ export const deleteSeller = createServerFn({
     return deletedSeller
   })
 
-export const createSeller = createServerFn({
+export const createSellerByAdmin = createServerFn({
   method: 'POST',
 })
-  // .middleware([requireAdminMiddleware])
+  .middleware([requireAdminMiddleware])
   .inputValidator((data: CreateSellerPayload) => data)
   .handler(async ({ data }) => {
-    const { categories, ...sellerData } = data
+    return createSellerFn(data)
+  })
 
-    const [seller] = await db.insert(sellers).values(sellerData).returning()
+export const createSellerByUser = createServerFn({
+  method: 'POST',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: CreateSellerPayload) => data)
+  .handler(async ({ context, data }) => {
+    const { user } = context
 
-    const [categoriesResult] = await db
-      .insert(sellerCategories)
-      .values(
-        categories.map((categoryId) => ({
-          sellerId: seller.id,
-          categoryId,
-        })),
-      )
-      .returning()
-
-    return {
-      seller,
-      categories: categoriesResult,
-    }
+    return createSellerFn({ ...data, userId: user?.id ?? '' })
   })
 
 export const updateSeller = createServerFn({
@@ -264,7 +235,6 @@ export const updateSeller = createServerFn({
   .handler(async ({ data }) => {
     const { sellerId, categories, ...sellerData } = data
 
-    // If enything fails, the transaction will be rolled back
     const result = await db.transaction(async (tx) => {
       const [updatedSeller] = await tx
         .update(sellers)

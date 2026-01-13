@@ -20,7 +20,7 @@ export function App() {
 
   return (
     <div className="min-h-screen flex justify-center">
-      <section className="flex gap-4 pt-5 h-full w-5xl">
+      <section className="flex gap-4 h-full w-5xl">
         <Carousel
           opts={{
             align: 'start',

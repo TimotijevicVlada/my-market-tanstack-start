@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FormStepper } from './-components/FormStepper'
@@ -28,18 +28,21 @@ import type { FourthStepSchema } from './-components/Form/StepFour/step-four-sch
 import type { SecondStepSchema } from './-components/Form/StepTwo/step-two-schema'
 import type { ThirdStepSchema } from './-components/Form/StepThree/step-three-schema'
 import type { CreateSellerPayload } from '@/api/sellers/types'
-import { useLoggedInUser } from '@/api/auth/queries'
-import { useCreateSeller } from '@/api/sellers/queries'
+import { useCreateSellerByUser } from '@/api/sellers/queries'
 import { Card, CardContent } from '@/components/ui/card'
+import { getMySeller } from '@/api/sellers/server'
 
 export const Route = createFileRoute('/_public/seller-apply/')({
   component: SellerApplyPage,
+  beforeLoad: async () => {
+    const seller = await getMySeller()
+    if (seller) {
+      throw redirect({ to: '/' })
+    }
+  },
 })
 
 function SellerApplyPage() {
-  const { data: user } = useLoggedInUser()
-  const userId = user?.id
-
   const firstStepMethods = useForm<FirstStepSchema>({
     resolver: zodResolver(firstStepSchema),
     defaultValues: firstStepDefaultValues,
@@ -62,7 +65,7 @@ function SellerApplyPage() {
 
   const [currentStep, setCurrentStep] = useState(1)
 
-  const { mutate: createSeller, isPending } = useCreateSeller()
+  const { mutate: createSeller, isPending } = useCreateSellerByUser()
 
   const onFourthStepSubmit = (formValues: FourthStepSchema) => {
     const firstStepData = firstStepMethods.getValues()
@@ -75,7 +78,6 @@ function SellerApplyPage() {
       ...secondStepData,
       ...thirdStepData,
       ...fourthStepData,
-      userId: userId!,
     }
 
     const convertEmptyStringToNull = Object.fromEntries(

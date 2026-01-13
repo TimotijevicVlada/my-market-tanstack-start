@@ -1,10 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { useNavigate } from '@tanstack/react-router'
 import {
-  createSeller,
+  createSellerByAdmin,
+  createSellerByUser,
   deleteSeller,
+  getMySeller,
   getPagedSellers,
-  getSellerByUserId,
   toggleSellerActiveStatus,
   updateSeller,
   verifySeller,
@@ -24,12 +26,11 @@ export const useGetSellers = (params: GetSellerParams) => {
   })
 }
 
-export const useGetSellerByUserId = (userId: string | undefined) => {
+export const useGetMySeller = () => {
   return useQuery({
-    queryKey: ['seller', userId],
-    queryFn: () => getSellerByUserId({ data: { userId: userId ?? '' } }),
+    queryKey: ['my-seller'],
+    queryFn: () => getMySeller(),
     placeholderData: (prev) => prev,
-    enabled: !!userId,
   })
 }
 
@@ -82,11 +83,28 @@ export const useDeleteSeller = (params: GetSellerParams) => {
   })
 }
 
-export const useCreateSeller = (params?: GetSellerParams) => {
+export const useCreateSellerByUser = () => {
+  const navigate = useNavigate()
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: CreateSellerPayload) => createSeller({ data }),
+    mutationFn: (data: CreateSellerPayload) => createSellerByUser({ data }),
+    onSuccess: () => {
+      toast.success('Uspešno ste podneli zahtev za kreiranje prodavnice')
+      queryClient.invalidateQueries({ queryKey: ['my-seller'] })
+      navigate({ to: '/' })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useCreateSellerByAdmin = (params: GetSellerParams) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: CreateSellerPayload) => createSellerByAdmin({ data }),
     onSuccess: (res) => {
       toast.success(
         `Prodavac ${res.seller.displayName.toUpperCase()} je uspesno kreiran`,

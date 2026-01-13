@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
-import { useCreateSeller } from '@/api/sellers/queries'
+import { useCreateSellerByAdmin } from '@/api/sellers/queries'
 
 interface CreateSellerProps {
   params: GetSellerParams
@@ -19,7 +19,7 @@ interface CreateSellerProps {
 export const CreateSeller = ({ params }: CreateSellerProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const { mutate: createSeller, isPending } = useCreateSeller(params)
+  const { mutate: createSeller, isPending } = useCreateSellerByAdmin(params)
 
   const onFormSubmit = (data: CreateSellerPayload) => {
     createSeller(data, {
