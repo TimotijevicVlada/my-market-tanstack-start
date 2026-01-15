@@ -32,7 +32,7 @@ export function useUploadToR2() {
       return { uploadUrl, publicUrl, key }
     },
     onSuccess: () => {
-      toast.success('Fajl je uspešno učitavan')
+      toast.success('Fajl je uspešno učitan')
     },
     onError: (error) => {
       toast.error(error.message || 'Greška pri učitavanju fajla')
