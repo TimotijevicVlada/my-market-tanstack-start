@@ -8,12 +8,14 @@ import {
   getMySeller,
   getPagedSellers,
   toggleSellerActiveStatus,
+  updateMySeller,
   updateSeller,
   verifySeller,
 } from './server'
 import type {
   CreateSellerPayload,
   GetSellerParams,
+  UpdateMySellerPayload,
   UpdateSellerPayload,
   VerifySellerParams,
 } from './types'
@@ -127,6 +129,21 @@ export const useUpdateSeller = (params: GetSellerParams) => {
         `Prodavac ${res.seller.displayName.toUpperCase()} je uspesno azuriran`,
       )
       queryClient.invalidateQueries({ queryKey: ['sellers', params] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateMySeller = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: UpdateMySellerPayload) => updateMySeller({ data }),
+    onSuccess: () => {
+      toast.success(`Prodavnica je uspesno azurirana`)
+      queryClient.invalidateQueries({ queryKey: ['my-seller'] })
     },
     onError: (error) => {
       toast.error(error.message)

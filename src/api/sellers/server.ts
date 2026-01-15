@@ -15,6 +15,7 @@ import { createSellerFn } from './shared'
 import type {
   CreateSellerPayload,
   GetSellerParams,
+  UpdateMySellerPayload,
   UpdateSellerPayload,
   VerifySellerParams,
 } from './types'
@@ -129,6 +130,22 @@ export const getMySeller = createServerFn({
     })
 
     return seller
+  })
+
+export const updateMySeller = createServerFn({
+  method: 'POST',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: UpdateMySellerPayload) => data)
+  .handler(async ({ data }) => {
+    const { sellerId, ...sellerData } = data
+    const [updatedSeller] = await db
+      .update(sellers)
+      .set(sellerData)
+      .where(eq(sellers.id, sellerId))
+      .returning()
+
+    return updatedSeller
   })
 
 export const toggleSellerActiveStatus = createServerFn({

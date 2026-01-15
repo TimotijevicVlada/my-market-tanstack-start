@@ -25,6 +25,8 @@ export type Seller = typeof sellers.$inferSelect & {
   categories: Array<{ id: string; name: string }>
 }
 
+export type MySeller = typeof sellers.$inferSelect
+
 export type VerifySellerParams = {
   sellerId: string
   userId: string
@@ -38,6 +40,10 @@ export type CreateSellerPayload = FirstStepSchema &
   FourthStepSchema
 
 export interface UpdateSellerPayload extends CreateSellerPayload {
+  sellerId: string
+}
+
+export interface UpdateMySellerPayload extends MySeller {
   sellerId: string
 }
 

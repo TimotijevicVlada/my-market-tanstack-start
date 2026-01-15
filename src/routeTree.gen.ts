@@ -27,6 +27,7 @@ import { Route as PrivateBuyerOrdersIndexRouteImport } from './routes/_private/b
 import { Route as PrivateAdminUsersIndexRouteImport } from './routes/_private/admin/users/index'
 import { Route as PrivateAdminSellersIndexRouteImport } from './routes/_private/admin/sellers/index'
 import { Route as PrivateAdminCategoriesIndexRouteImport } from './routes/_private/admin/categories/index'
+import { Route as PrivateAccountOrdersIndexRouteImport } from './routes/_private/account/orders/index'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -118,6 +119,12 @@ const PrivateAdminCategoriesIndexRoute =
     path: '/categories/',
     getParentRoute: () => PrivateAdminRouteRoute,
   } as any)
+const PrivateAccountOrdersIndexRoute =
+  PrivateAccountOrdersIndexRouteImport.update({
+    id: '/account/orders/',
+    path: '/account/orders/',
+    getParentRoute: () => PrivateRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/admin': typeof PrivateAdminRouteRouteWithChildren
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterIndexRoute
   '/account': typeof PrivateAccountIndexRoute
   '/seller-apply': typeof PublicSellerApplyIndexRoute
+  '/account/orders': typeof PrivateAccountOrdersIndexRoute
   '/admin/categories': typeof PrivateAdminCategoriesIndexRoute
   '/admin/sellers': typeof PrivateAdminSellersIndexRoute
   '/admin/users': typeof PrivateAdminUsersIndexRoute
@@ -146,6 +154,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterIndexRoute
   '/account': typeof PrivateAccountIndexRoute
   '/seller-apply': typeof PublicSellerApplyIndexRoute
+  '/account/orders': typeof PrivateAccountOrdersIndexRoute
   '/admin/categories': typeof PrivateAdminCategoriesIndexRoute
   '/admin/sellers': typeof PrivateAdminSellersIndexRoute
   '/admin/users': typeof PrivateAdminUsersIndexRoute
@@ -167,6 +176,7 @@ export interface FileRoutesById {
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_private/account/': typeof PrivateAccountIndexRoute
   '/_public/seller-apply/': typeof PublicSellerApplyIndexRoute
+  '/_private/account/orders/': typeof PrivateAccountOrdersIndexRoute
   '/_private/admin/categories/': typeof PrivateAdminCategoriesIndexRoute
   '/_private/admin/sellers/': typeof PrivateAdminSellersIndexRoute
   '/_private/admin/users/': typeof PrivateAdminUsersIndexRoute
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/account'
     | '/seller-apply'
+    | '/account/orders'
     | '/admin/categories'
     | '/admin/sellers'
     | '/admin/users'
@@ -203,6 +214,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/account'
     | '/seller-apply'
+    | '/account/orders'
     | '/admin/categories'
     | '/admin/sellers'
     | '/admin/users'
@@ -223,6 +235,7 @@ export interface FileRouteTypes {
     | '/_auth/register/'
     | '/_private/account/'
     | '/_public/seller-apply/'
+    | '/_private/account/orders/'
     | '/_private/admin/categories/'
     | '/_private/admin/sellers/'
     | '/_private/admin/users/'
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateAdminCategoriesIndexRouteImport
       parentRoute: typeof PrivateAdminRouteRoute
     }
+    '/_private/account/orders/': {
+      id: '/_private/account/orders/'
+      path: '/account/orders'
+      fullPath: '/account/orders'
+      preLoaderRoute: typeof PrivateAccountOrdersIndexRouteImport
+      parentRoute: typeof PrivateRouteRoute
+    }
   }
 }
 
@@ -426,6 +446,7 @@ interface PrivateRouteRouteChildren {
   PrivateBuyerRouteRoute: typeof PrivateBuyerRouteRouteWithChildren
   PrivateSellerRouteRoute: typeof PrivateSellerRouteRouteWithChildren
   PrivateAccountIndexRoute: typeof PrivateAccountIndexRoute
+  PrivateAccountOrdersIndexRoute: typeof PrivateAccountOrdersIndexRoute
 }
 
 const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
@@ -433,6 +454,7 @@ const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateBuyerRouteRoute: PrivateBuyerRouteRouteWithChildren,
   PrivateSellerRouteRoute: PrivateSellerRouteRouteWithChildren,
   PrivateAccountIndexRoute: PrivateAccountIndexRoute,
+  PrivateAccountOrdersIndexRoute: PrivateAccountOrdersIndexRoute,
 }
 
 const PrivateRouteRouteWithChildren = PrivateRouteRoute._addFileChildren(
