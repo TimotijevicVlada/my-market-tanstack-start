@@ -1,13 +1,13 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { EyeClosedIcon, EyeIcon, LockIcon, MailIcon } from 'lucide-react'
-import { useState } from 'react'
+import { LockIcon, MailIcon } from 'lucide-react'
 import { loginSchema } from './-schema'
 import type { LoginFormData } from './-schema'
 import { Button } from '@/components/custom/Button'
 import { useLogin } from '@/api/auth/queries'
 import { FormField } from '@/components/custom/FormField'
+import { FormFieldPassword } from '@/components/custom/FormFieldPassword'
 
 export const Route = createFileRoute('/_auth/login/')({
   component: LoginComponent,
@@ -15,8 +15,6 @@ export const Route = createFileRoute('/_auth/login/')({
 
 function LoginComponent() {
   const { mutate: login, isPending, error } = useLogin()
-
-  const [showPassword, setShowPassword] = useState(false)
 
   const {
     register,
@@ -60,24 +58,12 @@ function LoginComponent() {
           startIcon={<MailIcon />}
           {...register('email')}
         />
-        <FormField
+        <FormFieldPassword
           label="Password"
           placeholder="Unesite vašu lozinku"
           error={errors.password?.message}
-          type={showPassword ? 'text' : 'password'}
           autoComplete="current-password"
           startIcon={<LockIcon />}
-          endIcon={
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              type="button"
-              className="rounded-full"
-              onClick={() => setShowPassword((prev) => !prev)}
-            >
-              {showPassword ? <EyeIcon /> : <EyeClosedIcon />}
-            </Button>
-          }
           {...register('password')}
         />
         <Button

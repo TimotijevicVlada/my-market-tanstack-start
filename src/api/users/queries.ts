@@ -8,6 +8,9 @@ import {
   getAllUsers,
   getPagedUsers,
   toggleUserActiveStatus,
+  updateMyUserAvatar,
+  updateMyUserEmail,
+  updateMyUserPassword,
 } from './server'
 import type {
   CreateUserSchema,
@@ -108,6 +111,53 @@ export const useEditUserPassword = (params: GetUsersParams) => {
         `Lozinka korisnika ${res.user.username.toUpperCase()} je uspesno izmenjena`,
       )
       queryClient.invalidateQueries({ queryKey: ['users', params] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateMyUserAvatar = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { avatarUrl: string | null | undefined }) =>
+      updateMyUserAvatar({ data }),
+    onSuccess: () => {
+      toast.success('Slika profila je uspesno izmenjena')
+      queryClient.invalidateQueries({ queryKey: ['loggedInUser'] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateMyUserEmail = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { email: string }) => updateMyUserEmail({ data }),
+    onSuccess: () => {
+      toast.success('Email je uspesno izmenjen')
+      queryClient.invalidateQueries({ queryKey: ['loggedInUser'] })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useUpdateMyUserPassword = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: { oldPassword: string; newPassword: string }) =>
+      updateMyUserPassword({ data }),
+    onSuccess: () => {
+      toast.success('Vaša lozinka je uspešno izmenjena')
+      queryClient.invalidateQueries({ queryKey: ['loggedInUser'] })
     },
     onError: (error) => {
       toast.error(error.message)
