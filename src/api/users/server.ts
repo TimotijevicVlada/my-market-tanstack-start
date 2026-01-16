@@ -1,7 +1,16 @@
 import bcrypt from 'bcryptjs'
 import { createServerFn } from '@tanstack/react-start'
-import { and, asc, count, desc, eq, ilike, or } from 'drizzle-orm'
-import { requireAdminMiddleware } from '../middleware'
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  or,
+} from 'drizzle-orm'
+import { authMiddleware, requireAdminMiddleware } from '../middleware'
 import type { GetUsersParams } from './types'
 import type {
   CreateUserSchema,
@@ -62,13 +71,7 @@ export const getPagedUsers = createServerFn({
 
     const query = db
       .select({
-        id: users.id,
-        username: users.username,
-        email: users.email,
-        role: users.role,
-        isActive: users.isActive,
-        createdAt: users.createdAt,
-        updatedAt: users.updatedAt,
+        ...getTableColumns(users),
         productCount: count(products.id).as('product_count'),
       })
       .from(users)
@@ -244,4 +247,83 @@ export const editUserPassword = createServerFn({
     return {
       user: userWithoutPassword,
     }
+  })
+
+export const updateMyUserAvatar = createServerFn({
+  method: 'POST',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { avatarUrl: string | null | undefined }) => data)
+  .handler(async ({ context, data }) => {
+    const { user } = context
+    const { avatarUrl } = data
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({ avatarUrl })
+      .where(eq(users.id, user?.id ?? ''))
+      .returning()
+
+    return { user: updatedUser }
+  })
+
+export const updateMyUserEmail = createServerFn({
+  method: 'POST',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { email: string }) => data)
+  .handler(async ({ context, data }) => {
+    const { user } = context
+    const { email } = data
+
+    const existingUserByEmail = await db.query.users.findFirst({
+      where: (userTable) => eq(userTable.email, data.email),
+    })
+
+    if (existingUserByEmail && existingUserByEmail.id !== user?.id) {
+      throw new Error('Email je već zauzet')
+    }
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({ email })
+      .where(eq(users.id, user?.id ?? ''))
+      .returning()
+
+    return { user: updatedUser }
+  })
+
+export const updateMyUserPassword = createServerFn({
+  method: 'POST',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { oldPassword: string; newPassword: string }) => data)
+  .handler(async ({ context, data }) => {
+    const { user } = context
+    const { oldPassword, newPassword } = data
+
+    const userData = await db.query.users.findFirst({
+      where: (userTable) => eq(userTable.id, user?.id ?? ''),
+    })
+
+    const isValidPassword = await bcrypt.compare(
+      oldPassword,
+      userData?.passwordHash ?? '',
+    )
+
+    if (!isValidPassword) {
+      throw new Error('Trenutna lozinka nije ispravna')
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 10)
+
+    const [updatedUser] = await db
+      .update(users)
+      .set({ passwordHash })
+      .where(eq(users.id, user?.id ?? ''))
+      .returning()
+
+    const { passwordHash: _, ...userWithoutPassword } = updatedUser
+
+    return { user: userWithoutPassword }
   })

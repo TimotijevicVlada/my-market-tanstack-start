@@ -1,11 +1,13 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { MailIcon, ShieldEllipsis, UserIcon } from 'lucide-react'
 import { defaultValues, registerSchema } from './-schema'
 import type { RegisterFormData } from './-schema'
 import { Button } from '@/components/custom/Button'
 import { useRegister } from '@/api/auth/queries'
 import { FormField } from '@/components/custom/FormField'
+import { FormFieldPassword } from '@/components/custom/FormFieldPassword'
 
 export const Route = createFileRoute('/_auth/register/')({
   component: RegisterComponent,
@@ -59,6 +61,7 @@ function RegisterComponent() {
           label="Korisničko ime"
           placeholder="Unesite vaše korisničko ime"
           error={errors.username?.message}
+          startIcon={<UserIcon />}
           {...registerField('username')}
         />
 
@@ -66,23 +69,24 @@ function RegisterComponent() {
           label="Email adresa"
           placeholder="Unesite vašu email adresu"
           error={errors.email?.message}
+          startIcon={<MailIcon />}
           {...registerField('email')}
         />
 
-        <FormField
+        <FormFieldPassword
           label="Lozinka"
           placeholder="Unesite vašu lozinku"
           error={errors.password?.message}
-          type="password"
+          startIcon={<ShieldEllipsis />}
           autoComplete="new-password"
           {...registerField('password')}
         />
 
-        <FormField
+        <FormFieldPassword
           label="Potvrdite lozinku"
           placeholder="Potvrdite vašu lozinku"
           error={errors.confirmPassword?.message}
-          type="password"
+          startIcon={<ShieldEllipsis />}
           autoComplete="new-password"
           {...registerField('confirmPassword')}
         />

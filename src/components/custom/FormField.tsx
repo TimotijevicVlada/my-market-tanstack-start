@@ -2,7 +2,7 @@ import { Field, FieldDescription, FieldLabel } from '../ui/field'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
 import type { InputHTMLAttributes, ReactNode } from 'react'
 
-interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string
   required?: boolean
   error?: string

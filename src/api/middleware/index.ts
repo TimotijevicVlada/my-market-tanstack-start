@@ -141,11 +141,7 @@ export const authMiddleware = createMiddleware({ type: 'function' }).server(
 
           if (dbUser) {
             user = {
-              id: dbUser.id,
-              username: dbUser.username,
-              email: dbUser.email,
-              role: dbUser.role,
-              isActive: dbUser.isActive,
+              ...dbUser,
               productCount: 0,
               createdAt: dbUser.createdAt ?? new Date(),
               updatedAt: dbUser.updatedAt ?? new Date(),
