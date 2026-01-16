@@ -100,7 +100,7 @@ export const EditContactInfo = ({
             />
             <DialogFooter className="flex justify-end gap-2">
               <Button variant="ghost" type="button" onClick={() => reset()}>
-                Ponisti
+                Poništi
               </Button>
               <Button
                 type="submit"

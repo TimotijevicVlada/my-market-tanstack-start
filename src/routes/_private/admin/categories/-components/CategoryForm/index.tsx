@@ -67,7 +67,7 @@ export const CategoryForm = ({
       </div>
       <DialogFooter>
         <Button variant="outline" type="button" onClick={() => reset()}>
-          Ponisti
+          Poništi
         </Button>
         <Button
           type="submit"

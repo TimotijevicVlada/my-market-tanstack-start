@@ -87,7 +87,7 @@ export const EditAvatar = ({ user, open, onOpen }: EditAvatarProps) => {
           >
             <div className="flex flex-col gap-5">
               <UploadFileArea
-                label="Logo"
+                label="Slika profila"
                 Icon={UserIcon}
                 src={getImageUrl(avatarUrlField.value)}
                 onFileChange={(file) => onChange(file)}
@@ -98,7 +98,7 @@ export const EditAvatar = ({ user, open, onOpen }: EditAvatarProps) => {
             </div>
             <DialogFooter className="flex justify-end gap-2">
               <Button variant="ghost" type="button" onClick={() => reset()}>
-                Ponisti
+                Poništi
               </Button>
               <Button
                 type="submit"

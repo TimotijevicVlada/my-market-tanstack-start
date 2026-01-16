@@ -56,7 +56,7 @@ export const EmailSection = () => {
           <div className="flex justify-end gap-2">
             {isDirty && (
               <Button variant="outline" type="button" onClick={() => reset()}>
-                Ponisti
+                Poništi
               </Button>
             )}
             <Button
