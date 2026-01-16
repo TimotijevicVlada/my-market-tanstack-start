@@ -3,13 +3,8 @@ import { SectionHead } from '@/components/custom/SectionHead'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetMySeller } from '@/api/sellers/queries'
 
-export const StatsSection = () => {
+export const StatsInfo = () => {
   const { data: seller } = useGetMySeller()
-
-  const handleEdit = (section: string) => {
-    console.log(`Edit section: ${section}`)
-    // Placeholder for edit functionality
-  }
 
   return (
     <Card className="border-border/50">
@@ -18,7 +13,6 @@ export const StatsSection = () => {
           Icon={Star}
           title="Performanse"
           description="Statistika vaše prodavnice"
-          onEdit={() => handleEdit('stats')}
           className="mb-6"
         />
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

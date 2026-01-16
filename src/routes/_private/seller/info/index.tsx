@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { BasicInfo } from './-components/BasicInfo'
 import { ImagesSection } from './-components/ImagesSection'
 import { LocationInfo } from './-components/LocationInfo'
-import { StatsSection } from './-components/StatsSection'
+import { StatsInfo } from './-components/StatsInfo'
 import { ContactInfo } from './-components/ContactInfo'
 
 export const Route = createFileRoute('/_private/seller/info/')({
@@ -19,7 +19,7 @@ function SellerInfoPage() {
           <ContactInfo />
         </div>
         <LocationInfo />
-        <StatsSection />
+        <StatsInfo />
       </div>
     </div>
   )
