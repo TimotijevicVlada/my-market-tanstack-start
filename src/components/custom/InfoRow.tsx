@@ -1,12 +1,12 @@
 interface InfoRowProps {
-  icon?: React.ReactNode
+  Icon?: React.ElementType
   label: string
   value: string | null | undefined
   placeholder?: string
 }
 
 export const InfoRow = ({
-  icon,
+  Icon,
   label,
   value,
   placeholder = 'Nije uneto',
@@ -17,7 +17,7 @@ export const InfoRow = ({
         {label}
       </span>
       <div className="flex items-center gap-2.5 text-foreground">
-        {icon && <span className="text-muted-foreground">{icon}</span>}
+        {Icon && <Icon className="size-4 text-muted-foreground" />}
         <span
           className={
             !value

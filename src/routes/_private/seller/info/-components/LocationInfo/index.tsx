@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Building2, FileText, Globe, MapPin } from 'lucide-react'
-import { InfoRow } from '../InfoRow'
+import { InfoRow } from '../../../../../../components/custom/InfoRow'
 import { EditLocationInfo } from './EditLocationInfo'
 import { SectionHead } from '@/components/custom/SectionHead'
 import { Card, CardContent } from '@/components/ui/card'
@@ -28,23 +28,11 @@ export const LocationInfo = () => {
             className="mb-6"
           />
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <InfoRow Icon={Globe} label="Država" value={seller?.country} />
+            <InfoRow Icon={Building2} label="Grad" value={seller?.city} />
+            <InfoRow Icon={MapPin} label="Adresa" value={seller?.address} />
             <InfoRow
-              icon={<Globe className="h-4 w-4" />}
-              label="Država"
-              value={seller?.country}
-            />
-            <InfoRow
-              icon={<Building2 className="h-4 w-4" />}
-              label="Grad"
-              value={seller?.city}
-            />
-            <InfoRow
-              icon={<MapPin className="h-4 w-4" />}
-              label="Adresa"
-              value={seller?.address}
-            />
-            <InfoRow
-              icon={<FileText className="h-4 w-4" />}
+              Icon={FileText}
               label="Poštanski broj"
               value={seller?.postalCode}
             />

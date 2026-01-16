@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Store } from 'lucide-react'
-import { InfoRow } from '../InfoRow'
+import { InfoRow } from '../../../../../../components/custom/InfoRow'
 import { EditBasicInfo } from './EditBasicInfo'
 import { SectionHead } from '@/components/custom/SectionHead'
 import { Card, CardContent } from '@/components/ui/card'
@@ -24,7 +24,7 @@ export const BasicInfo = () => {
           />
           <div className="space-y-5">
             <InfoRow
-              icon={<Store className="h-4 w-4" />}
+              Icon={Store}
               label="Naziv prodavnice"
               value={seller?.displayName}
             />

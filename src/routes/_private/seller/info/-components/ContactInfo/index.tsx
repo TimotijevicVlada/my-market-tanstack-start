@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Globe, Mail, Phone } from 'lucide-react'
-import { InfoRow } from '../InfoRow'
+import { InfoRow } from '../../../../../../components/custom/InfoRow'
 import { EditContactInfo } from './EditContactInfo'
 import { SectionHead } from '@/components/custom/SectionHead'
 import { Card, CardContent } from '@/components/ui/card'
@@ -27,21 +27,9 @@ export const ContactInfo = () => {
             className="mb-6"
           />
           <div className="space-y-5">
-            <InfoRow
-              icon={<Mail className="h-4 w-4" />}
-              label="Email adresa"
-              value={seller?.email}
-            />
-            <InfoRow
-              icon={<Phone className="h-4 w-4" />}
-              label="Telefon"
-              value={seller?.phone}
-            />
-            <InfoRow
-              icon={<Globe className="h-4 w-4" />}
-              label="Website"
-              value={seller?.website}
-            />
+            <InfoRow Icon={Mail} label="Email adresa" value={seller?.email} />
+            <InfoRow Icon={Phone} label="Telefon" value={seller?.phone} />
+            <InfoRow Icon={Globe} label="Website" value={seller?.website} />
           </div>
         </CardContent>
       </Card>

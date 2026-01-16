@@ -25,6 +25,7 @@ import { SectionHead } from '@/components/custom/SectionHead'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/custom/Button'
+import { InfoRow } from '@/components/custom/InfoRow'
 
 export const Route = createFileRoute('/_private/account/')({
   component: AccountPage,
@@ -110,27 +111,25 @@ function AccountPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-muted-foreground">Korisničko ime</Label>
-                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
-                  <UserIcon className="size-4 text-muted-foreground" />
-                  <span className="font-medium">{user?.username}</span>
-                </div>
+                <InfoRow
+                  Icon={UserIcon}
+                  label="Korisničko ime"
+                  value={user?.username}
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-muted-foreground">Email adresa</Label>
-                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
-                  <MailIcon className="size-4 text-muted-foreground" />
-                  <span className="font-medium">{user?.email}</span>
-                </div>
+                <InfoRow
+                  Icon={MailIcon}
+                  label="Email adresa"
+                  value={user?.email}
+                />
               </div>
               <div className="space-y-2">
-                <Label className="text-muted-foreground">Uloga</Label>
-                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
-                  <ShieldCheck className="size-4 text-muted-foreground" />
-                  <span className="font-medium">
-                    {user?.role ? getRole[user.role].name : ''}
-                  </span>
-                </div>
+                <InfoRow
+                  Icon={ShieldCheck}
+                  label="Uloga"
+                  value={user?.role ? getRole[user.role].name : ''}
+                />
               </div>
             </CardContent>
           </Card>
