@@ -46,6 +46,7 @@ export const StatusColumn = ({ user, refetchUsers }: StatusColumnProps) => {
   return (
     <>
       <Switch
+        size="sm"
         checked={user.isActive}
         onCheckedChange={() => {
           if (user.isActive) {

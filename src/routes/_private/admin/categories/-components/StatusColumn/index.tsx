@@ -49,6 +49,7 @@ export const StatusColumn = ({
   return (
     <>
       <Switch
+        size="sm"
         checked={category.isActive}
         onCheckedChange={() => {
           if (category.isActive) {

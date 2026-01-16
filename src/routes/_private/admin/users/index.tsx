@@ -39,6 +39,8 @@ import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { getImageUrl } from '@/utils/get-image-url'
 
 const usersSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -201,6 +203,24 @@ function UsersPage() {
                   return (
                     <TableCell key={key}>
                       <StatusColumn user={user} refetchUsers={refetch} />
+                    </TableCell>
+                  )
+                }
+                if (key === 'username') {
+                  return (
+                    <TableCell key={key}>
+                      <div className="flex items-center gap-2">
+                        <Avatar>
+                          <AvatarImage
+                            src={getImageUrl(user.avatarUrl)}
+                            alt={user.username}
+                          />
+                          <AvatarFallback>
+                            {user.username.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {user[key]}
+                      </div>
                     </TableCell>
                   )
                 }
