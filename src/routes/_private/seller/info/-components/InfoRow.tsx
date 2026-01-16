@@ -1,5 +1,5 @@
 interface InfoRowProps {
-  icon: React.ReactNode
+  icon?: React.ReactNode
   label: string
   value: string | null | undefined
   placeholder?: string
@@ -17,8 +17,14 @@ export const InfoRow = ({
         {label}
       </span>
       <div className="flex items-center gap-2.5 text-foreground">
-        <span className="text-muted-foreground">{icon}</span>
-        <span className={!value ? 'text-muted-foreground italic' : ''}>
+        {icon && <span className="text-muted-foreground">{icon}</span>}
+        <span
+          className={
+            !value
+              ? 'text-muted-foreground italic'
+              : 'line-clamp-4 whitespace-pre-line'
+          }
+        >
           {value || placeholder}
         </span>
       </div>

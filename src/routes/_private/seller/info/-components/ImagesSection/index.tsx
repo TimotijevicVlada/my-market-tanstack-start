@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetMySeller } from '@/api/sellers/queries'
 import { getImageUrl } from '@/utils/get-image-url'
+import { formatDateToLocale } from '@/utils/format-date'
 
 export const ImagesSection = () => {
   const { data: seller } = useGetMySeller()
@@ -42,7 +43,6 @@ export const ImagesSection = () => {
 
         <CardContent className="relative pt-0 pb-6">
           <div className="flex flex-col md:flex-row md:items-end gap-4 -mt-12 md:-mt-16">
-            {/* Avatar */}
             <div className="relative">
               <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-card rounded-full shadow-xl">
                 <AvatarImage
@@ -76,13 +76,7 @@ export const ImagesSection = () => {
 
                 <div className="flex items-center gap-1.5">
                   <Calendar className="h-4 w-4" />
-                  <span>
-                    Član od{' '}
-                    {seller?.createdAt?.toLocaleDateString('sr-Latn-RS', {
-                      month: 'long',
-                      year: 'numeric',
-                    })}
-                  </span>
+                  <span>Član od {formatDateToLocale(seller?.createdAt)} </span>
                 </div>
               </div>
             </div>

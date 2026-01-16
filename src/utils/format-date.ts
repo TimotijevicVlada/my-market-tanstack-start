@@ -9,3 +9,14 @@ export const formatDate = (date: Date | undefined | null) => {
     year: 'numeric',
   })
 }
+
+export const formatDateToLocale = (date: Date | undefined | null) => {
+  if (!date) {
+    return '/'
+  }
+
+  return new Date(date).toLocaleDateString('sr-Latn-RS', {
+    month: 'long',
+    year: 'numeric',
+  })
+}

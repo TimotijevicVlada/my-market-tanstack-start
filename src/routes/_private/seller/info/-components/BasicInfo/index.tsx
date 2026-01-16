@@ -28,18 +28,7 @@ export const BasicInfo = () => {
               label="Naziv prodavnice"
               value={seller?.displayName}
             />
-            <div className="flex flex-col gap-1.5">
-              <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                Opis
-              </span>
-              <p className="text-sm text-foreground leading-relaxed">
-                {seller?.description || (
-                  <span className="text-muted-foreground italic">
-                    Nije uneto
-                  </span>
-                )}
-              </p>
-            </div>
+            <InfoRow label="Opis" value={seller?.description} />
           </div>
         </CardContent>
       </Card>
