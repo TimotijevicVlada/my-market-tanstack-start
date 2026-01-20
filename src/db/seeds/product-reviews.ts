@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm'
 import { db } from '../index.ts'
 import { productReviews } from '../schema/product-reviews.ts'
 import { products } from '../schema/products.ts'
-import { users } from '../schema/users.ts'
+import { user } from '../schema/better-auth.ts'
 
 export async function seedProductReviews() {
   // Safety check: prevent running in production
@@ -15,8 +15,8 @@ export async function seedProductReviews() {
   const allProducts = await db.select().from(products)
   const buyerUsers = await db
     .select()
-    .from(users)
-    .where(eq(users.role, 'buyer'))
+    .from(user)
+    .where(eq(user.role, 'buyer'))
 
   if (allProducts.length === 0) {
     console.log('⚠️  No products found. Skipping product reviews seed.')
@@ -36,7 +36,7 @@ export async function seedProductReviews() {
 
   // Helper to find user by username
   const findUser = (username: string) =>
-    buyerUsers.find((user) => user.username === username)!
+    buyerUsers.find((userBuyer) => userBuyer.name === username)!
 
   // Create fake reviews data
   const fakeReviews = [

@@ -1,4 +1,4 @@
-import type { sellers } from '@/db/schema'
+import type { sellers } from '@/db/schema/sellers'
 import type { FourthStepSchema } from '@/components/shared/SellerForm/StepFour/zod-schema-step-four'
 import type { FirstStepSchema } from '@/components/shared/SellerForm/StepOne/zod-schema-step-one'
 import type { ThirdStepSchema } from '@/components/shared/SellerForm/StepThree/zod-schema-step-tree'

@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
 import { betterAuthMiddleware } from '@/lib/middleware'
 import { db } from '@/db'
-import { user } from '@/db/schema'
+import { user } from '@/db/schema/better-auth'
 
 export const getSessionUser = createServerFn({ method: "GET" })
   .handler(async () => {

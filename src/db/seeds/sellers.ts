@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { db } from '../index.ts'
 import { sellers } from '../schema/sellers.ts'
-import { users } from '../schema/users.ts'
+import { user } from '../schema/better-auth.ts'
 
 export async function seedSellers() {
   // Safety check: prevent running in production
@@ -13,8 +13,8 @@ export async function seedSellers() {
   // Get all users with seller role
   const sellerUsers = await db
     .select()
-    .from(users)
-    .where(eq(users.role, 'seller'))
+    .from(user)
+    .where(eq(user.role, 'seller'))
 
   if (sellerUsers.length === 0) {
     console.log('⚠️  No seller users found. Skipping sellers seed.')
@@ -23,7 +23,7 @@ export async function seedSellers() {
   }
 
   // Create fake sellers data based on SELLER users
-  const fakeSellers = sellerUsers.map((user, index) => {
+  const fakeSellers = sellerUsers.map((userSeller, index) => {
     const fakeSellersData = [
       {
         displayName: "Johnson's Organic Farm",
@@ -67,7 +67,7 @@ export async function seedSellers() {
     ]
 
     return {
-      userId: user.id,
+      userId: userSeller.id,
       ...fakeSellersData[index % fakeSellersData.length],
     }
   })
