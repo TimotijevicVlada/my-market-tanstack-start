@@ -10,7 +10,6 @@ import {
   sql,
 } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
-import { authMiddleware, requireAdminMiddleware } from '../middleware'
 import { createSellerFn } from './shared'
 import type {
   CreateSellerPayload,
@@ -26,6 +25,7 @@ import {
   sellers,
   users,
 } from '@/db/schema'
+import { betterAuthMiddleware, requireAdminMiddleware } from '@/lib/middleware'
 
 export const getPagedSellers = createServerFn({
   method: 'POST',
@@ -121,12 +121,12 @@ export const getPagedSellers = createServerFn({
 export const getMySeller = createServerFn({
   method: 'GET',
 })
-  .middleware([authMiddleware])
+  .middleware([betterAuthMiddleware])
   .handler(async ({ context }) => {
     const { user } = context
 
     const seller = await db.query.sellers.findFirst({
-      where: (sellersTable) => eq(sellersTable.userId, user?.id ?? ''),
+      where: (sellersTable) => eq(sellersTable.userId, user.id),
     })
 
     return seller
@@ -135,7 +135,7 @@ export const getMySeller = createServerFn({
 export const updateMySeller = createServerFn({
   method: 'POST',
 })
-  .middleware([authMiddleware])
+  .middleware([betterAuthMiddleware])
   .inputValidator((data: UpdateMySellerPayload) => data)
   .handler(async ({ data }) => {
     const { sellerId, ...sellerData } = data
@@ -236,12 +236,12 @@ export const createSellerByAdmin = createServerFn({
 export const createSellerByUser = createServerFn({
   method: 'POST',
 })
-  .middleware([authMiddleware])
+  .middleware([betterAuthMiddleware])
   .inputValidator((data: CreateSellerPayload) => data)
   .handler(async ({ context, data }) => {
     const { user } = context
 
-    return createSellerFn({ ...data, userId: user?.id ?? '' })
+    return createSellerFn({ ...data, userId: user.id })
   })
 
 export const updateSeller = createServerFn({

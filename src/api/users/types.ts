@@ -1,11 +1,9 @@
-import type { users } from '@/db/schema/users'
+import type { user } from '@/db/schema/better-auth'
 
 export type UserStatus = 'active' | 'inactive'
 export type UserRole = 'seller' | 'buyer' | 'admin' | 'super-admin'
 
-export type User = Omit<typeof users.$inferSelect, 'passwordHash'> & {
-  productCount: number
-}
+export type User = typeof user.$inferSelect
 
 export type SortableUserColumns = keyof User
 

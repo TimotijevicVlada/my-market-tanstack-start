@@ -9,17 +9,16 @@ export const getRole = {
 
 type Column = {
   label: string
-  key: keyof User | 'actions' | 'order' | 'productCount'
+  key: keyof User | 'actions' | 'order'
   options?: React.ComponentProps<'td'>
 }
 
 export const usersColumns: Array<Column> = [
   { label: '#', key: 'order' },
   { label: 'Status', key: 'isActive' },
-  { label: 'Korisničko ime', key: 'username' },
+  { label: 'Korisničko ime', key: 'name' },
   { label: 'Email adresa', key: 'email' },
   { label: 'Uloga', key: 'role' },
-  { label: 'Broj proizvoda', key: 'productCount' },
   { label: 'Datum kreiranja', key: 'createdAt' },
   { label: 'Datum ažuriranja', key: 'updatedAt' },
   { label: 'Akcije', key: 'actions', options: { className: 'text-right' } },

@@ -9,23 +9,19 @@ import {
   SearchIcon,
 } from 'lucide-react'
 import { UserMenuDropdown } from './UserMenuDropdown'
-import type { User } from '@/api/users/types'
-import { useLoggedInUser } from '@/api/auth/queries'
+import type { Session } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Input } from '@/components/ui/input'
 
 interface HeaderProps {
-  initialUser: User | null
   privateLayout?: boolean
+  sessionUser?: Session['user'] | null
 }
 
-export default function Header({ initialUser, privateLayout }: HeaderProps) {
-  const { data: loggedInUser } = useLoggedInUser({
-    initialData: initialUser,
-  })
+export default function Header({ privateLayout, sessionUser }: HeaderProps) {
 
-  const isAdmin = loggedInUser?.role.includes('admin')
+  const isAdmin = sessionUser?.role?.includes('admin')
 
   return (
     <header className="sticky top-0 z-10 h-14 flex items-center justify-between px-5 border-b border-border bg-sidebar">
@@ -80,8 +76,8 @@ export default function Header({ initialUser, privateLayout }: HeaderProps) {
             </Button>
           </>
         )}
-        {loggedInUser ? (
-          <UserMenuDropdown loggedInUser={loggedInUser} />
+        {sessionUser ? (
+          <UserMenuDropdown />
         ) : (
           <>
             <Link to="/login">

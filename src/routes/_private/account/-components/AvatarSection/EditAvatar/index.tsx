@@ -3,7 +3,7 @@ import { FormProvider, useController, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { UserIcon } from 'lucide-react'
 import { updateAvatarDefaultValues, updateAvatarSchema } from './zod-schema'
-import type { User } from '@/api/users/types'
+import type { Session } from '@/lib/auth'
 import type { UpdateAvatarSchema } from './zod-schema'
 import {
   Dialog,
@@ -17,10 +17,10 @@ import { Button } from '@/components/custom/Button'
 import { UploadFileArea } from '@/components/custom/UploadFileArea'
 import { getImageUrl } from '@/utils/get-image-url'
 import { useUploadToR2 } from '@/api/uploads/queries'
-import { useUpdateMyUserAvatar } from '@/api/users/queries'
+import { useUpdateSessionUserAvatar } from '@/api/auth/queries'
 
 interface EditAvatarProps {
-  user: User | null | undefined
+  user: Session['user'] | undefined
   open: boolean
   onOpen: (open: boolean) => void
 }
@@ -38,7 +38,7 @@ export const EditAvatar = ({ user, open, onOpen }: EditAvatarProps) => {
     name: 'avatarUrl',
   })
 
-  const { mutate: updateAvatar, isPending } = useUpdateMyUserAvatar()
+  const { mutate: updateAvatar, isPending } = useUpdateSessionUserAvatar()
 
   const onSubmit = (data: UpdateAvatarSchema) => {
     updateAvatar(
@@ -69,7 +69,7 @@ export const EditAvatar = ({ user, open, onOpen }: EditAvatarProps) => {
 
   useEffect(() => {
     if (user) {
-      methods.reset({ avatarUrl: user.avatarUrl })
+      methods.reset({ avatarUrl: user.image })
     }
   }, [user])
 

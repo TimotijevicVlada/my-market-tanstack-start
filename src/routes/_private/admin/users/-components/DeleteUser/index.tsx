@@ -32,7 +32,7 @@ export const DeleteUser = ({ user, params }: DeleteUserProps) => {
         open={isOpen}
         onOpenChange={() => setIsOpen(false)}
         title="Potvrdite brisanje korisnika"
-        description={`Da li ste sigurni da želite da obrišete korisnika ${user.username.toUpperCase()}?`}
+        description={`Da li ste sigurni da želite da obrišete korisnika ${user.name.toUpperCase()}?`}
         onConfirm={() => deleteUser({ userId: user.id })}
         onCancel={() => setIsOpen(false)}
         confirmText="Obrisi"

@@ -56,7 +56,7 @@ export const StepOne = ({
           label="Korisnik"
           placeholder="Izaberite korisnika"
           value={userIfField.value}
-          keys={{ label: 'username', value: 'id' }}
+          keys={{ label: 'name', value: 'id' }}
           onSelect={(selectedValue) => userIfField.onChange(selectedValue?.id)}
           error={errors.userId?.message}
         />

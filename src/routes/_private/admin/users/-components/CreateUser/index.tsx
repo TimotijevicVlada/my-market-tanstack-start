@@ -5,7 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { createUserDefaultValues, createUserSchema } from '../zod-schema'
 import { UserForm } from '../UserForm'
 import type { CreateUserSchema } from '../zod-schema'
-import type { GetUsersParams } from '@/api/users/types'
+// import type { GetUsersParams } from '@/api/users/types'
 import { Button } from '@/components/custom/Button'
 import {
   Dialog,
@@ -14,13 +14,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
-import { useCreateUser } from '@/api/users/queries'
+// import { useCreateUser } from '@/api/users/queries'
 
-interface CreateUserProps {
-  params: GetUsersParams
-}
-
-export const CreateUser = ({ params }: CreateUserProps) => {
+export const CreateUser = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const methods = useForm<CreateUserSchema>({
@@ -28,17 +24,16 @@ export const CreateUser = ({ params }: CreateUserProps) => {
     defaultValues: createUserDefaultValues,
   })
 
-  const { reset } = methods
 
-  const { mutate: createUser, isPending } = useCreateUser(params)
+  // const { mutate: createUser, isPending } = useCreateUser(params)
 
-  const onFormSubmit = (data: CreateUserSchema) => {
-    createUser(data, {
-      onSuccess: () => {
-        reset()
-        setIsOpen(false)
-      },
-    })
+  const onFormSubmit = () => {
+    // createUser(data, {
+    //   onSuccess: () => {
+    //     reset()
+    //     setIsOpen(false)
+    //   },
+    // })
   }
 
   return (
@@ -56,7 +51,7 @@ export const CreateUser = ({ params }: CreateUserProps) => {
           <FormProvider {...methods}>
             <UserForm
               onFormSubmit={onFormSubmit}
-              isSubmitting={isPending}
+              isSubmitting={false}
               type="create"
             />
           </FormProvider>

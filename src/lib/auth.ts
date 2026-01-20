@@ -1,31 +1,37 @@
-// Utility functions for authentication token management
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { tanstackStartCookies } from 'better-auth/tanstack-start'
+import { db } from '@/db'
 
-/**
- * Set authentication token in both localStorage and cookie
- */
-export function setAuthToken(token: string) {
-  // Store in localStorage for client-side access
-  localStorage.setItem('auth-token', token)
+// Better Auth instance - SERVER ONLY
+export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: 'pg',
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+  user: {
+    additionalFields: {
+      role: {
+        type: 'string',
+        required: false,
+        defaultValue: 'buyer',
+        input: false, // users can't set this on signup
+      },
+      isActive: {
+        type: 'boolean',
+        required: false,
+        defaultValue: true,
+        input: false, // users can't set this on signup
+      },
+    },
+  },
+  plugins: [
+    tanstackStartCookies(), // Must be last plugin
+  ],
+})
 
-  // Set cookie (expires in 7 days to match JWT expiration)
-  const expires = new Date()
-  expires.setDate(expires.getDate() + 7)
-  document.cookie = `auth-token=${token}; expires=${expires.toUTCString()}; path=/; SameSite=Strict`
-}
 
-/**
- * Get authentication token from localStorage
- */
-export function getAuthToken(): string | null {
-  return localStorage.getItem('auth-token')
-}
-
-/**
- * Remove authentication token
- */
-export function removeAuthToken() {
-  localStorage.removeItem('auth-token')
-  // Remove cookie
-  document.cookie =
-    'auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-}
+// TODO: use this type where needed
+export type Session = typeof auth.$Infer.Session

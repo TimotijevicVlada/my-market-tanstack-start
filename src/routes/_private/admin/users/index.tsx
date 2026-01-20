@@ -12,7 +12,6 @@ import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
 import { EditUser } from './-components/EditUser'
-import { EditPassword } from './-components/EditPassword'
 import type {
   GetUsersParams,
   SortableUserColumns,
@@ -131,7 +130,7 @@ function UsersPage() {
             </Button>
           )}
         </div>
-        <CreateUser params={params} />
+        <CreateUser />
       </div>
       <Table className="overflow-x-auto">
         <TableHeader className="bg-muted">
@@ -206,17 +205,17 @@ function UsersPage() {
                     </TableCell>
                   )
                 }
-                if (key === 'username') {
+                if (key === 'name') {
                   return (
                     <TableCell key={key}>
                       <div className="flex items-center gap-2">
                         <Avatar>
                           <AvatarImage
-                            src={getImageUrl(user.avatarUrl)}
-                            alt={user.username}
+                            src={getImageUrl(user.image)}
+                            alt={user.name}
                           />
                           <AvatarFallback>
-                            {user.username.charAt(0)}
+                            {user.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         {user[key]}
@@ -254,7 +253,6 @@ function UsersPage() {
                   return (
                     <TableCell key={key} className="sticky right-0 text-right">
                       <div className="flex justify-end gap-1">
-                        <EditPassword userId={user.id} params={params} />
                         <EditUser user={user} params={params} />
                         <DeleteUser user={user} params={params} />
                       </div>

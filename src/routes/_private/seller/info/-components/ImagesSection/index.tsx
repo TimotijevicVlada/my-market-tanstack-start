@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Calendar, Camera, Star } from 'lucide-react'
-import { statusConfig } from '../../data'
+import { statusConfig } from '../../-data'
 import { EditImages } from './EditImages'
 import { Button } from '@/components/custom/Button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

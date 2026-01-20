@@ -7,7 +7,6 @@ import {
   UserIcon,
 } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
-import { toast } from 'sonner'
 import type { User } from '@/api/users/types'
 import {
   DropdownMenu,
@@ -16,42 +15,34 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { removeAuthToken } from '@/lib/auth'
-import { useLoggedInUser } from '@/api/auth/queries'
 import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getRole } from '@/routes/_private/admin/users/-data'
 import { useGetMySeller } from '@/api/sellers/queries'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { useGetSessionUser, useSignOut } from '@/api/auth/queries'
+import { Spinner } from '@/components/ui/spinner'
 
-interface UserMenuDropdownProps {
-  loggedInUser: User
-}
 
-export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
-  const { data: user, refetch: refetchLoggedInUser } = useLoggedInUser({
-    initialData: loggedInUser,
-  })
+export const UserMenuDropdown = () => {
+
+  const { data: sessionUser } = useGetSessionUser()
+
   const { data: seller } = useGetMySeller()
 
   const { themeMode, toggleTheme } = useThemeStore()
 
-  const navigate = useNavigate()
+  const { mutate: signOut, isPending: isSigningOut } = useSignOut()
 
-  const handleLogout = () => {
-    removeAuthToken()
-    refetchLoggedInUser()
-    navigate({ to: '/' })
-    toast.success('Uspešno ste se odjavili')
-  }
+  const navigate = useNavigate()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="size-10">
           <AvatarFallback className="bg-muted-foreground/20 cursor-pointer">
-            {user?.username.charAt(0)}
+            {sessionUser?.name.charAt(0)}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -59,16 +50,16 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
         <div className="flex flex-col p-2">
           <div className="flex justify-between items-center">
             <span className="text-sm font-medium text-ellipsis overflow-hidden whitespace-nowrap">
-              {user?.username}
+              {sessionUser?.name}
             </span>
             <span
-              className={`text-xs font-bold text-white rounded-full px-2 py-0 capitalize ${user?.role ? getRole[user.role].color : ''}`}
+              className={`text-xs font-bold text-white rounded-full px-2 py-0 capitalize ${sessionUser?.role ? getRole[sessionUser.role as User['role']].color : ''}`}
             >
-              {user?.role ? getRole[user.role].name : ''}
+              {sessionUser?.role ? getRole[sessionUser.role as User['role']].name : ''}
             </span>
           </div>
           <span className="text-xs text-muted-foreground text-ellipsis overflow-hidden whitespace-nowrap">
-            {user?.email}
+            {sessionUser?.email}
           </span>
           {seller?.status === 'pending' && (
             <Alert variant="warning" appearance="light" className="mt-3 p-2">
@@ -96,7 +87,7 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
               </div>
             </Alert>
           )}
-          {user?.role === 'buyer' &&
+          {sessionUser?.role === 'buyer' &&
             seller?.status !== 'pending' &&
             seller?.status !== 'rejected' && (
               <DropdownMenuItem
@@ -135,9 +126,12 @@ export const UserMenuDropdown = ({ loggedInUser }: UserMenuDropdownProps) => {
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
+        <DropdownMenuItem onClick={() => signOut()}>
           <LogOutIcon />
           Odjavi se
+          {isSigningOut && (
+            <Spinner className='ml-auto' />
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
