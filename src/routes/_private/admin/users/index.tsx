@@ -39,7 +39,6 @@ import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getImageUrl } from '@/utils/get-image-url'
 
 const usersSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -211,7 +210,7 @@ function UsersPage() {
                       <div className="flex items-center gap-2">
                         <Avatar>
                           <AvatarImage
-                            src={getImageUrl(user.image)}
+                            src={user.image ?? undefined}
                             alt={user.name}
                           />
                           <AvatarFallback>

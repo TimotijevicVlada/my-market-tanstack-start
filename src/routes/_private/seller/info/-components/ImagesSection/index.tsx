@@ -7,7 +7,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetMySeller } from '@/api/sellers/queries'
-import { getImageUrl } from '@/utils/get-image-url'
 import { formatDateToLocale } from '@/utils/format-date'
 
 export const ImagesSection = () => {
@@ -24,7 +23,7 @@ export const ImagesSection = () => {
         <div className="relative h-40 md:h-48 bg-gradient-to-br from-primary/30 via-primary/20 to-background">
           {seller?.coverImageUrl && (
             <img
-              src={getImageUrl(seller.coverImageUrl)}
+              src={seller.coverImageUrl}
               alt="Cover"
               className="w-full h-full object-cover"
             />
@@ -46,7 +45,7 @@ export const ImagesSection = () => {
             <div className="relative">
               <Avatar className="h-24 w-24 md:h-32 md:w-32 border-4 border-card rounded-full shadow-xl">
                 <AvatarImage
-                  src={getImageUrl(seller?.avatarUrl)}
+                  src={seller?.avatarUrl ?? undefined}
                   alt={seller?.displayName}
                 />
                 <AvatarFallback className="bg-primary/20 text-primary text-2xl md:text-3xl font-bold">

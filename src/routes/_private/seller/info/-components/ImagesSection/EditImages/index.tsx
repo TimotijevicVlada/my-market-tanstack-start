@@ -16,7 +16,6 @@ import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/custom/Button'
 import { useUpdateMySeller } from '@/api/sellers/queries'
 import { UploadFileArea } from '@/components/custom/UploadFileArea'
-import { getImageUrl } from '@/utils/get-image-url'
 import { useUploadToR2 } from '@/api/uploads/queries'
 
 type UploadingType = 'avatar' | 'cover'
@@ -79,9 +78,9 @@ export const EditImages = ({ seller, open, onOpen }: EditImagesProps) => {
       {
         onSuccess: (data) => {
           if (imageType === 'avatar') {
-            avatarUrlField.onChange(data.key)
+            avatarUrlField.onChange(data.publicUrl)
           } else {
-            coverImageUrlField.onChange(data.key)
+            coverImageUrlField.onChange(data.publicUrl)
           }
         },
       },
@@ -110,7 +109,7 @@ export const EditImages = ({ seller, open, onOpen }: EditImagesProps) => {
               <UploadFileArea
                 label="Logo"
                 Icon={UserIcon}
-                src={getImageUrl(avatarUrlField.value)}
+                src={avatarUrlField.value}
                 onFileChange={(file) => onChange(file, 'avatar')}
                 onClear={() => avatarUrlField.onChange(null)}
                 isUploading={uploadingType === 'avatar' && isUploadingImage}
@@ -118,7 +117,7 @@ export const EditImages = ({ seller, open, onOpen }: EditImagesProps) => {
               />
               <UploadFileArea
                 label="Naslovna slika profila"
-                src={getImageUrl(coverImageUrlField.value)}
+                src={coverImageUrlField.value}
                 Icon={ImageIcon}
                 onFileChange={(file) => onChange(file, 'cover')}
                 onClear={() => coverImageUrlField.onChange(null)}

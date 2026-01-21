@@ -33,6 +33,13 @@ export function useLogin() {
   })
 }
 
+
+export function useGoogleSignIn() {
+  return useMutation({
+    mutationFn: () => authClient.signIn.social({ provider: "google" }),
+  })
+}
+
 export function useRegister() {
   const navigate = useNavigate()
 

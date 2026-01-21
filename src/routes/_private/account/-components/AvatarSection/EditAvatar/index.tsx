@@ -15,7 +15,6 @@ import {
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/custom/Button'
 import { UploadFileArea } from '@/components/custom/UploadFileArea'
-import { getImageUrl } from '@/utils/get-image-url'
 import { useUploadToR2 } from '@/api/uploads/queries'
 import { useUpdateSessionUserAvatar } from '@/api/auth/queries'
 
@@ -61,7 +60,7 @@ export const EditAvatar = ({ user, open, onOpen }: EditAvatarProps) => {
       { file, folder: 'test' },
       {
         onSuccess: (data) => {
-          avatarUrlField.onChange(data.key)
+          avatarUrlField.onChange(data.publicUrl)
         },
       },
     )
@@ -89,7 +88,7 @@ export const EditAvatar = ({ user, open, onOpen }: EditAvatarProps) => {
               <UploadFileArea
                 label="Slika profila"
                 Icon={UserIcon}
-                src={getImageUrl(avatarUrlField.value)}
+                src={avatarUrlField.value}
                 onFileChange={(file) => onChange(file)}
                 onClear={() => avatarUrlField.onChange(null)}
                 isUploading={isUploadingImage}

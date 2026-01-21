@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Switch, SwitchIndicator, SwitchWrapper } from '@/components/ui/switch'
 import { useThemeStore } from '@/zustand/theme'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getRole } from '@/routes/_private/admin/users/-data'
 import { useGetMySeller } from '@/api/sellers/queries'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -41,6 +41,7 @@ export const UserMenuDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="size-10">
+          <AvatarImage src={sessionUser?.image ?? undefined} />
           <AvatarFallback className="bg-muted-foreground/20 cursor-pointer">
             {sessionUser?.name.charAt(0)}
           </AvatarFallback>

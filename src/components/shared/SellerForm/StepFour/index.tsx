@@ -7,7 +7,6 @@ import { Button } from '@/components/custom/Button'
 import { DialogFooter } from '@/components/ui/dialog'
 import { useUploadToR2 } from '@/api/uploads/queries'
 import { UploadFileArea } from '@/components/custom/UploadFileArea'
-import { getImageUrl } from '@/utils/get-image-url'
 
 interface StepFourProps {
   setActiveStep: (step: number) => void
@@ -52,9 +51,9 @@ export const StepFour = ({
       {
         onSuccess: (data) => {
           if (imageType === 'avatar') {
-            avatarUrlField.onChange(data.key)
+            avatarUrlField.onChange(data.publicUrl)
           } else {
-            coverImageUrlField.onChange(data.key)
+            coverImageUrlField.onChange(data.publicUrl)
           }
         },
       },
@@ -71,7 +70,7 @@ export const StepFour = ({
           <UploadFileArea
             label="Logo"
             Icon={UserIcon}
-            src={getImageUrl(avatarUrlField.value)}
+            src={avatarUrlField.value}
             onFileChange={(file) => onChange(file, 'avatar')}
             onClear={() => avatarUrlField.onChange(null)}
             isUploading={uploadingType === 'avatar' && isUploadingImage}
@@ -80,7 +79,7 @@ export const StepFour = ({
         <div className="flex-1">
           <UploadFileArea
             label="Naslovna slika profila"
-            src={getImageUrl(coverImageUrlField.value)}
+            src={coverImageUrlField.value}
             Icon={ImageIcon}
             onFileChange={(file) => onChange(file, 'cover')}
             onClear={() => coverImageUrlField.onChange(null)}

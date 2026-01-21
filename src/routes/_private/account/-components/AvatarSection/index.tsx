@@ -6,7 +6,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { getRole } from '@/routes/_private/admin/users/-data'
-import { getImageUrl } from '@/utils/get-image-url'
 import { useGetSessionUser } from '@/api/auth/queries'
 
 
@@ -25,7 +24,7 @@ export const AvatarSection = () => {
             <div className="relative -mt-12 sm:-mt-16">
               <Avatar className="size-24 border-4 border-background rounded-full shadow-xl sm:size-28">
                 <AvatarImage
-                  src={getImageUrl(sessionUser?.image)}
+                  src={sessionUser?.image ?? undefined}
                   alt={sessionUser?.name}
                 />
                 <AvatarFallback className="bg-primary/10 text-3xl font-semibold text-primary">

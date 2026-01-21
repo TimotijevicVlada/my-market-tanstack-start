@@ -45,7 +45,6 @@ import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
-import { getImageUrl } from '@/utils/get-image-url'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 const sellersSearchSchema = z.object({
@@ -235,7 +234,7 @@ function SellersPage() {
                       <div className="flex items-center gap-2">
                         <Avatar>
                           <AvatarImage
-                            src={getImageUrl(seller.avatarUrl)}
+                            src={seller.avatarUrl ?? undefined}
                             alt={seller.displayName}
                           />
                           <AvatarFallback>
