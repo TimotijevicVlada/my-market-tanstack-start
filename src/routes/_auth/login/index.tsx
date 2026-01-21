@@ -5,7 +5,7 @@ import { LockIcon, MailIcon } from 'lucide-react'
 import { loginSchema } from './-schema'
 import type { LoginFormData } from './-schema'
 import { Button } from '@/components/custom/Button'
-import { useGoogleSignIn, useLogin } from '@/api/auth/queries'
+import { useFacebookSignIn, useGoogleSignIn, useLogin } from '@/api/auth/queries'
 import { FormField } from '@/components/custom/FormField'
 import { FormFieldPassword } from '@/components/custom/FormFieldPassword'
 import {
@@ -29,6 +29,7 @@ export const Route = createFileRoute('/_auth/login/')({
 function LoginComponent() {
   const { mutate: login, isPending, error } = useLogin()
   const { mutate: googleLogin, isPending: isGoogleLoginPending } = useGoogleSignIn()
+  const { mutate: facebookLogin, isPending: isFacebookLoginPending } = useFacebookSignIn()
 
   const {
     register,
@@ -61,7 +62,7 @@ function LoginComponent() {
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Dobrodošli nazad</CardTitle>
           <CardDescription>
-            Prijavite se pomoću svojeg Apple ili Google naloga
+            Prijavite se pomoću Google ili Facebook naloga
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -82,7 +83,12 @@ function LoginComponent() {
                   </svg>
                   Google prijava
                 </Button>
-                <Button variant="outline" type="button">
+                <Button
+                  variant="outline"
+                  type="button"
+                  loading={{ state: isFacebookLoginPending, text: 'Facebook prijava...' }}
+                  onClick={() => facebookLogin()}
+                >
                   <svg fill="currentColor" width="800px" height="800px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
                     <g id="SVGRepo_bgCarrier" stroke-width="0" />
                     <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />

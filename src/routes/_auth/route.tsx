@@ -1,9 +1,16 @@
 import { GalleryVerticalEnd } from 'lucide-react'
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
+import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import Header from '@/layout/Header'
+import { getSessionUser } from '@/api/auth/server'
 
 export const Route = createFileRoute('/_auth')({
   component: AuthLayout,
+  beforeLoad: async () => {
+    const sessionUser = await getSessionUser()
+    if (sessionUser.user) {
+      throw redirect({ to: '/', replace: true })
+    }
+  },
 })
 
 function AuthLayout() {

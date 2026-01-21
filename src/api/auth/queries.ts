@@ -33,10 +33,21 @@ export function useLogin() {
   })
 }
 
-
 export function useGoogleSignIn() {
   return useMutation({
     mutationFn: () => authClient.signIn.social({ provider: "google" }),
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export function useFacebookSignIn() {
+  return useMutation({
+    mutationFn: () => authClient.signIn.social({ provider: "facebook" }),
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 }
 
