@@ -195,7 +195,7 @@ export const editUser = createServerFn({
     }
 
     const existingUserByUsername = await db.query.user.findFirst({
-      where: (userTable) => eq(userTable.name, data.username),
+      where: (userTable) => eq(userTable.name, data.name),
     })
 
     if (existingUserByUsername && existingUserByUsername.id !== userId) {
@@ -205,7 +205,7 @@ export const editUser = createServerFn({
     const [updatedUser] = await db
       .update(user)
       .set({
-        name: data.username,
+        name: data.name,
         email: data.email,
         role: data.role,
       })
