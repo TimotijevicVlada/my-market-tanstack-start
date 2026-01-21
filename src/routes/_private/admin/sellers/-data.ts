@@ -37,15 +37,15 @@ export const statusFilterOptions: Array<{
   id: SellerStatus
   label: string
 }> = [
-  { id: 'active', label: 'Aktivne' },
-  { id: 'inactive', label: 'Neaktivne' },
-]
+    { id: 'active', label: 'Aktivne' },
+    { id: 'inactive', label: 'Neaktivne' },
+  ]
 
 export const verificationStatusFilterOptions: Array<{
   id: VerificationStatus
   label: string
 }> = [
-  { id: 'pending', label: 'Na čekanju' },
-  { id: 'approved', label: 'Odobreno' },
-  { id: 'rejected', label: 'Odbijeno' },
-]
+    { id: 'pending', label: 'Na čekanju' },
+    { id: 'approved', label: 'Odobreno' },
+    { id: 'rejected', label: 'Odbijeno' },
+  ]

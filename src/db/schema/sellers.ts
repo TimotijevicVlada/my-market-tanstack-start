@@ -10,8 +10,7 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core'
 import { sql } from 'drizzle-orm'
-
-import { users } from './users'
+import { user } from './better-auth.ts'
 
 export const sellerStatusEnum = pgEnum('seller_status', [
   'pending',
@@ -21,9 +20,9 @@ export const sellerStatusEnum = pgEnum('seller_status', [
 
 export const sellers = pgTable('sellers', {
   id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id')
+  userId: text('user_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => user.id, { onDelete: 'cascade' }),
 
   displayName: varchar('display_name', { length: 120 }).notNull(),
   description: text('description'),

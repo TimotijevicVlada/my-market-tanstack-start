@@ -2,13 +2,13 @@ import { z } from 'zod'
 
 export const registerSchema = z
   .object({
-    username: z.string().min(3, 'Username must be at least 3 characters'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6, 'Please confirm your password'),
+    username: z.string().min(3, 'Korisničko ime mora biti najmanje 3 karaktera'),
+    email: z.string().email('Neispravna email adresa'),
+    password: z.string().min(6, 'Lozinka mora biti najmanje 6 karaktera'),
+    confirmPassword: z.string().min(6, 'Potvrdite lozinku'),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
+    message: "Lozinke se ne podudaraju",
     path: ['confirmPassword'],
   })
 

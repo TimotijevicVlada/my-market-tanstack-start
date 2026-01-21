@@ -60,7 +60,7 @@ export const StatusColumn = ({ user, refetchUsers }: StatusColumnProps) => {
         open={!!userIdForDeactivation}
         onOpenChange={() => setUserIdForDeactivation(null)}
         title="Potvrdite deaktivaciju korisnika"
-        description={`Da li ste sigurni da želite da deaktivujete korisnika ${user.username.toUpperCase()}?`}
+        description={`Da li ste sigurni da želite da deaktivujete korisnika ${user.name.toUpperCase()}?`}
         onConfirm={() => handleToggleUserActiveStatus()}
         onCancel={() => setUserIdForDeactivation(null)}
         confirmText="Deaktiviraj"

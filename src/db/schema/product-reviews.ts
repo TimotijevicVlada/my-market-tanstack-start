@@ -7,7 +7,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core'
 import { products } from './products.ts'
-import { users } from './users.ts'
+import { user } from './better-auth.ts'
 
 export const reviewStatusEnum = pgEnum('review_status', [
   'pending',
@@ -22,7 +22,7 @@ export const productReviews = pgTable('product_reviews', {
     .references(() => products.id, { onDelete: 'cascade' }),
   userId: uuid('user_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => user.id, { onDelete: 'cascade' }),
   rating: integer('rating').notNull(),
   content: text('content').notNull(),
   status: reviewStatusEnum('status').notNull().default('pending'),

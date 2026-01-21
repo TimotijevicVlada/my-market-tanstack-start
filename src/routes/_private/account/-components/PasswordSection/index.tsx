@@ -6,7 +6,7 @@ import { Button } from '@/components/custom/Button'
 import { SectionHead } from '@/components/custom/SectionHead'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { FormFieldPassword } from '@/components/custom/FormFieldPassword'
-import { useUpdateMyUserPassword } from '@/api/users/queries'
+import { useChangeSessionUserPassword } from '@/api/auth/queries'
 
 const passwordSchema = z
   .object({
@@ -25,6 +25,9 @@ const passwordSchema = z
 type PasswordFormData = z.infer<typeof passwordSchema>
 
 export const PasswordSection = () => {
+
+  const { mutate: changeSessionUserPassword, isPending } = useChangeSessionUserPassword()
+
   const {
     register,
     handleSubmit,
@@ -39,10 +42,11 @@ export const PasswordSection = () => {
     },
   })
 
-  const { mutate: updateMyUserPassword, isPending } = useUpdateMyUserPassword()
-
   const onSubmit = (data: PasswordFormData) => {
-    updateMyUserPassword(data, {
+    changeSessionUserPassword({
+      currentPassword: data.oldPassword,
+      newPassword: data.newPassword
+    }, {
       onSuccess: () => {
         reset()
       },

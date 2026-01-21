@@ -169,6 +169,41 @@
       "when": 1768580080451,
       "tag": "0023_lovely_mandroid",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1768774602379,
+      "tag": "0024_dapper_ultron",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1768777601651,
+      "tag": "0025_lowly_pretty_boy",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1768783673497,
+      "tag": "0026_wealthy_squirrel_girl",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1768949686014,
+      "tag": "0027_sweet_edwin_jarvis",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1768950146810,
+      "tag": "0028_free_ultragirl",
+      "breakpoints": true
     }
   ]
 }

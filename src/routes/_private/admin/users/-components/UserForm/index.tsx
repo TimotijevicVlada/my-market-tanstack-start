@@ -39,8 +39,8 @@ export const UserForm = ({
         required
         label="Korisničko ime"
         placeholder="Unesite korisničko ime"
-        error={errors.username?.message}
-        {...register('username')}
+        error={errors.name?.message}
+        {...register('name')}
       />
       <FormField
         required

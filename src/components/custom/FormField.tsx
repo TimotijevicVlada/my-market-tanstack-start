@@ -8,6 +8,7 @@ export interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
   startIcon?: ReactNode
   endIcon?: ReactNode
+  forgotPasswordLink?: ReactNode
 }
 
 export const FormField = ({
@@ -16,15 +17,19 @@ export const FormField = ({
   error,
   startIcon,
   endIcon,
+  forgotPasswordLink,
   ...props
 }: FormFieldProps) => {
   return (
     <Field className="gap-1">
       {label && (
-        <FieldLabel>
-          {label}
-          {required && <span className="text-destructive font-bold">*</span>}
-        </FieldLabel>
+        <div className="flex items-center">
+          <div className="flex items-center gap-2">
+            <FieldLabel>{label}</FieldLabel>
+            {required && <span className="text-destructive font-bold">*</span>}
+          </div>
+          {forgotPasswordLink}
+        </div>
       )}
       <InputGroup>
         <InputGroupInput {...props} />

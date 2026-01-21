@@ -14,8 +14,8 @@ import { alias } from 'drizzle-orm/pg-core'
 import type { GetCategoriesParams } from './types'
 import type { CategorySchema } from '@/routes/_private/admin/categories/-components/zod-schema'
 import { db } from '@/db'
-import { categories } from '@/db/schema'
-import { requireAdminMiddleware } from '@/api/middleware'
+import { categories } from '@/db/schema/categories'
+import { requireAdminMiddleware } from '@/lib/middleware'
 
 export const getCategories = createServerFn({
   method: 'GET',

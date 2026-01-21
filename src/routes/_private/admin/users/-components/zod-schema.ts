@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 export const baseSchema = z.object({
-  username: z.string().trim().min(1, 'Korisničko ime je obavezno'),
+  name: z.string().trim().min(1, 'Korisničko ime je obavezno'),
   email: z.email('Neispravna email adresa'),
   role: z.enum(['seller', 'buyer', 'admin', 'super-admin']),
 })
@@ -19,14 +19,14 @@ export type CreateUserSchema = z.infer<typeof createUserSchema>
 export type UserSchema = CreateUserSchema & EditUserSchema
 
 export const createUserDefaultValues: CreateUserSchema = {
-  username: '',
+  name: '',
   email: '',
   password: '',
   role: 'buyer',
 }
 
 export const editUserDefaultValues: EditUserSchema = {
-  username: '',
+  name: '',
   email: '',
   role: 'buyer',
 }

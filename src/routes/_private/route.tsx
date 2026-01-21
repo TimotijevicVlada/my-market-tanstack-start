@@ -1,37 +1,33 @@
 import {
   Outlet,
   createFileRoute,
-  redirect,
   useLoaderData,
 } from '@tanstack/react-router'
+import Header from '@/layout/Header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/custom/Sidebar/app-sidebar'
-import { getLoggedInUser } from '@/api/auth/server'
-import Header from '@/layout/Header'
+import { betterAuthMiddleware } from '@/lib/middleware'
+import { getSessionUser } from '@/api/auth/server'
+import { useGetSessionUser } from '@/api/auth/queries'
 
 export const Route = createFileRoute('/_private')({
   component: PrivateLayout,
-  beforeLoad: async () => {
-    const user = await getLoggedInUser()
-    if (!user) {
-      throw redirect({ to: '/login' })
-    }
-    return { user }
+  server: {
+    middleware: [betterAuthMiddleware]
   },
-  loader: async () => {
-    const user = await getLoggedInUser()
-    return { user }
-  },
+  loader: async () => await getSessionUser()
 })
 
 function PrivateLayout() {
   const { user } = useLoaderData({ from: '/_private' })
 
+  const { data: sessionUser } = useGetSessionUser(user)
+
   return (
     <SidebarProvider>
       <AppSidebar collapsible="icon" />
       <SidebarInset className="overflow-x-hidden">
-        <Header initialUser={user} privateLayout />
+        <Header privateLayout sessionUser={sessionUser} />
         <div className="p-5">
           <Outlet />
         </div>

@@ -21,6 +21,7 @@ import { Route as PublicSellerApplyIndexRouteImport } from './routes/_public/sel
 import { Route as PrivateAccountIndexRouteImport } from './routes/_private/account/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as PrivateSellerProductsIndexRouteImport } from './routes/_private/seller/products/index'
 import { Route as PrivateSellerInfoIndexRouteImport } from './routes/_private/seller/info/index'
 import { Route as PrivateBuyerOrdersIndexRouteImport } from './routes/_private/buyer/orders/index'
@@ -86,6 +87,11 @@ const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   path: '/login/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivateSellerProductsIndexRoute =
   PrivateSellerProductsIndexRouteImport.update({
     id: '/products/',
@@ -127,29 +133,31 @@ const PrivateAccountOrdersIndexRoute =
   } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof PublicIndexRoute
   '/admin': typeof PrivateAdminRouteRouteWithChildren
   '/buyer': typeof PrivateBuyerRouteRouteWithChildren
   '/seller': typeof PrivateSellerRouteRouteWithChildren
   '/auth': typeof PublicAuthRouteRoute
-  '/': typeof PublicIndexRoute
-  '/login': typeof AuthLoginIndexRoute
-  '/register': typeof AuthRegisterIndexRoute
-  '/account': typeof PrivateAccountIndexRoute
-  '/seller-apply': typeof PublicSellerApplyIndexRoute
-  '/account/orders': typeof PrivateAccountOrdersIndexRoute
-  '/admin/categories': typeof PrivateAdminCategoriesIndexRoute
-  '/admin/sellers': typeof PrivateAdminSellersIndexRoute
-  '/admin/users': typeof PrivateAdminUsersIndexRoute
-  '/buyer/orders': typeof PrivateBuyerOrdersIndexRoute
-  '/seller/info': typeof PrivateSellerInfoIndexRoute
-  '/seller/products': typeof PrivateSellerProductsIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/login/': typeof AuthLoginIndexRoute
+  '/register/': typeof AuthRegisterIndexRoute
+  '/account/': typeof PrivateAccountIndexRoute
+  '/seller-apply/': typeof PublicSellerApplyIndexRoute
+  '/account/orders/': typeof PrivateAccountOrdersIndexRoute
+  '/admin/categories/': typeof PrivateAdminCategoriesIndexRoute
+  '/admin/sellers/': typeof PrivateAdminSellersIndexRoute
+  '/admin/users/': typeof PrivateAdminUsersIndexRoute
+  '/buyer/orders/': typeof PrivateBuyerOrdersIndexRoute
+  '/seller/info/': typeof PrivateSellerInfoIndexRoute
+  '/seller/products/': typeof PrivateSellerProductsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof PublicIndexRoute
   '/admin': typeof PrivateAdminRouteRouteWithChildren
   '/buyer': typeof PrivateBuyerRouteRouteWithChildren
   '/seller': typeof PrivateSellerRouteRouteWithChildren
   '/auth': typeof PublicAuthRouteRoute
-  '/': typeof PublicIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/account': typeof PrivateAccountIndexRoute
@@ -172,6 +180,7 @@ export interface FileRoutesById {
   '/_private/seller': typeof PrivateSellerRouteRouteWithChildren
   '/_public/auth': typeof PublicAuthRouteRoute
   '/_public/': typeof PublicIndexRoute
+  '/api/auth/$': typeof ApiAuthSplatRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_private/account/': typeof PrivateAccountIndexRoute
@@ -187,29 +196,31 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/admin'
     | '/buyer'
     | '/seller'
     | '/auth'
-    | '/'
-    | '/login'
-    | '/register'
-    | '/account'
-    | '/seller-apply'
-    | '/account/orders'
-    | '/admin/categories'
-    | '/admin/sellers'
-    | '/admin/users'
-    | '/buyer/orders'
-    | '/seller/info'
-    | '/seller/products'
+    | '/api/auth/$'
+    | '/login/'
+    | '/register/'
+    | '/account/'
+    | '/seller-apply/'
+    | '/account/orders/'
+    | '/admin/categories/'
+    | '/admin/sellers/'
+    | '/admin/users/'
+    | '/buyer/orders/'
+    | '/seller/info/'
+    | '/seller/products/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/admin'
     | '/buyer'
     | '/seller'
     | '/auth'
-    | '/'
+    | '/api/auth/$'
     | '/login'
     | '/register'
     | '/account'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/_private/seller'
     | '/_public/auth'
     | '/_public/'
+    | '/api/auth/$'
     | '/_auth/login/'
     | '/_auth/register/'
     | '/_private/account/'
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   PrivateRouteRoute: typeof PrivateRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
+  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -255,21 +268,21 @@ declare module '@tanstack/react-router' {
     '/_public': {
       id: '/_public'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof PublicRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_private': {
       id: '/_private'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof PrivateRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_auth': {
       id: '/_auth'
       path: ''
-      fullPath: ''
+      fullPath: '/'
       preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
@@ -311,77 +324,84 @@ declare module '@tanstack/react-router' {
     '/_public/seller-apply/': {
       id: '/_public/seller-apply/'
       path: '/seller-apply'
-      fullPath: '/seller-apply'
+      fullPath: '/seller-apply/'
       preLoaderRoute: typeof PublicSellerApplyIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_private/account/': {
       id: '/_private/account/'
       path: '/account'
-      fullPath: '/account'
+      fullPath: '/account/'
       preLoaderRoute: typeof PrivateAccountIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
     '/_auth/register/': {
       id: '/_auth/register/'
       path: '/register'
-      fullPath: '/register'
+      fullPath: '/register/'
       preLoaderRoute: typeof AuthRegisterIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/_auth/login/': {
       id: '/_auth/login/'
       path: '/login'
-      fullPath: '/login'
+      fullPath: '/login/'
       preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof AuthRouteRoute
+    }
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_private/seller/products/': {
       id: '/_private/seller/products/'
       path: '/products'
-      fullPath: '/seller/products'
+      fullPath: '/seller/products/'
       preLoaderRoute: typeof PrivateSellerProductsIndexRouteImport
       parentRoute: typeof PrivateSellerRouteRoute
     }
     '/_private/seller/info/': {
       id: '/_private/seller/info/'
       path: '/info'
-      fullPath: '/seller/info'
+      fullPath: '/seller/info/'
       preLoaderRoute: typeof PrivateSellerInfoIndexRouteImport
       parentRoute: typeof PrivateSellerRouteRoute
     }
     '/_private/buyer/orders/': {
       id: '/_private/buyer/orders/'
       path: '/orders'
-      fullPath: '/buyer/orders'
+      fullPath: '/buyer/orders/'
       preLoaderRoute: typeof PrivateBuyerOrdersIndexRouteImport
       parentRoute: typeof PrivateBuyerRouteRoute
     }
     '/_private/admin/users/': {
       id: '/_private/admin/users/'
       path: '/users'
-      fullPath: '/admin/users'
+      fullPath: '/admin/users/'
       preLoaderRoute: typeof PrivateAdminUsersIndexRouteImport
       parentRoute: typeof PrivateAdminRouteRoute
     }
     '/_private/admin/sellers/': {
       id: '/_private/admin/sellers/'
       path: '/sellers'
-      fullPath: '/admin/sellers'
+      fullPath: '/admin/sellers/'
       preLoaderRoute: typeof PrivateAdminSellersIndexRouteImport
       parentRoute: typeof PrivateAdminRouteRoute
     }
     '/_private/admin/categories/': {
       id: '/_private/admin/categories/'
       path: '/categories'
-      fullPath: '/admin/categories'
+      fullPath: '/admin/categories/'
       preLoaderRoute: typeof PrivateAdminCategoriesIndexRouteImport
       parentRoute: typeof PrivateAdminRouteRoute
     }
     '/_private/account/orders/': {
       id: '/_private/account/orders/'
       path: '/account/orders'
-      fullPath: '/account/orders'
+      fullPath: '/account/orders/'
       preLoaderRoute: typeof PrivateAccountOrdersIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
@@ -481,6 +501,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   PrivateRouteRoute: PrivateRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
+  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

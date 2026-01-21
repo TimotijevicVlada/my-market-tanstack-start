@@ -1,99 +1,60 @@
 import { createServerFn } from '@tanstack/react-start'
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
-import { authMiddleware } from '../middleware'
-import type { SignOptions } from 'jsonwebtoken'
-import type { LoginPayload, RegisterPayload } from './types'
+import { getRequest } from '@tanstack/react-start/server'
+import { eq } from 'drizzle-orm'
+import { auth } from '@/lib/auth'
+import { betterAuthMiddleware } from '@/lib/middleware'
 import { db } from '@/db'
-import { users } from '@/db/schema'
+import { user } from '@/db/schema/better-auth'
 
-const JWT_SECRET = process.env.JWT_SECRET!
-
-// Helper function to sign JWT token (server-only)
-function signJWTToken(
-  userId: string,
-  expiresIn: SignOptions['expiresIn'] = '7d',
-) {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn })
-}
-
-export const login = createServerFn({
-  method: 'POST',
-})
-  .inputValidator((data: LoginPayload) => data)
-  .handler(async ({ data }) => {
-    const user = await db.query.users.findFirst({
-      where: (userTable, { eq }) => eq(userTable.email, data.email),
-    })
-
-    if (!user) {
-      throw new Error('Neispravna email adresa')
-    }
-
-    const isValidPassword = await bcrypt.compare(
-      data.password,
-      user.passwordHash,
-    )
-
-    if (!isValidPassword) {
-      throw new Error('Neispravna lozinka')
-    }
-
-    const token = signJWTToken(user.id)
-
-    const { passwordHash: _, ...userWithoutPassword } = user
+export const getSessionUser = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const { headers } = getRequest()
+    const session = await auth.api.getSession({ headers })
     return {
-      token,
-      user: userWithoutPassword,
+      user: session?.user
     }
   })
 
-export const register = createServerFn({
+export const updateSessionUserAvatar = createServerFn({
   method: 'POST',
 })
-  .inputValidator((data: RegisterPayload) => data)
-  .handler(async ({ data }) => {
-    const existingUserByEmail = await db.query.users.findFirst({
-      where: (userTable, { eq }) => eq(userTable.email, data.email),
+  .middleware([betterAuthMiddleware])
+  .inputValidator((data: { avatarUrl: string | null | undefined }) => data)
+  .handler(async ({ context, data }) => {
+    const { user: userData } = context
+    const { avatarUrl } = data
+
+    const [updatedUser] = await db
+      .update(user)
+      .set({ image: avatarUrl })
+      .where(eq(user.id, userData.id))
+      .returning()
+
+    return { user: updatedUser }
+  })
+
+export const updateSessionUserEmail = createServerFn({
+  method: 'POST',
+})
+  .middleware([betterAuthMiddleware])
+  .inputValidator((data: { email: string }) => data)
+  .handler(async ({ context, data }) => {
+    const { user: userData } = context
+    const { email } = data
+
+    const existingUserByEmail = await db.query.user.findFirst({
+      where: (userTable) => eq(userTable.email, data.email),
     })
 
-    if (existingUserByEmail) {
+    if (existingUserByEmail && existingUserByEmail.id !== userData.id) {
       throw new Error('Email je već zauzet')
     }
 
-    const existingUserByUsername = await db.query.users.findFirst({
-      where: (userTable, { eq }) => eq(userTable.username, data.username),
-    })
-
-    if (existingUserByUsername) {
-      throw new Error('Korisničko ime je već zauzeto')
-    }
-
-    const passwordHash = await bcrypt.hash(data.password, 10)
-
-    const [user] = await db
-      .insert(users)
-      .values({
-        username: data.username,
-        email: data.email,
-        passwordHash,
-        role: 'buyer',
-      })
+    const [updatedUser] = await db
+      .update(user)
+      .set({ email })
+      .where(eq(user.id, userData.id))
       .returning()
 
-    const token = signJWTToken(user.id)
-
-    const { passwordHash: _, ...userWithoutPassword } = user
-    return {
-      token,
-      user: userWithoutPassword,
-    }
-  })
-
-export const getLoggedInUser = createServerFn({
-  method: 'GET',
-})
-  .middleware([authMiddleware])
-  .handler(({ context }) => {
-    return context.user
+    return { user: updatedUser }
   })

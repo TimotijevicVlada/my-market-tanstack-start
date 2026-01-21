@@ -6,7 +6,7 @@ import { Button } from '@/components/custom/Button'
 import { SectionHead } from '@/components/custom/SectionHead'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { FormField } from '@/components/custom/FormField'
-import { useUpdateMyUserEmail } from '@/api/users/queries'
+import { useUpdateSessionUserEmail } from '@/api/auth/queries'
 
 const emailSchema = z.object({
   email: z.email('Neispravna email adresa'),
@@ -23,7 +23,7 @@ export const EmailSection = () => {
     defaultValues: { email: '' },
   })
 
-  const { mutate: updateMyUserEmail, isPending } = useUpdateMyUserEmail()
+  const { mutate: updateMyUserEmail, isPending } = useUpdateSessionUserEmail()
 
   const onSubmit = (data: { email: string }) => {
     updateMyUserEmail(data, {

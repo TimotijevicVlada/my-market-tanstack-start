@@ -1,37 +1,30 @@
-import {
-  Outlet,
-  createFileRoute,
-  redirect,
-  useLoaderData,
-} from '@tanstack/react-router'
-import { getLoggedInUser } from '@/api/auth/server'
+import { GalleryVerticalEnd } from 'lucide-react'
+import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import Header from '@/layout/Header'
+import { getSessionUser } from '@/api/auth/server'
 
 export const Route = createFileRoute('/_auth')({
   component: AuthLayout,
   beforeLoad: async () => {
-    const user = await getLoggedInUser()
-    if (user) {
-      throw redirect({ to: '/' })
+    const sessionUser = await getSessionUser()
+    if (sessionUser.user) {
+      throw redirect({ to: '/', replace: true })
     }
-  },
-  loader: async () => {
-    const user = await getLoggedInUser()
-    return { user }
   },
 })
 
 function AuthLayout() {
-  const { user } = useLoaderData({ from: '/_auth' })
-
   return (
     <div>
-      <Header initialUser={user} />
-      <div className="min-h-screen flex">
-        <div className="flex-1 bg-sidebar flex justify-center items-center">
-          Left side
-        </div>
-        <div className="flex-1 flex justify-center items-center">
+      <Header />
+      <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
+        <div className="flex w-full max-w-sm flex-col gap-6">
+          <Link to="/" className="flex items-center gap-2 self-center font-medium">
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <GalleryVerticalEnd className="size-4" />
+            </div>
+            My Marketplace
+          </Link>
           <Outlet />
         </div>
       </div>

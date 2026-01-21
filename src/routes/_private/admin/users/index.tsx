@@ -12,7 +12,6 @@ import { StatusColumn } from './-components/StatusColumn'
 import { CreateUser } from './-components/CreateUser'
 import { DeleteUser } from './-components/DeleteUser'
 import { EditUser } from './-components/EditUser'
-import { EditPassword } from './-components/EditPassword'
 import type {
   GetUsersParams,
   SortableUserColumns,
@@ -40,7 +39,6 @@ import { TableError } from '@/components/custom/Table/TableError'
 import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { Button } from '@/components/custom/Button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { getImageUrl } from '@/utils/get-image-url'
 
 const usersSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -131,7 +129,7 @@ function UsersPage() {
             </Button>
           )}
         </div>
-        <CreateUser params={params} />
+        <CreateUser />
       </div>
       <Table className="overflow-x-auto">
         <TableHeader className="bg-muted">
@@ -206,17 +204,17 @@ function UsersPage() {
                     </TableCell>
                   )
                 }
-                if (key === 'username') {
+                if (key === 'name') {
                   return (
                     <TableCell key={key}>
                       <div className="flex items-center gap-2">
                         <Avatar>
                           <AvatarImage
-                            src={getImageUrl(user.avatarUrl)}
-                            alt={user.username}
+                            src={user.image ?? undefined}
+                            alt={user.name}
                           />
                           <AvatarFallback>
-                            {user.username.charAt(0)}
+                            {user.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         {user[key]}
@@ -254,7 +252,6 @@ function UsersPage() {
                   return (
                     <TableCell key={key} className="sticky right-0 text-right">
                       <div className="flex justify-end gap-1">
-                        <EditPassword userId={user.id} params={params} />
                         <EditUser user={user} params={params} />
                         <DeleteUser user={user} params={params} />
                       </div>

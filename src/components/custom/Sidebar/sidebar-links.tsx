@@ -16,7 +16,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { useLoggedInUser } from '@/api/auth/queries'
+import { authClient } from '@/lib/auth-client'
 
 interface SidebarLink {
   name: string
@@ -30,11 +30,13 @@ interface SidebarLinkGroup {
 }
 
 export function SidebarLinks() {
-  const { data: user } = useLoggedInUser()
+  const { data: session } = authClient.useSession()
+
+  const user = session?.user
 
   const location = useLocation()
 
-  const groups = user ? sidebarLinks[user.role] : []
+  const groups = user ? sidebarLinks[user.role as User['role']] : []
 
   return (
     <>

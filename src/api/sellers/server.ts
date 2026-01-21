@@ -10,7 +10,6 @@ import {
   sql,
 } from 'drizzle-orm'
 import { createServerFn } from '@tanstack/react-start'
-import { authMiddleware, requireAdminMiddleware } from '../middleware'
 import { createSellerFn } from './shared'
 import type {
   CreateSellerPayload,
@@ -20,12 +19,12 @@ import type {
   VerifySellerParams,
 } from './types'
 import { db } from '@/db'
-import {
-  categories as categoriesTable,
-  sellerCategories,
-  sellers,
-  users,
-} from '@/db/schema'
+
+import { betterAuthMiddleware, requireAdminMiddleware } from '@/lib/middleware'
+import { sellers } from '@/db/schema/sellers'
+import { user } from '@/db/schema/better-auth'
+import { sellerCategories } from '@/db/schema/seller-categories'
+import { categories } from '@/db/schema/categories'
 
 export const getPagedSellers = createServerFn({
   method: 'POST',
@@ -51,7 +50,7 @@ export const getPagedSellers = createServerFn({
           ilike(sellers.city, `%${trimmedKeyword}%`),
           ilike(sellers.address, `%${trimmedKeyword}%`),
           ilike(sellers.postalCode, `%${trimmedKeyword}%`),
-          ilike(users.username, `%${trimmedKeyword}%`),
+          ilike(user.name, `%${trimmedKeyword}%`),
         ),
       )
     }
@@ -65,7 +64,7 @@ export const getPagedSellers = createServerFn({
     const totalQuery = db
       .select({ count: count(sellers.id) })
       .from(sellers)
-      .leftJoin(users, eq(sellers.userId, users.id))
+      .leftJoin(user, eq(sellers.userId, user.id))
 
     if (conditions.length > 0) {
       totalQuery.where(and(...conditions))
@@ -77,28 +76,28 @@ export const getPagedSellers = createServerFn({
     const query = db
       .select({
         ...getTableColumns(sellers),
-        username: users.username,
+        username: user.name,
         categories: sql<
           Array<{ id: string; name: string }>
-        >`COALESCE(json_agg(json_build_object('id', ${sellerCategories.categoryId}, 'name', ${categoriesTable.name})) FILTER (WHERE ${sellerCategories.categoryId} IS NOT NULL), '[]'::json)`.as(
+        >`COALESCE(json_agg(json_build_object('id', ${sellerCategories.categoryId}, 'name', ${categories.name})) FILTER (WHERE ${sellerCategories.categoryId} IS NOT NULL), '[]'::json)`.as(
           'categories',
         ),
       })
       .from(sellers)
-      .leftJoin(users, eq(sellers.userId, users.id))
+      .leftJoin(user, eq(sellers.userId, user.id))
       .leftJoin(sellerCategories, eq(sellers.id, sellerCategories.sellerId))
       .leftJoin(
-        categoriesTable,
-        eq(sellerCategories.categoryId, categoriesTable.id),
+        categories,
+        eq(sellerCategories.categoryId, categories.id),
       )
-      .groupBy(sellers.id, users.id, users.username)
+      .groupBy(sellers.id, user.id, user.name)
 
     if (conditions.length > 0) {
       query.where(and(...conditions))
     }
 
     const orderByColumn =
-      sort.key === 'username' ? users.username : sellers[sort.key]
+      sort.key === 'username' ? user.name : sellers[sort.key]
     const result = await query
       .orderBy(
         sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
@@ -121,12 +120,12 @@ export const getPagedSellers = createServerFn({
 export const getMySeller = createServerFn({
   method: 'GET',
 })
-  .middleware([authMiddleware])
+  .middleware([betterAuthMiddleware])
   .handler(async ({ context }) => {
-    const { user } = context
+    const { user: sessionUser } = context
 
     const seller = await db.query.sellers.findFirst({
-      where: (sellersTable) => eq(sellersTable.userId, user?.id ?? ''),
+      where: (sellersTable) => eq(sellersTable.userId, sessionUser.id),
     })
 
     return seller
@@ -135,7 +134,7 @@ export const getMySeller = createServerFn({
 export const updateMySeller = createServerFn({
   method: 'POST',
 })
-  .middleware([authMiddleware])
+  .middleware([betterAuthMiddleware])
   .inputValidator((data: UpdateMySellerPayload) => data)
   .handler(async ({ data }) => {
     const { sellerId, ...sellerData } = data
@@ -186,9 +185,9 @@ export const verifySeller = createServerFn({
     const result = await db.transaction(async (tx) => {
       if (status === 'approved') {
         await tx
-          .update(users)
+          .update(user)
           .set({ role: 'seller' })
-          .where(eq(users.id, userId))
+          .where(eq(user.id, userId))
       }
 
       const [verifiedSeller] = await tx
@@ -236,12 +235,12 @@ export const createSellerByAdmin = createServerFn({
 export const createSellerByUser = createServerFn({
   method: 'POST',
 })
-  .middleware([authMiddleware])
+  .middleware([betterAuthMiddleware])
   .inputValidator((data: CreateSellerPayload) => data)
   .handler(async ({ context, data }) => {
-    const { user } = context
+    const { user: sessionUser } = context
 
-    return createSellerFn({ ...data, userId: user?.id ?? '' })
+    return createSellerFn({ ...data, userId: sessionUser.id })
   })
 
 export const updateSeller = createServerFn({
@@ -250,7 +249,7 @@ export const updateSeller = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: UpdateSellerPayload) => data)
   .handler(async ({ data }) => {
-    const { sellerId, categories, ...sellerData } = data
+    const { sellerId, categories: categoryIds, ...sellerData } = data
 
     const result = await db.transaction(async (tx) => {
       const [updatedSeller] = await tx
@@ -266,7 +265,7 @@ export const updateSeller = createServerFn({
       const [categoriesResult] = await tx
         .insert(sellerCategories)
         .values(
-          categories.map((categoryId) => ({
+          categoryIds.map((categoryId) => ({
             sellerId,
             categoryId,
           })),
