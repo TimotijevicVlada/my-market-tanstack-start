@@ -20,7 +20,7 @@ import type {
 } from './types'
 import { db } from '@/db'
 
-import { betterAuthMiddleware, requireAdminMiddleware } from '@/lib/middleware'
+import { authMiddleware, requireAdminMiddleware } from '@/lib/middleware'
 import { sellers } from '@/db/schema/sellers'
 import { user } from '@/db/schema/better-auth'
 import { sellerCategories } from '@/db/schema/seller-categories'
@@ -120,7 +120,7 @@ export const getPagedSellers = createServerFn({
 export const getMySeller = createServerFn({
   method: 'GET',
 })
-  .middleware([betterAuthMiddleware])
+  .middleware([authMiddleware])
   .handler(async ({ context }) => {
     const { user: sessionUser } = context
 
@@ -134,7 +134,7 @@ export const getMySeller = createServerFn({
 export const updateMySeller = createServerFn({
   method: 'POST',
 })
-  .middleware([betterAuthMiddleware])
+  .middleware([authMiddleware])
   .inputValidator((data: UpdateMySellerPayload) => data)
   .handler(async ({ data }) => {
     const { sellerId, ...sellerData } = data
@@ -235,7 +235,7 @@ export const createSellerByAdmin = createServerFn({
 export const createSellerByUser = createServerFn({
   method: 'POST',
 })
-  .middleware([betterAuthMiddleware])
+  .middleware([authMiddleware])
   .inputValidator((data: CreateSellerPayload) => data)
   .handler(async ({ context, data }) => {
     const { user: sessionUser } = context

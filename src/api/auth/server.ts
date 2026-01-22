@@ -2,7 +2,7 @@ import { createServerFn } from '@tanstack/react-start'
 import { getRequest } from '@tanstack/react-start/server'
 import { eq } from 'drizzle-orm'
 import { auth } from '@/lib/auth'
-import { betterAuthMiddleware } from '@/lib/middleware'
+import { authMiddleware } from '@/lib/middleware'
 import { db } from '@/db'
 import { user } from '@/db/schema/better-auth'
 
@@ -18,7 +18,7 @@ export const getSessionUser = createServerFn({ method: "GET" })
 export const updateSessionUserAvatar = createServerFn({
   method: 'POST',
 })
-  .middleware([betterAuthMiddleware])
+  .middleware([authMiddleware])
   .inputValidator((data: { avatarUrl: string | null | undefined }) => data)
   .handler(async ({ context, data }) => {
     const { user: userData } = context
@@ -36,7 +36,7 @@ export const updateSessionUserAvatar = createServerFn({
 export const updateSessionUserEmail = createServerFn({
   method: 'POST',
 })
-  .middleware([betterAuthMiddleware])
+  .middleware([authMiddleware])
   .inputValidator((data: { email: string }) => data)
   .handler(async ({ context, data }) => {
     const { user: userData } = context
@@ -57,4 +57,29 @@ export const updateSessionUserEmail = createServerFn({
       .returning()
 
     return { user: updatedUser }
+  })
+
+export const getLinkedAccounts = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }) => {
+
+    const { user: sessionUser } = context
+
+    const accounts = await db.query.account.findMany({
+      where: (a) => eq(a.userId, sessionUser.id),
+    })
+
+    return accounts
+  })
+
+export const linkAccountWithCredentials = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .inputValidator((data: { password: string }) => data)
+  .handler(async ({ data }) => {
+    await auth.api.setPassword({
+      body: {
+        newPassword: data.password,
+      },
+      headers: await getRequest().headers
+    });
   })

@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
-import { getSessionUser, updateSessionUserAvatar, updateSessionUserEmail } from './server'
+import { getLinkedAccounts, getSessionUser, linkAccountWithCredentials, updateSessionUserAvatar, updateSessionUserEmail } from './server'
 import type { Session } from '@/lib/auth'
 import type { LoginData, RegisterData } from './types'
+import type { Provider } from '@/routes/_private/account/-components/AccountsSection'
 import { authClient } from '@/lib/auth-client'
 import { errorMapper } from '@/lib/error-mapper'
 
@@ -157,6 +158,70 @@ export function useChangeSessionUserPassword() {
     },
     onSuccess: () => {
       toast.success('Vaša lozinka je uspešno promenjena')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useGetLinkedAccounts = () => {
+  return useQuery({
+    queryKey: ['linkedAccounts'],
+    queryFn: async () => {
+      const accounts = await getLinkedAccounts()
+      return accounts
+    },
+  })
+}
+
+export const useLinkAccountWithCredentials = () => {
+  return useMutation({
+    mutationFn: (data: { password: string }) => linkAccountWithCredentials({ data }),
+    onSuccess: () => {
+      toast.success('Vaša lozinka je uspešno povezana')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useConnectProvider = (provider: Provider) => {
+  return useMutation({
+    mutationFn: async () => {
+      const result = await authClient.linkSocial({ provider, callbackURL: '/account' })
+
+      if (result.error) {
+        throw new Error(errorMapper(result.error.message))
+      }
+
+      return result.data
+    },
+    onSuccess: () => {
+      toast.success(`${provider} nalog je uspešno povezan`)
+    },
+    onError: (error) => {
+      toast.error(errorMapper(error.message))
+    },
+  })
+}
+
+export const useDisconnectProvider = (providerId: Provider) => {
+  return useMutation({
+    mutationFn: async (accountId: string | undefined) => {
+      const result = await authClient.unlinkAccount(
+        { providerId, accountId },
+      )
+
+      if (result.error) {
+        throw new Error(errorMapper(result.error.message))
+      }
+
+      return result.data
+    },
+    onSuccess: () => {
+      toast.success(`${providerId} nalog je uspešno prekinut`)
     },
     onError: (error) => {
       toast.error(error.message)
