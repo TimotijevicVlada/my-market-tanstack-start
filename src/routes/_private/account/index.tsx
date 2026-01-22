@@ -4,6 +4,7 @@ import { AvatarSection } from './-components/AvatarSection'
 import { EmailSection } from './-components/EmailSection'
 import { BasicInfo } from './-components/BasicInfo'
 import { PasswordSection } from './-components/PasswordSection'
+import { AccountsSection } from './-components/AccountsSection'
 import { useGetMySeller } from '@/api/sellers/queries'
 import {
   Alert,
@@ -55,6 +56,7 @@ function AccountPage() {
           <BasicInfo />
           <EmailSection />
         </div>
+        <AccountsSection />
         <PasswordSection />
       </div>
     </div>

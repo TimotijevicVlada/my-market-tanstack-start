@@ -21,6 +21,14 @@ export const auth = betterAuth({
     },
   },
 
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "facebook", "credentials"],
+      allowDifferentEmails: false,
+    },
+  },
+
   database: drizzleAdapter(db, {
     provider: 'pg',
   }),

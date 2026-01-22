@@ -6,14 +6,14 @@ import {
 import Header from '@/layout/Header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { AppSidebar } from '@/components/custom/Sidebar/app-sidebar'
-import { betterAuthMiddleware } from '@/lib/middleware'
+import { authMiddleware } from '@/lib/middleware'
 import { getSessionUser } from '@/api/auth/server'
 import { useGetSessionUser } from '@/api/auth/queries'
 
 export const Route = createFileRoute('/_private')({
   component: PrivateLayout,
   server: {
-    middleware: [betterAuthMiddleware]
+    middleware: [authMiddleware]
   },
   loader: async () => await getSessionUser()
 })
