@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
-import { getLinkedAccounts, getSessionUser, linkAccountWithCredentials, updateSessionUserAvatar, updateSessionUserEmail } from './server'
+import { getLinkedAccounts, getSessionUser, linkAccountWithCredentials, updateSessionUserAvatar, updateSessionUserBasicInfo } from './server'
 import type { Session } from '@/lib/auth'
 import type { LoginData, RegisterData } from './types'
 import type { Provider } from '@/routes/_private/account/-components/AccountsSection'
@@ -126,13 +126,13 @@ export const useUpdateSessionUserAvatar = () => {
 }
 
 
-export const useUpdateSessionUserEmail = () => {
+export const useUpdateSessionUserBasicInfo = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { email: string }) => updateSessionUserEmail({ data }),
+    mutationFn: (data: { name: string; email: string }) => updateSessionUserBasicInfo({ data }),
     onSuccess: () => {
-      toast.success('Vaša email adresa je uspešno izmenjena')
+      toast.success('Vaše osnovne informacije su uspešno izmenjene')
       queryClient.invalidateQueries({ queryKey: ['sessionUser'] })
     },
     onError: (error) => {

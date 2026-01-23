@@ -33,17 +33,17 @@ export const updateSessionUserAvatar = createServerFn({
     return { user: updatedUser }
   })
 
-export const updateSessionUserEmail = createServerFn({
+export const updateSessionUserBasicInfo = createServerFn({
   method: 'POST',
 })
   .middleware([authMiddleware])
-  .inputValidator((data: { email: string }) => data)
+  .inputValidator((data: { name: string; email: string }) => data)
   .handler(async ({ context, data }) => {
     const { user: userData } = context
-    const { email } = data
+    const { name, email } = data
 
     const existingUserByEmail = await db.query.user.findFirst({
-      where: (userTable) => eq(userTable.email, data.email),
+      where: (userTable) => eq(userTable.email, email),
     })
 
     if (existingUserByEmail && existingUserByEmail.id !== userData.id) {
@@ -52,7 +52,7 @@ export const updateSessionUserEmail = createServerFn({
 
     const [updatedUser] = await db
       .update(user)
-      .set({ email })
+      .set({ name, email })
       .where(eq(user.id, userData.id))
       .returning()
 
