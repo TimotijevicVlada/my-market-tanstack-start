@@ -122,7 +122,7 @@ function LoginComponent() {
                   error={errors.password?.message}
                   autoComplete="current-password"
                   startIcon={<LockIcon />}
-                  forgotPasswordLink={<a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">Zaboravili ste lozinku?</a>}
+                  forgotPasswordLink={<Link to="/forgot-password" className="ml-auto text-sm underline-offset-4 hover:underline">Zaboravili ste lozinku?</Link>}
                   {...register('password')}
                 />
                 <Field>

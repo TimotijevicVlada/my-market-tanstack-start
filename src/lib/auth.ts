@@ -36,6 +36,25 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset lozinke",
+        html: `
+          <div style="font-family:system-ui;line-height:1.6">
+            <h2>Reset lozinke</h2>
+            <p>Zatražili ste reset lozinke.</p>
+             <p>
+                <a href="${url}" style="display:inline-block;padding:10px 14px;border-radius:8px;background:#ef4444;color:white;text-decoration:none">
+                  Kliknite ovde da postavite novu lozinku
+                </a>
+              </p>
+            <p>Ako niste vi, ignorišite ovaj email.</p>
+          </div>
+        `,
+        text: `Reset lozinke: ${url}`,
+      })
+    },
   },
 
   user: {
