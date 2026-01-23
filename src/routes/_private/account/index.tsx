@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Ban, Building2 } from 'lucide-react'
 import { AvatarSection } from './-components/AvatarSection'
-import { EmailSection } from './-components/EmailSection'
 import { BasicInfo } from './-components/BasicInfo'
 import { PasswordSection } from './-components/PasswordSection'
 import { DangerZone } from './-components/DangerZone'
@@ -55,10 +54,9 @@ function AccountPage() {
         <AvatarSection />
         <div className="grid gap-6 md:grid-cols-2">
           <BasicInfo />
-          <EmailSection />
+          <PasswordSection />
         </div>
         <AccountsSection />
-        <PasswordSection />
         <DangerZone />
       </div>
     </div>

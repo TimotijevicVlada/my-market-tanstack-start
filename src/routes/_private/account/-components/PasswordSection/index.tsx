@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { LockIcon, ShieldCheck, ShieldEllipsis } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -26,12 +27,14 @@ type PasswordFormData = z.infer<typeof passwordSchema>
 
 export const PasswordSection = () => {
 
+  const [isEditMode, setIsEditMode] = useState(false)
+
   const { mutate: changeSessionUserPassword, isPending } = useChangeSessionUserPassword()
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors },
     reset,
   } = useForm<PasswordFormData>({
     resolver: zodResolver(passwordSchema),
@@ -49,67 +52,64 @@ export const PasswordSection = () => {
     }, {
       onSuccess: () => {
         reset()
+        setIsEditMode(false)
       },
     })
   }
 
   return (
     <Card className="border-border/50">
-      <CardHeader className="pb-4">
+      <CardHeader>
         <SectionHead
           Icon={LockIcon}
           title="Promena lozinke"
           description="Zaštitite vaš nalog sa novom lozinkom"
           className="pb-2"
+          onEdit={() => setIsEditMode(true)}
         />
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-2">
-              <FormFieldPassword
-                label="Trenutna lozinka"
-                placeholder="Unesite trenutnu lozinku"
-                startIcon={<ShieldEllipsis className="size-4" />}
-                error={errors.oldPassword?.message}
-                {...register('oldPassword')}
-              />
-            </div>
-            <div className="space-y-2">
-              <FormFieldPassword
-                label="Nova lozinka"
-                placeholder="Unesite novu lozinku"
-                startIcon={<ShieldCheck className="size-4" />}
-                error={errors.newPassword?.message}
-                {...register('newPassword')}
-              />
-            </div>
-            <div className="space-y-2">
-              <FormFieldPassword
-                label="Potvrdi lozinku"
-                placeholder="Potvrdite novu lozinku"
-                startIcon={<ShieldCheck className="size-4" />}
-                error={errors.confirmPassword?.message}
-                {...register('confirmPassword')}
-              />
-            </div>
-          </div>
-          <div className="flex justify-end gap-2 mt-4">
-            {isDirty && (
-              <Button variant="outline" type="button" onClick={() => reset()}>
-                Poništi
+        <form onSubmit={handleSubmit(onSubmit)} className='flex flex-col gap-3'>
+          <FormFieldPassword
+            label="Trenutna lozinka"
+            placeholder="Unesite trenutnu lozinku"
+            startIcon={<ShieldEllipsis className="size-4" />}
+            error={errors.oldPassword?.message}
+            {...register('oldPassword')}
+            disabled={!isEditMode}
+          />
+          <FormFieldPassword
+            label="Nova lozinka"
+            placeholder="Unesite novu lozinku"
+            startIcon={<ShieldCheck className="size-4" />}
+            error={errors.newPassword?.message}
+            {...register('newPassword')}
+            disabled={!isEditMode}
+          />
+          <FormFieldPassword
+            label="Potvrdi lozinku"
+            placeholder="Potvrdite novu lozinku"
+            startIcon={<ShieldCheck className="size-4" />}
+            error={errors.confirmPassword?.message}
+            {...register('confirmPassword')}
+            disabled={!isEditMode}
+          />
+          {isEditMode && (
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" type="button" onClick={() => setIsEditMode(false)}>
+                Odustani
               </Button>
-            )}
-            <Button
-              loading={{
-                state: isPending,
-                text: 'Promena lozinke...',
-              }}
-              type="submit"
-            >
-              Promeni lozinku
-            </Button>
-          </div>
+              <Button
+                loading={{
+                  state: isPending,
+                  text: 'Promena lozinke...',
+                }}
+                type="submit"
+              >
+                Promeni lozinku
+              </Button>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

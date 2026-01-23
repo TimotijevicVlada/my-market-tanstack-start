@@ -8,5 +8,8 @@ export const errorMapper = (error: string | undefined) => {
     if (error === 'You can\'t unlink your last account') {
         return 'Ne možete prekinuti vezu sa vašim poslednjim nalogom'
     }
+    if (error === 'Credential account not found') {
+        return 'Nemate odobrenu prijavu lozinkom. Postavite vašu lozinku u sekciji ispod.'
+    }
     return error
 }
