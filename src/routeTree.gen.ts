@@ -20,8 +20,10 @@ import { Route as PrivateBuyerRouteRouteImport } from './routes/_private/buyer/r
 import { Route as PrivateAdminRouteRouteImport } from './routes/_private/admin/route'
 import { Route as PublicSellerApplyIndexRouteImport } from './routes/_public/seller-apply/index'
 import { Route as PrivateAccountIndexRouteImport } from './routes/_private/account/index'
+import { Route as AuthResetPasswordIndexRouteImport } from './routes/_auth/reset-password/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/_auth/login/index'
+import { Route as AuthForgotPasswordIndexRouteImport } from './routes/_auth/forgot-password/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as PrivateSellerProductsIndexRouteImport } from './routes/_private/seller/products/index'
 import { Route as PrivateSellerInfoIndexRouteImport } from './routes/_private/seller/info/index'
@@ -84,6 +86,11 @@ const PrivateAccountIndexRoute = PrivateAccountIndexRouteImport.update({
   path: '/account/',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
+const AuthResetPasswordIndexRoute = AuthResetPasswordIndexRouteImport.update({
+  id: '/reset-password/',
+  path: '/reset-password/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
   id: '/register/',
   path: '/register/',
@@ -92,6 +99,11 @@ const AuthRegisterIndexRoute = AuthRegisterIndexRouteImport.update({
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/login/',
   path: '/login/',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthForgotPasswordIndexRoute = AuthForgotPasswordIndexRouteImport.update({
+  id: '/forgot-password/',
+  path: '/forgot-password/',
   getParentRoute: () => AuthRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -153,8 +165,10 @@ export interface FileRoutesByFullPath {
   '/auth': typeof PublicAuthRouteRoute
   '/goodbye': typeof PublicGoodbyeRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/login/': typeof AuthLoginIndexRoute
   '/register/': typeof AuthRegisterIndexRoute
+  '/reset-password/': typeof AuthResetPasswordIndexRoute
   '/account/': typeof PrivateAccountIndexRoute
   '/seller-apply/': typeof PublicSellerApplyIndexRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
@@ -174,8 +188,10 @@ export interface FileRoutesByTo {
   '/auth': typeof PublicAuthRouteRoute
   '/goodbye': typeof PublicGoodbyeRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/forgot-password': typeof AuthForgotPasswordIndexRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
+  '/reset-password': typeof AuthResetPasswordIndexRoute
   '/account': typeof PrivateAccountIndexRoute
   '/seller-apply': typeof PublicSellerApplyIndexRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
@@ -199,8 +215,10 @@ export interface FileRoutesById {
   '/_public/goodbye': typeof PublicGoodbyeRouteRoute
   '/_public/': typeof PublicIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_auth/forgot-password/': typeof AuthForgotPasswordIndexRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
+  '/_auth/reset-password/': typeof AuthResetPasswordIndexRoute
   '/_private/account/': typeof PrivateAccountIndexRoute
   '/_public/seller-apply/': typeof PublicSellerApplyIndexRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
@@ -222,8 +240,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/goodbye'
     | '/api/auth/$'
+    | '/forgot-password/'
     | '/login/'
     | '/register/'
+    | '/reset-password/'
     | '/account/'
     | '/seller-apply/'
     | '/api/auth/delete-user/callback'
@@ -243,8 +263,10 @@ export interface FileRouteTypes {
     | '/auth'
     | '/goodbye'
     | '/api/auth/$'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
     | '/account'
     | '/seller-apply'
     | '/api/auth/delete-user/callback'
@@ -267,8 +289,10 @@ export interface FileRouteTypes {
     | '/_public/goodbye'
     | '/_public/'
     | '/api/auth/$'
+    | '/_auth/forgot-password/'
     | '/_auth/login/'
     | '/_auth/register/'
+    | '/_auth/reset-password/'
     | '/_private/account/'
     | '/_public/seller-apply/'
     | '/api/auth/delete-user/callback'
@@ -368,6 +392,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateAccountIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
+    '/_auth/reset-password/': {
+      id: '/_auth/reset-password/'
+      path: '/reset-password'
+      fullPath: '/reset-password/'
+      preLoaderRoute: typeof AuthResetPasswordIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_auth/register/': {
       id: '/_auth/register/'
       path: '/register'
@@ -380,6 +411,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login/'
       preLoaderRoute: typeof AuthLoginIndexRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/forgot-password/': {
+      id: '/_auth/forgot-password/'
+      path: '/forgot-password'
+      fullPath: '/forgot-password/'
+      preLoaderRoute: typeof AuthForgotPasswordIndexRouteImport
       parentRoute: typeof AuthRouteRoute
     }
     '/api/auth/$': {
@@ -449,13 +487,17 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteRouteChildren {
+  AuthForgotPasswordIndexRoute: typeof AuthForgotPasswordIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
   AuthRegisterIndexRoute: typeof AuthRegisterIndexRoute
+  AuthResetPasswordIndexRoute: typeof AuthResetPasswordIndexRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthForgotPasswordIndexRoute: AuthForgotPasswordIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
   AuthRegisterIndexRoute: AuthRegisterIndexRoute,
+  AuthResetPasswordIndexRoute: AuthResetPasswordIndexRoute,
 }
 
 const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(

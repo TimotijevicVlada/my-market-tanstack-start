@@ -228,3 +228,49 @@ export const useDisconnectProvider = (providerId: Provider) => {
     },
   })
 }
+
+export const useRequestPasswordReset = () => {
+  return useMutation({
+    mutationFn: async (data: { email: string }) => {
+      const result = await authClient.requestPasswordReset({
+        email: data.email,
+        redirectTo: "/reset-password",
+      })
+
+      if (result.error) {
+        throw new Error(errorMapper(result.error.message))
+      }
+
+      return result.data
+    },
+    onSuccess: () => {
+      toast.success('Poslali smo vam email za resetovanje lozinke')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: async (data: { newPassword: string; token: string }) => {
+      const result = await authClient.resetPassword({
+        newPassword: data.newPassword,
+        token: data.token,
+      })
+
+      if (result.error) {
+        throw new Error(errorMapper(result.error.message))
+      }
+
+      return result.data
+    },
+    onSuccess: () => {
+      toast.success('Lozinka je uspešno resetovana')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
