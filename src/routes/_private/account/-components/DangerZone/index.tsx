@@ -1,22 +1,24 @@
+import { useState } from "react";
 import { AlertTriangle, Trash2 } from "lucide-react";
-import { toast } from "sonner";
 import { Button } from "@/components/custom/Button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { authClient } from "@/lib/auth-client";
-
+import { AlertDialog } from "@/components/custom/AlertDialog";
+import { useDeleteUser } from "@/api/auth/queries";
 
 export const DangerZone = () => {
 
-  const handleDeleteUser = async () => {
-    await authClient.deleteUser({
-      callbackURL: "/goodbye",
-    }, {
+  const { mutate: deleteUser, isPending } = useDeleteUser()
+
+  const [alertIsOpen, setAlertIsOpen] = useState(false)
+
+  const handleDeleteUser = () => {
+    deleteUser(undefined, {
       onSuccess: () => {
-        toast.success("Poslali smo vam email za potvrdu brisanja naloga")
+        setAlertIsOpen(false)
       }
     })
-  }
 
+  }
 
   return (
     <Card className="border-destructive/30 bg-destructive/5">
@@ -69,12 +71,25 @@ export const DangerZone = () => {
           </p>
           <Button
             variant="destructive"
-            onClick={handleDeleteUser}
+            onClick={() => setAlertIsOpen(true)}
           >
             <Trash2 className="size-4" />
             Obriši moj nalog
           </Button>
         </div>
+        <AlertDialog
+          open={alertIsOpen}
+          onOpenChange={() => setAlertIsOpen(false)}
+          title="Potvrdite slanje linka za brisanje naloga"
+          description="Bićete zamoljeni da potvrdite ovu akciju preko vaše email adrese."
+          onConfirm={handleDeleteUser}
+          onCancel={() => setAlertIsOpen(false)}
+          confirmText="Pošalji link"
+          loading={{
+            state: isPending,
+            text: 'Slanje linka...',
+          }}
+        />
       </CardContent>
     </Card>
   )

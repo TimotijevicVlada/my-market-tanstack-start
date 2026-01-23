@@ -274,3 +274,25 @@ export const useResetPassword = () => {
     },
   })
 }
+
+export const useDeleteUser = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const result = await authClient.deleteUser({
+        callbackURL: "/goodbye",
+      })
+
+      if (result.error) {
+        throw new Error(errorMapper(result.error.message))
+      }
+
+      return result.data
+    },
+    onSuccess: () => {
+      toast.success('Poslali smo vam email za potvrdu brisanja naloga')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
+  })
+}
