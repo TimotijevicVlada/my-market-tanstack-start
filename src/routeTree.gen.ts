@@ -13,6 +13,7 @@ import { Route as PublicRouteRouteImport } from './routes/_public/route'
 import { Route as PrivateRouteRouteImport } from './routes/_private/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
+import { Route as PublicGoodbyeRouteRouteImport } from './routes/_public/goodbye/route'
 import { Route as PublicAuthRouteRouteImport } from './routes/_public/auth/route'
 import { Route as PrivateSellerRouteRouteImport } from './routes/_private/seller/route'
 import { Route as PrivateBuyerRouteRouteImport } from './routes/_private/buyer/route'
@@ -29,6 +30,7 @@ import { Route as PrivateAdminUsersIndexRouteImport } from './routes/_private/ad
 import { Route as PrivateAdminSellersIndexRouteImport } from './routes/_private/admin/sellers/index'
 import { Route as PrivateAdminCategoriesIndexRouteImport } from './routes/_private/admin/categories/index'
 import { Route as PrivateAccountOrdersIndexRouteImport } from './routes/_private/account/orders/index'
+import { Route as ApiAuthDeleteUserCallbackRouteImport } from './routes/api/auth/delete-user/callback'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -45,6 +47,11 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 const PublicIndexRoute = PublicIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicGoodbyeRouteRoute = PublicGoodbyeRouteRouteImport.update({
+  id: '/goodbye',
+  path: '/goodbye',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PublicAuthRouteRoute = PublicAuthRouteRouteImport.update({
@@ -131,6 +138,12 @@ const PrivateAccountOrdersIndexRoute =
     path: '/account/orders/',
     getParentRoute: () => PrivateRouteRoute,
   } as any)
+const ApiAuthDeleteUserCallbackRoute =
+  ApiAuthDeleteUserCallbackRouteImport.update({
+    id: '/api/auth/delete-user/callback',
+    path: '/api/auth/delete-user/callback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
@@ -138,11 +151,13 @@ export interface FileRoutesByFullPath {
   '/buyer': typeof PrivateBuyerRouteRouteWithChildren
   '/seller': typeof PrivateSellerRouteRouteWithChildren
   '/auth': typeof PublicAuthRouteRoute
+  '/goodbye': typeof PublicGoodbyeRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/login/': typeof AuthLoginIndexRoute
   '/register/': typeof AuthRegisterIndexRoute
   '/account/': typeof PrivateAccountIndexRoute
   '/seller-apply/': typeof PublicSellerApplyIndexRoute
+  '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/account/orders/': typeof PrivateAccountOrdersIndexRoute
   '/admin/categories/': typeof PrivateAdminCategoriesIndexRoute
   '/admin/sellers/': typeof PrivateAdminSellersIndexRoute
@@ -157,11 +172,13 @@ export interface FileRoutesByTo {
   '/buyer': typeof PrivateBuyerRouteRouteWithChildren
   '/seller': typeof PrivateSellerRouteRouteWithChildren
   '/auth': typeof PublicAuthRouteRoute
+  '/goodbye': typeof PublicGoodbyeRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/login': typeof AuthLoginIndexRoute
   '/register': typeof AuthRegisterIndexRoute
   '/account': typeof PrivateAccountIndexRoute
   '/seller-apply': typeof PublicSellerApplyIndexRoute
+  '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/account/orders': typeof PrivateAccountOrdersIndexRoute
   '/admin/categories': typeof PrivateAdminCategoriesIndexRoute
   '/admin/sellers': typeof PrivateAdminSellersIndexRoute
@@ -179,12 +196,14 @@ export interface FileRoutesById {
   '/_private/buyer': typeof PrivateBuyerRouteRouteWithChildren
   '/_private/seller': typeof PrivateSellerRouteRouteWithChildren
   '/_public/auth': typeof PublicAuthRouteRoute
+  '/_public/goodbye': typeof PublicGoodbyeRouteRoute
   '/_public/': typeof PublicIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_auth/login/': typeof AuthLoginIndexRoute
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_private/account/': typeof PrivateAccountIndexRoute
   '/_public/seller-apply/': typeof PublicSellerApplyIndexRoute
+  '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/_private/account/orders/': typeof PrivateAccountOrdersIndexRoute
   '/_private/admin/categories/': typeof PrivateAdminCategoriesIndexRoute
   '/_private/admin/sellers/': typeof PrivateAdminSellersIndexRoute
@@ -201,11 +220,13 @@ export interface FileRouteTypes {
     | '/buyer'
     | '/seller'
     | '/auth'
+    | '/goodbye'
     | '/api/auth/$'
     | '/login/'
     | '/register/'
     | '/account/'
     | '/seller-apply/'
+    | '/api/auth/delete-user/callback'
     | '/account/orders/'
     | '/admin/categories/'
     | '/admin/sellers/'
@@ -220,11 +241,13 @@ export interface FileRouteTypes {
     | '/buyer'
     | '/seller'
     | '/auth'
+    | '/goodbye'
     | '/api/auth/$'
     | '/login'
     | '/register'
     | '/account'
     | '/seller-apply'
+    | '/api/auth/delete-user/callback'
     | '/account/orders'
     | '/admin/categories'
     | '/admin/sellers'
@@ -241,12 +264,14 @@ export interface FileRouteTypes {
     | '/_private/buyer'
     | '/_private/seller'
     | '/_public/auth'
+    | '/_public/goodbye'
     | '/_public/'
     | '/api/auth/$'
     | '/_auth/login/'
     | '/_auth/register/'
     | '/_private/account/'
     | '/_public/seller-apply/'
+    | '/api/auth/delete-user/callback'
     | '/_private/account/orders/'
     | '/_private/admin/categories/'
     | '/_private/admin/sellers/'
@@ -261,6 +286,7 @@ export interface RootRouteChildren {
   PrivateRouteRoute: typeof PrivateRouteRouteWithChildren
   PublicRouteRoute: typeof PublicRouteRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  ApiAuthDeleteUserCallbackRoute: typeof ApiAuthDeleteUserCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -291,6 +317,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof PublicIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/goodbye': {
+      id: '/_public/goodbye'
+      path: '/goodbye'
+      fullPath: '/goodbye'
+      preLoaderRoute: typeof PublicGoodbyeRouteRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_public/auth': {
@@ -405,6 +438,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateAccountOrdersIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
+    '/api/auth/delete-user/callback': {
+      id: '/api/auth/delete-user/callback'
+      path: '/api/auth/delete-user/callback'
+      fullPath: '/api/auth/delete-user/callback'
+      preLoaderRoute: typeof ApiAuthDeleteUserCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -483,12 +523,14 @@ const PrivateRouteRouteWithChildren = PrivateRouteRoute._addFileChildren(
 
 interface PublicRouteRouteChildren {
   PublicAuthRouteRoute: typeof PublicAuthRouteRoute
+  PublicGoodbyeRouteRoute: typeof PublicGoodbyeRouteRoute
   PublicIndexRoute: typeof PublicIndexRoute
   PublicSellerApplyIndexRoute: typeof PublicSellerApplyIndexRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRouteRoute: PublicAuthRouteRoute,
+  PublicGoodbyeRouteRoute: PublicGoodbyeRouteRoute,
   PublicIndexRoute: PublicIndexRoute,
   PublicSellerApplyIndexRoute: PublicSellerApplyIndexRoute,
 }
@@ -502,6 +544,7 @@ const rootRouteChildren: RootRouteChildren = {
   PrivateRouteRoute: PrivateRouteRouteWithChildren,
   PublicRouteRoute: PublicRouteRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  ApiAuthDeleteUserCallbackRoute: ApiAuthDeleteUserCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
