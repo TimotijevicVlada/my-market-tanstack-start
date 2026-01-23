@@ -96,7 +96,14 @@ export const PasswordSection = () => {
           />
           {isEditMode && (
             <div className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={() => setIsEditMode(false)}>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => {
+                  setIsEditMode(false)
+                  reset()
+                }}
+              >
                 Odustani
               </Button>
               <Button
