@@ -1,16 +1,13 @@
 import { Check } from 'lucide-react'
 import { STEPS } from './data'
-import type { Dispatch, SetStateAction } from 'react'
 import { cn } from '@/lib/utils'
 
 interface FormStepperProps {
   currentStep: number
-  setCurrentStep: Dispatch<SetStateAction<number>>
 }
 
 export const FormStepper = ({
   currentStep,
-  setCurrentStep,
 }: FormStepperProps) => {
   return (
     <div className="border-b border-t border-border/50 bg-muted/30 px-6 py-5">
@@ -23,11 +20,7 @@ export const FormStepper = ({
           return (
             <div key={step.id} className="flex flex-1 items-center">
               <button
-                onClick={() => setCurrentStep(step.id)}
-                className={cn(
-                  'group flex flex-col items-center gap-2 transition-all',
-                  isActive || isCompleted ? 'cursor-pointer' : 'cursor-default',
-                )}
+                className={cn('group flex flex-col items-center gap-2 transition-all')}
               >
                 <div
                   className={cn(
