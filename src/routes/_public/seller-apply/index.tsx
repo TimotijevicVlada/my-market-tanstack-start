@@ -105,7 +105,7 @@ function SellerApplyPage() {
         </p>
       </div>
 
-      <FormStepper currentStep={currentStep} setCurrentStep={setCurrentStep} />
+      <FormStepper currentStep={currentStep} />
 
       <CardContent className="pt-5">
         {currentStep === 1 && (
