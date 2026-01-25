@@ -6,6 +6,7 @@ import { sellers } from './schema/sellers.ts'
 import { products } from './schema/products.ts'
 import { productReviews } from './schema/product-reviews.ts'
 import { productImages } from './schema/product-images.ts'
+import { productCategories } from './schema/product-categories.ts'
 import { sellerCategories } from './schema/seller-categories.ts'
 import { account, session, user, verification, } from './schema/better-auth.ts'
 
@@ -21,6 +22,7 @@ export const db = drizzle(pool, {
     products,
     productReviews,
     productImages,
+    productCategories,
     sellerCategories,
 
     // Better Auth tables

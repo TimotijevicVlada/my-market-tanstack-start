@@ -1,56 +1,120 @@
 import {
   boolean,
-  decimal,
+  index,
   integer,
+  jsonb,
   pgEnum,
   pgTable,
-  text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
-} from 'drizzle-orm/pg-core'
-import { sellers } from './sellers.ts'
-import { categories } from './categories.ts'
+} from "drizzle-orm/pg-core";
+import { sellers } from "./sellers";
 
-export const productUnitEnum = pgEnum('product_unit', [
-  'kg',
-  'lb',
-  'g',
-  'oz',
-  'piece',
-  'bunch',
-  'dozen',
-  'liter',
-  'gallon',
-  'box',
-])
+export const productStatusEnum = pgEnum("product_status", [
+  "draft",
+  "published",
+  "archived",
+]);
 
-export const productStatusEnum = pgEnum('product_status', [
-  'draft',
-  'published',
-  'out_of_stock',
-  'archived',
-])
+export const currencyEnum = pgEnum("currency_code", ["RSD", "EUR", "USD"]);
 
-export const products = pgTable('products', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  sellerId: uuid('seller_id')
-    .notNull()
-    .references(() => sellers.id, { onDelete: 'cascade' }),
-  categoryId: uuid('category_id')
-    .notNull()
-    .references(() => categories.id, { onDelete: 'restrict' }),
-  name: varchar('name', { length: 255 }).notNull(),
-  slug: varchar('slug', { length: 255 }).notNull().unique(),
-  description: text('description').notNull(),
-  price: decimal('price', { precision: 10, scale: 2 }).notNull(),
-  unit: productUnitEnum('unit').notNull(),
-  quantity: integer('quantity').notNull().default(0),
-  isAvailable: boolean('is_available').notNull().default(true),
-  isOrganic: boolean('is_organic').notNull().default(false),
-  originPlace: varchar('origin_place', { length: 255 }).notNull(),
-  mainImageUrl: varchar('main_image_url', { length: 500 }),
-  status: productStatusEnum('status').notNull().default('draft'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
-})
+export const productUnitEnum = pgEnum("product_unit", [
+  "kg",
+  "lb",
+  "g",
+  "oz",
+  "piece",
+  "bunch",
+  "dozen",
+  "liter",
+  "gallon",
+  "box",
+]);
+
+// TipTap JSON doc (minimal type - dovoljno za start)
+
+export type TiptapDoc = {
+  type: "doc";
+  content?: Array<any>;
+};
+
+export const products = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+
+    sellerId: uuid("seller_id")
+      .notNull()
+      .references(() => sellers.id, { onDelete: "cascade" }),
+
+    // Core
+    name: varchar("name", { length: 255 }).notNull(),
+    slug: varchar("slug", { length: 255 }).notNull(),
+
+    // Rich text (TipTap JSON)
+    description: jsonb("description")
+      .$type<TiptapDoc>()
+      .notNull()
+      .default({ type: "doc", content: [] }),
+
+    // Pricing: integer (minor units)
+    currency: currencyEnum("currency").notNull().default("RSD"),
+    price: integer("price").notNull(),
+    compareAtPrice: integer("compare_at_price"), // optional "precrtana cena"
+
+    // Unit + inventory
+    unit: productUnitEnum("unit").notNull().default("piece"),
+    trackInventory: boolean("track_inventory").notNull().default(true),
+    stockQty: integer("stock_qty").notNull().default(0),
+    lowStockThreshold: integer("low_stock_threshold").notNull().default(0),
+
+    // Optional: SKU (nije unique globalno, jer selleri mogu imati iste)
+    sku: varchar("sku", { length: 64 }),
+
+    // Generic attributes/tags (umesto hardcoded isOrganic/originPlace)
+    tags: jsonb("tags").$type<Array<string>>().notNull().default([]),
+    attributes: jsonb("attributes")
+      .$type<Record<string, string | number | boolean | null>>()
+      .notNull()
+      .default({}),
+
+    // SEO (opciono ali korisno)
+    seoTitle: varchar("seo_title", { length: 70 }),
+    seoDescription: varchar("seo_description", { length: 160 }),
+
+    // Lifecycle
+    status: productStatusEnum("status").notNull().default("draft"),
+    publishedAt: timestamp("published_at", { withTimezone: true }),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+
+    // Soft delete
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("products_seller_slug_uq").on(
+      t.sellerId,
+      t.slug,
+    ),
+
+    index("products_seller_status_idx").on(
+      t.sellerId,
+      t.status,
+    ),
+
+    index("products_status_idx").on(t.status),
+
+    index("products_name_idx").on(t.name),
+
+    index("products_published_at_idx").on(t.publishedAt),
+  ],
+);
+

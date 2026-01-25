@@ -214,7 +214,17 @@ export async function seedCategories() {
 
   // Delete all existing categories to override
   console.log('🗑️  Deleting existing categories...')
-  await db.delete(categories)
+  try {
+    await db.delete(categories)
+  } catch (error: any) {
+    if (error?.cause?.code === '42P01') {
+      // Table doesn't exist
+      console.error('❌ Error: The "categories" table does not exist!')
+      console.error('💡 Please run "npm run db:push" first to create all database tables.')
+      throw new Error('Database tables not found. Run "npm run db:push" first.')
+    }
+    throw error
+  }
 
   // Insert categories
   console.log('📝 Inserting categories...')

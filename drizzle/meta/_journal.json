@@ -204,6 +204,20 @@
       "when": 1768950146810,
       "tag": "0028_free_ultragirl",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1769334597689,
+      "tag": "0029_mixed_talos",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1769336184581,
+      "tag": "0030_breezy_grandmaster",
+      "breakpoints": true
     }
   ]
 }
