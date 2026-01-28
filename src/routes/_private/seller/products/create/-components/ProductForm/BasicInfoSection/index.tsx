@@ -1,5 +1,6 @@
 import { Package } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
+import { RichTextEditorDescription } from './Description'
 import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
@@ -10,7 +11,6 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 
 export const BasicInfoSection = () => {
   const { register } = useFormContext<ProductFormSchema>()
@@ -59,18 +59,7 @@ export const BasicInfoSection = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="description">Opis proizvoda</Label>
-          <Textarea
-            id="description"
-            {...register('description')}
-            placeholder="Opišite vaš proizvod detaljno..."
-            className="min-h-[150px] bg-input/50 transition-colors focus:bg-input"
-          />
-          <p className="text-xs text-muted-foreground">
-            Podržava formatiranje teksta (bold, italic, liste...)
-          </p>
-        </div>
+        <RichTextEditorDescription />
 
         <div className="space-y-2 md:w-1/2">
           <Label htmlFor="sku">SKU (Stock Keeping Unit)</Label>
