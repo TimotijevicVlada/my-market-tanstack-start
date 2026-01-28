@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Plus, Tag, X } from 'lucide-react'
+import { useController, useFormContext } from 'react-hook-form'
+import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
   CardContent,
@@ -12,18 +14,18 @@ import { Button } from '@/components/custom/Button'
 import { Badge } from '@/components/ui/badge'
 
 export const TagsSection = () => {
-  const [tags, setTags] = useState<Array<string>>([])
+  const { control } = useFormContext<ProductFormSchema>()
+
+  const { field: tagsField } = useController({
+    name: 'tags',
+    control,
+  })
+
   const [newTag, setNewTag] = useState('')
 
   const addTag = () => {
-    if (newTag && !tags.includes(newTag.toLowerCase())) {
-      setTags([...tags, newTag.toLowerCase()])
-      setNewTag('')
-    }
-  }
-
-  const removeTag = (tag: string) => {
-    setTags(tags.filter((t) => t !== tag))
+    tagsField.onChange([...tagsField.value, newTag])
+    setNewTag('')
   }
 
   return (
@@ -57,9 +59,9 @@ export const TagsSection = () => {
           </Button>
         </div>
 
-        {tags.length > 0 ? (
+        {tagsField.value.length > 0 ? (
           <div className="flex flex-wrap gap-2">
-            {tags.map((tag) => (
+            {tagsField.value.map((tag) => (
               <Badge
                 key={tag}
                 variant="secondary"
@@ -68,7 +70,9 @@ export const TagsSection = () => {
                 {tag}
                 <button
                   type="button"
-                  onClick={() => removeTag(tag)}
+                  onClick={() =>
+                    tagsField.onChange(tagsField.value.filter((t) => t !== tag))
+                  }
                   className="ml-1 rounded-full p-0.5 transition-colors hover:bg-foreground/10"
                 >
                   <X className="size-3" />

@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import { DollarSign, Info } from 'lucide-react'
+import { useController, useFormContext } from 'react-hook-form'
+import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
   CardContent,
@@ -18,11 +19,24 @@ import {
 } from '@/components/ui/select'
 
 export const PriceSection = () => {
-  const [price, setPrice] = useState('')
-  const [compareAtPrice, setCompareAtPrice] = useState('')
-  const [currency, setCurrency] = useState('RSD')
+  const { register, control } = useFormContext<ProductFormSchema>()
 
-  const getCurrencySymbol = () => {
+  const { field: priceField } = useController({
+    name: 'price',
+    control,
+  })
+
+  const { field: compareAtPriceField } = useController({
+    name: 'compareAtPrice',
+    control,
+  })
+
+  const { field: currencyField } = useController({
+    name: 'currency',
+    control,
+  })
+
+  const getCurrencySymbol = (currency: ProductFormSchema['currency']) => {
     return currencies.find((c) => c.value === currency)?.symbol || ''
   }
 
@@ -51,13 +65,12 @@ export const PriceSection = () => {
               <Input
                 id="price"
                 type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                {...register('price')}
                 placeholder="0.00"
                 className="bg-input/50 pr-16 transition-colors focus:bg-input"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                {getCurrencySymbol()}
+                {getCurrencySymbol(currencyField.value)}
               </span>
             </div>
           </div>
@@ -68,13 +81,12 @@ export const PriceSection = () => {
               <Input
                 id="compareAtPrice"
                 type="number"
-                value={compareAtPrice}
-                onChange={(e) => setCompareAtPrice(e.target.value)}
+                {...register('compareAtPrice')}
                 placeholder="0.00"
                 className="bg-input/50 pr-16 transition-colors focus:bg-input"
               />
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                {getCurrencySymbol()}
+                {getCurrencySymbol(currencyField.value)}
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -84,8 +96,11 @@ export const PriceSection = () => {
 
           <div className="space-y-2">
             <Label htmlFor="currency">Valuta</Label>
-            <Select value={currency} onValueChange={setCurrency}>
-              <SelectTrigger id="currency" className="bg-input/50">
+            <Select
+              value={currencyField.value}
+              onValueChange={currencyField.onChange}
+            >
+              <SelectTrigger id="currency" className="bg-input/50 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -100,30 +115,37 @@ export const PriceSection = () => {
         </div>
 
         {/* Discount preview */}
-        {price && compareAtPrice && Number(compareAtPrice) > Number(price) && (
-          <div className="flex items-center gap-3 rounded-lg border border-green-500/30 bg-green-500/10 p-4">
-            <Info className="size-5 text-green-500" />
-            <div className="text-sm">
-              <span className="font-medium text-green-500">
-                Popust aktivan:{' '}
-              </span>
-              <span className="text-muted-foreground">
-                {Math.round(
-                  ((Number(compareAtPrice) - Number(price)) /
-                    Number(compareAtPrice)) *
-                    100,
-                )}
-                % niža cena od prethodne
-              </span>
+        {priceField.value &&
+          compareAtPriceField.value &&
+          Number(compareAtPriceField.value) > Number(priceField.value) && (
+            <div className="flex items-center gap-3 rounded-lg border border-green-500/30 bg-green-500/10 p-4">
+              <Info className="size-5 text-green-500" />
+              <div className="text-sm">
+                <span className="font-medium text-green-500">
+                  Popust aktivan:{' '}
+                </span>
+                <span className="text-muted-foreground">
+                  {Math.round(
+                    ((Number(compareAtPriceField.value) -
+                      Number(priceField.value)) /
+                      Number(compareAtPriceField.value)) *
+                      100,
+                  )}
+                  % niža cena od prethodne
+                </span>
+              </div>
             </div>
-          </div>
-        )}
+          )}
       </CardContent>
     </Card>
   )
 }
 
-const currencies = [
+const currencies: Array<{
+  value: ProductFormSchema['currency']
+  label: ProductFormSchema['currency']
+  symbol: string
+}> = [
   { value: 'RSD', label: 'RSD', symbol: 'дин.' },
   { value: 'EUR', label: 'EUR', symbol: '€' },
   { value: 'USD', label: 'USD', symbol: '$' },

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useController, useFormContext } from 'react-hook-form'
+import type { ProductFormSchema } from '../zod-schema'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import {
@@ -10,7 +11,12 @@ import {
 } from '@/components/ui/select'
 
 export const StatusSection = () => {
-  const [status, setStatus] = useState('draft')
+  const { control } = useFormContext<ProductFormSchema>()
+
+  const { field } = useController({
+    name: 'status',
+    control,
+  })
 
   return (
     <Card className="border-border/50">
@@ -19,7 +25,7 @@ export const StatusSection = () => {
           <Label htmlFor="status" className="text-muted-foreground">
             Status proizvoda:
           </Label>
-          <Select value={status} onValueChange={setStatus}>
+          <Select value={field.value} onValueChange={field.onChange}>
             <SelectTrigger id="status" className="w-[180px]">
               <SelectValue />
             </SelectTrigger>

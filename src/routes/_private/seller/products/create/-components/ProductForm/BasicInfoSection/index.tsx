@@ -1,5 +1,6 @@
 import { Package } from 'lucide-react'
-import { useState } from 'react'
+import { useFormContext } from 'react-hook-form'
+import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
   CardContent,
@@ -12,28 +13,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
 export const BasicInfoSection = () => {
-  const [name, setName] = useState('')
-  const [slug, setSlug] = useState('')
-  const [description, setDescription] = useState('')
-  const [sku, setSku] = useState('')
-
-  const generateSlug = (text: string) => {
-    return text
-      .toLowerCase()
-      .replace(/[čć]/g, 'c')
-      .replace(/[šś]/g, 's')
-      .replace(/ž/g, 'z')
-      .replace(/đ/g, 'dj')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-+|-+$/g, '')
-  }
-
-  const handleNameChange = (value: string) => {
-    setName(value)
-    if (!slug || slug === generateSlug(name)) {
-      setSlug(generateSlug(value))
-    }
-  }
+  const { register } = useFormContext<ProductFormSchema>()
 
   return (
     <Card className="border-border/50">
@@ -58,10 +38,9 @@ export const BasicInfoSection = () => {
             </Label>
             <Input
               id="name"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
               placeholder="npr. Pamučna majica Classic"
               className="bg-input/50 transition-colors focus:bg-input"
+              {...register('name')}
             />
           </div>
           <div className="space-y-2">
@@ -70,8 +49,7 @@ export const BasicInfoSection = () => {
             </Label>
             <Input
               id="slug"
-              value={slug}
-              onChange={(e) => setSlug(e.target.value)}
+              {...register('slug')}
               placeholder="pamucna-majica-classic"
               className="bg-input/50 font-mono text-sm transition-colors focus:bg-input"
             />
@@ -85,8 +63,7 @@ export const BasicInfoSection = () => {
           <Label htmlFor="description">Opis proizvoda</Label>
           <Textarea
             id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            {...register('description')}
             placeholder="Opišite vaš proizvod detaljno..."
             className="min-h-[150px] bg-input/50 transition-colors focus:bg-input"
           />
@@ -99,8 +76,7 @@ export const BasicInfoSection = () => {
           <Label htmlFor="sku">SKU (Stock Keeping Unit)</Label>
           <Input
             id="sku"
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
+            {...register('sku')}
             placeholder="npr. MAJ-001-BEL-L"
             className="bg-input/50 font-mono transition-colors focus:bg-input"
           />

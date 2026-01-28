@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import { Warehouse } from 'lucide-react'
+import { useController, useFormContext } from 'react-hook-form'
+import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
   CardContent,
@@ -19,10 +20,17 @@ import {
 import { Switch } from '@/components/ui/switch'
 
 export const InventorySection = () => {
-  const [unit, setUnit] = useState('piece')
-  const [trackInventory, setTrackInventory] = useState(true)
-  const [stockQty, setStockQty] = useState('')
-  const [lowStockThreshold, setLowStockThreshold] = useState('')
+  const { control, register } = useFormContext<ProductFormSchema>()
+
+  const { field: unitField } = useController({
+    name: 'unit',
+    control,
+  })
+
+  const { field: trackInventoryField } = useController({
+    name: 'trackInventory',
+    control,
+  })
 
   return (
     <Card className="border-border/50">
@@ -48,16 +56,16 @@ export const InventorySection = () => {
             </p>
           </div>
           <Switch
-            checked={trackInventory}
-            onCheckedChange={setTrackInventory}
+            checked={trackInventoryField.value}
+            onCheckedChange={trackInventoryField.onChange}
           />
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
           <div className="space-y-2">
             <Label htmlFor="unit">Jedinica mere</Label>
-            <Select value={unit} onValueChange={setUnit}>
-              <SelectTrigger id="unit" className="bg-input/50">
+            <Select value={unitField.value} onValueChange={unitField.onChange}>
+              <SelectTrigger id="unit" className="bg-input/50 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -70,15 +78,14 @@ export const InventorySection = () => {
             </Select>
           </div>
 
-          {trackInventory && (
+          {trackInventoryField.value && (
             <>
               <div className="space-y-2">
                 <Label htmlFor="stockQty">Količina na stanju</Label>
                 <Input
                   id="stockQty"
                   type="number"
-                  value={stockQty}
-                  onChange={(e) => setStockQty(e.target.value)}
+                  {...register('stockQty')}
                   placeholder="0"
                   min="0"
                   className="bg-input/50 transition-colors focus:bg-input"
@@ -90,8 +97,7 @@ export const InventorySection = () => {
                 <Input
                   id="lowStock"
                   type="number"
-                  value={lowStockThreshold}
-                  onChange={(e) => setLowStockThreshold(e.target.value)}
+                  {...register('lowStockThreshold')}
                   placeholder="5"
                   min="0"
                   className="bg-input/50 transition-colors focus:bg-input"
