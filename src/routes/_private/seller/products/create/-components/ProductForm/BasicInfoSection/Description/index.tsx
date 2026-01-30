@@ -4,6 +4,8 @@ import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
 import { useController, useFormContext } from 'react-hook-form'
 import { Placeholder } from '@tiptap/extensions'
+import { Link } from '@tiptap/extension-link'
+import Emoji from '@tiptap/extension-emoji'
 import { MenuBar } from './MenuBar'
 import type { ProductFormSchema } from '../../zod-schema'
 import { Label } from '@/components/ui/label'
@@ -32,11 +34,22 @@ export const RichTextEditorDescription = () => {
             class: 'list-decimal ml-3',
           },
         },
+        undoRedo: {
+          depth: 20,
+        },
       }),
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
       Highlight,
+      Link.configure({
+        openOnClick: true,
+        autolink: true,
+        HTMLAttributes: {
+          class: 'text-primary underline cursor-pointer',
+        },
+      }),
+      Emoji,
     ],
     content: field.value,
     editorProps: {

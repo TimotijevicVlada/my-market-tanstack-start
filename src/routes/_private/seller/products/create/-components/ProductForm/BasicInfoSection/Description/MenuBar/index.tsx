@@ -1,5 +1,7 @@
+import { Fragment } from 'react'
 import {
   AlignCenter,
+  AlignJustify,
   AlignLeft,
   AlignRight,
   Bold,
@@ -8,11 +10,17 @@ import {
   Heading3,
   Highlighter,
   Italic,
+  Link2,
   List,
   ListOrdered,
+  Redo2,
   Strikethrough,
+  Undo2,
 } from 'lucide-react'
+import { EmojiPicker } from './EmojiPicker'
 import type { Editor } from '@tiptap/react'
+import { Button } from '@/components/custom/Button'
+import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
 
 interface MenuBarProps {
@@ -52,6 +60,7 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
       icon: <Strikethrough className="size-4" />,
       onClick: () => editor.chain().focus().toggleStrike().run(),
       preesed: editor.isActive('strike'),
+      hasSeparator: true,
     },
     {
       icon: <AlignLeft className="size-4" />,
@@ -69,6 +78,12 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
       preesed: editor.isActive({ textAlign: 'right' }),
     },
     {
+      icon: <AlignJustify className="size-4" />,
+      onClick: () => editor.chain().focus().setTextAlign('justify').run(),
+      preesed: editor.isActive({ textAlign: 'justify' }),
+      hasSeparator: true,
+    },
+    {
       icon: <List className="size-4" />,
       onClick: () => editor.chain().focus().toggleBulletList().run(),
       preesed: editor.isActive('bulletList'),
@@ -83,19 +98,56 @@ export const MenuBar = ({ editor }: MenuBarProps) => {
       onClick: () => editor.chain().focus().toggleHighlight().run(),
       preesed: editor.isActive('highlight'),
     },
+    {
+      icon: <Link2 className="size-4" />,
+      onClick: () => {
+        if (editor.isActive('link')) {
+          editor.chain().focus().unsetLink().run()
+        } else {
+          const { from, to } = editor.state.selection
+          const selectedText = editor.state.doc.textBetween(from, to)
+          editor.chain().focus().setLink({ href: selectedText }).run()
+        }
+      },
+      preesed: editor.isActive('link'),
+      hasSeparator: true,
+    },
   ]
 
   return (
     <div className="border rounded-md p-1 mb-1 flex gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        onClick={() => editor.commands.undo()}
+      >
+        <Undo2 className="size-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        type="button"
+        onClick={() => editor.commands.redo()}
+      >
+        <Redo2 className="size-4" />
+      </Button>
+      <div className="py-1.5">
+        <Separator orientation="vertical" />
+      </div>
       {Options.map((option, index) => (
-        <Toggle
-          key={index}
-          pressed={option.preesed}
-          onPressedChange={option.onClick}
-        >
-          {option.icon}
-        </Toggle>
+        <Fragment key={index}>
+          <Toggle pressed={option.preesed} onPressedChange={option.onClick}>
+            {option.icon}
+          </Toggle>
+          {option.hasSeparator && (
+            <div className="py-1.5">
+              <Separator orientation="vertical" />
+            </div>
+          )}
+        </Fragment>
       ))}
+      <EmojiPicker editor={editor} />
     </div>
   )
 }
