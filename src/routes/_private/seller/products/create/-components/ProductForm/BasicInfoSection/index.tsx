@@ -10,8 +10,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { FormField } from '@/components/custom/FormField'
 
 export const BasicInfoSection = () => {
@@ -53,12 +51,11 @@ export const BasicInfoSection = () => {
         <RichTextEditorDescription />
 
         <div className="space-y-2 md:w-1/2">
-          <Label htmlFor="sku">Šifra proizvoda (SKU)</Label>
-          <Input
-            id="sku"
+          <FormField
+            label="Šifra proizvoda (SKU)"
+            error={errors.sku?.message}
             {...register('sku')}
             placeholder="npr. MAJ-001-BEL-L"
-            className="bg-input/50 font-mono transition-colors focus:bg-input"
           />
           <p className="text-xs text-muted-foreground">
             Jedinstveni kod za internu evidenciju

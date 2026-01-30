@@ -57,7 +57,7 @@ export const RichTextEditorDescription = () => {
     editorProps: {
       attributes: {
         class:
-          'min-h-40 bg-input/50 dark:bg-input/30 p-3 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none rounded-md border border-border shadow-xs transition-colors md:text-sm',
+          'min-h-40 dark:bg-input/30 p-3 focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none rounded-md border border-border shadow-xs transition-colors md:text-sm',
       },
     },
     onUpdate: ({ editor: editorValue }) => {
