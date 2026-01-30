@@ -1,6 +1,7 @@
 import { Package } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { RichTextEditorDescription } from './Description'
+import { Slug } from './Slug'
 import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
@@ -11,9 +12,15 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { FormField } from '@/components/custom/FormField'
 
 export const BasicInfoSection = () => {
-  const { register } = useFormContext<ProductFormSchema>()
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<ProductFormSchema>()
+
+  console.log('RENDER')
 
   return (
     <Card className="border-border/50">
@@ -32,37 +39,21 @@ export const BasicInfoSection = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label htmlFor="name">
-              Naziv proizvoda <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="name"
-              placeholder="npr. Pamučna majica Classic"
-              className="bg-input/50 transition-colors focus:bg-input"
-              {...register('name')}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="slug">
-              URL slug <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="slug"
-              {...register('slug')}
-              placeholder="pamucna-majica-classic"
-              className="bg-input/50 font-mono text-sm transition-colors focus:bg-input"
-            />
-            <p className="text-xs text-muted-foreground">
-              Automatski generisan iz naziva
-            </p>
-          </div>
+          <FormField
+            label="Naziv proizvoda"
+            placeholder="Unesite naziv proizvoda"
+            required
+            error={errors.name?.message}
+            {...register('name')}
+          />
+
+          <Slug />
         </div>
 
         <RichTextEditorDescription />
 
         <div className="space-y-2 md:w-1/2">
-          <Label htmlFor="sku">SKU (Stock Keeping Unit)</Label>
+          <Label htmlFor="sku">Šifra proizvoda (SKU)</Label>
           <Input
             id="sku"
             {...register('sku')}

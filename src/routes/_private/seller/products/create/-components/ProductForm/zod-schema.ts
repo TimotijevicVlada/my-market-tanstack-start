@@ -1,13 +1,24 @@
 import { z } from 'zod'
 
 export const productFormSchema = z.object({
+  // Status section
+  status: z.enum(['draft', 'published', 'out_of_stock', 'archived']),
+
+  // Basic info section
   name: z.string().min(1, 'Naziv je obavezan'),
   slug: z.string().min(1, 'Slug je obavezan'),
   description: z.string().nullish(),
+  sku: z.string().nullish(),
+
+  // Images section
+  images: z.array(z.string()),
+
+  // Price section
   price: z.number().min(0, 'Cena je obavezna'),
   compareAtPrice: z.number().nullish(),
   currency: z.enum(['RSD', 'EUR', 'USD']),
-  images: z.array(z.string()),
+
+  // Inventory section
   unit: z.enum([
     'piece',
     'kg',
@@ -33,14 +44,16 @@ export const productFormSchema = z.object({
   trackInventory: z.boolean(),
   stockQty: z.number().nullish(),
   lowStockThreshold: z.number().nullish(),
-  sku: z.string().min(1, 'SKU je obavezan'),
+
+  // Tags section
   tags: z.array(z.string()),
+
+  // Attributes section
   attributes: z.record(z.string(), z.string()),
+
+  // SEO section
   seoTitle: z.string().nullish(),
   seoDescription: z.string().nullish(),
-  status: z.enum(['draft', 'published', 'out_of_stock', 'archived']),
-  publishedAt: z.date().nullish(),
-  archivedAt: z.date().nullish(),
 })
 
 export type ProductFormSchema = z.infer<typeof productFormSchema>
@@ -63,6 +76,4 @@ export const defaultValues: ProductFormSchema = {
   seoTitle: '',
   seoDescription: '',
   status: 'draft',
-  publishedAt: null,
-  archivedAt: null,
 }
