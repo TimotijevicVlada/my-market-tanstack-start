@@ -16,17 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { FormField } from '@/components/custom/FormField'
 import {
   Alert,
   AlertDescription,
   AlertIcon,
   AlertTitle,
 } from '@/components/ui/alert'
+import { NumberFormField } from '@/components/shadcn-studio/input/NumberTextField'
 
 export const PriceSection = () => {
   const {
-    register,
     control,
     formState: { errors },
   } = useFormContext<ProductFormSchema>()
@@ -46,10 +45,6 @@ export const PriceSection = () => {
     control,
   })
 
-  const getCurrencySymbol = (currency: ProductFormSchema['currency']) => {
-    return currencies.find((c) => c.value === currency)?.symbol || ''
-  }
-
   return (
     <Card className="border-border/50">
       <CardHeader className="pb-4">
@@ -67,38 +62,26 @@ export const PriceSection = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-6 md:grid-cols-3">
-          <FormField
-            required
+          <NumberFormField
             label="Cena"
-            placeholder="0.00"
+            required
             error={errors.price?.message}
-            type="number"
-            {...register('price', { valueAsNumber: true })}
-            endIcon={
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                {getCurrencySymbol(currencyField.value)}
-              </span>
-            }
+            value={priceField.value}
+            onChange={priceField.onChange}
+            minValue={0}
+            placeholder="0.00"
+          />
+
+          <NumberFormField
+            label="Prethodna cena"
+            value={compareAtPriceField.value}
+            onChange={compareAtPriceField.onChange}
+            minValue={0}
+            placeholder="0.00"
+            description="Precrtana cena za prikaz popusta"
           />
 
           <div>
-            <FormField
-              label="Prethodna cena"
-              placeholder="0.00"
-              error={errors.compareAtPrice?.message}
-              {...register('compareAtPrice', { valueAsNumber: true })}
-              endIcon={
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                  {getCurrencySymbol(currencyField.value)}
-                </span>
-              }
-            />
-            <p className="text-xs text-muted-foreground">
-              Precrtana cena za prikaz popusta
-            </p>
-          </div>
-
-          <div className="">
             <Label className="mb-2">Valuta</Label>
             <Select
               value={currencyField.value}

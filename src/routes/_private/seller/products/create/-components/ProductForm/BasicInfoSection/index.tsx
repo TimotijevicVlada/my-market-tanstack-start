@@ -18,8 +18,6 @@ export const BasicInfoSection = () => {
     formState: { errors },
   } = useFormContext<ProductFormSchema>()
 
-  console.log('RENDER')
-
   return (
     <Card className="border-border/50">
       <CardHeader className="pb-4">
