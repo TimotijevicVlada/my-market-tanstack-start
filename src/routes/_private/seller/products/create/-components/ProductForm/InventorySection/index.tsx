@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -18,9 +17,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { NumberFormField } from '@/components/shadcn-studio/input/NumberTextField'
 
 export const InventorySection = () => {
-  const { control, register } = useFormContext<ProductFormSchema>()
+  const { control } = useFormContext<ProductFormSchema>()
 
   const { field: unitField } = useController({
     name: 'unit',
@@ -29,6 +29,16 @@ export const InventorySection = () => {
 
   const { field: trackInventoryField } = useController({
     name: 'trackInventory',
+    control,
+  })
+
+  const { field: stockQtyField } = useController({
+    name: 'stockQty',
+    control,
+  })
+
+  const { field: lowStockThresholdField } = useController({
+    name: 'lowStockThreshold',
     control,
   })
 
@@ -80,32 +90,22 @@ export const InventorySection = () => {
 
           {trackInventoryField.value && (
             <>
-              <div className="space-y-2">
-                <Label htmlFor="stockQty">Količina na stanju</Label>
-                <Input
-                  id="stockQty"
-                  type="number"
-                  {...register('stockQty')}
-                  placeholder="0"
-                  min="0"
-                  className="bg-input/50 transition-colors focus:bg-input"
-                />
-              </div>
+              <NumberFormField
+                label="Količina na stanju"
+                value={stockQtyField.value ?? 0}
+                onChange={stockQtyField.onChange}
+                minValue={0}
+                placeholder="0"
+              />
 
-              <div className="space-y-2">
-                <Label htmlFor="lowStock">Upozorenje za nisku zalihu</Label>
-                <Input
-                  id="lowStock"
-                  type="number"
-                  {...register('lowStockThreshold')}
-                  placeholder="5"
-                  min="0"
-                  className="bg-input/50 transition-colors focus:bg-input"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Dobićete obaveštenje kada zaliha padne ispod ovog broja
-                </p>
-              </div>
+              <NumberFormField
+                label="Upozorenje za nisku zalihu"
+                value={lowStockThresholdField.value ?? 0}
+                onChange={lowStockThresholdField.onChange}
+                minValue={0}
+                placeholder="0"
+                description="Dobićete obaveštenje kada zaliha padne ispod ovog broja"
+              />
             </>
           )}
         </div>
