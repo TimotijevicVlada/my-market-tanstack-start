@@ -2,6 +2,7 @@ import { Package } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { RichTextEditorDescription } from './Description'
 import { Slug } from './Slug'
+import { CategorySelect } from './CategorySelect'
 import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
@@ -46,19 +47,20 @@ export const BasicInfoSection = () => {
           <Slug />
         </div>
 
-        <RichTextEditorDescription />
-
-        <div className="space-y-2 md:w-1/2">
-          <FormField
-            label="Šifra proizvoda (SKU)"
-            error={errors.sku?.message}
-            {...register('sku')}
-            placeholder="npr. MAJ-001-BEL-L"
-          />
-          <p className="text-xs text-muted-foreground">
-            Jedinstveni kod za internu evidenciju
-          </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          <CategorySelect />
+          <div>
+            <FormField
+              label="Šifra proizvoda (SKU)"
+              error={errors.sku?.message}
+              {...register('sku')}
+              placeholder="npr. MAJ-001-BEL-L"
+              description="Jedinstveni kod za internu evidenciju"
+            />
+          </div>
         </div>
+
+        <RichTextEditorDescription />
       </CardContent>
     </Card>
   )

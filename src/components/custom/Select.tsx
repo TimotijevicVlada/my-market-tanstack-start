@@ -30,6 +30,7 @@ interface SelectProps<T> {
   onSelect: (value: T | null) => void
   required?: boolean
   error?: string
+  description?: string
 }
 
 export const Select = <T extends { id: string }>({
@@ -41,6 +42,7 @@ export const Select = <T extends { id: string }>({
   onSelect,
   required = false,
   error,
+  description,
 }: SelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -120,6 +122,11 @@ export const Select = <T extends { id: string }>({
           </Command>
         </PopoverContent>
       </Popover>
+      {description && (
+        <FieldDescription className="text-xs text-muted-foreground">
+          {description}
+        </FieldDescription>
+      )}
       {error && (
         <FieldDescription className="text-destructive">
           {error}

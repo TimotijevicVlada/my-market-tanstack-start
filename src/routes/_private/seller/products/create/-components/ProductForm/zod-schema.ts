@@ -9,6 +9,7 @@ export const productFormSchema = z.object({
   slug: z.string().min(1, 'Slug je obavezan'),
   description: z.string().nullish(),
   sku: z.string().nullish(),
+  categoryId: z.string().nullish(),
 
   // Images section
   images: z.array(z.string()),
@@ -47,12 +48,6 @@ export const productFormSchema = z.object({
   stockQty: z.number().nullish(),
   lowStockThreshold: z.number().nullish(),
 
-  // Tags section
-  tags: z.array(z.string()),
-
-  // Attributes section
-  attributes: z.record(z.string(), z.string()),
-
   // SEO section
   seoTitle: z.string().nullish(),
   seoDescription: z.string().nullish(),
@@ -64,6 +59,8 @@ export const defaultValues: Partial<ProductFormSchema> = {
   name: '',
   slug: '',
   description: '',
+  sku: '',
+  categoryId: null,
   price: undefined,
   compareAtPrice: undefined,
   currency: 'RSD',
@@ -72,9 +69,6 @@ export const defaultValues: Partial<ProductFormSchema> = {
   trackInventory: true,
   stockQty: 0,
   lowStockThreshold: 0,
-  sku: '',
-  tags: [],
-  attributes: {},
   seoTitle: '',
   seoDescription: '',
   status: 'draft',

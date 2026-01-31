@@ -9,6 +9,7 @@ export interface FormFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   startIcon?: ReactNode
   endIcon?: ReactNode
   forgotPasswordLink?: ReactNode
+  description?: string
 }
 
 export const FormField = ({
@@ -18,6 +19,7 @@ export const FormField = ({
   startIcon,
   endIcon,
   forgotPasswordLink,
+  description,
   ...props
 }: FormFieldProps) => {
   return (
@@ -40,6 +42,11 @@ export const FormField = ({
           <InputGroupAddon align="inline-end">{endIcon}</InputGroupAddon>
         )}
       </InputGroup>
+      {description && (
+        <FieldDescription className="text-xs text-muted-foreground">
+          {description}
+        </FieldDescription>
+      )}
       {error && (
         <FieldDescription className="text-destructive">
           {error}

@@ -5,8 +5,6 @@ import { BasicInfoSection } from './BasicInfoSection'
 import { ImagesSection } from './ImagesSection'
 import { PriceSection } from './PriceSection'
 import { InventorySection } from './InventorySection'
-import { CategoriesSection } from './CategoriesSection'
-import { TagsSection } from './TagsSection'
 import { SeoSection } from './SeoSection'
 import type { ProductFormSchema } from './zod-schema'
 import { Button } from '@/components/custom/Button'
@@ -47,10 +45,6 @@ export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
         <ImagesSection />
 
         <InventorySection />
-
-        <CategoriesSection />
-
-        <TagsSection />
 
         <SeoSection />
 
