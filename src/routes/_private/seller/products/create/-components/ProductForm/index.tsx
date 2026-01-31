@@ -42,9 +42,9 @@ export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
 
         <BasicInfoSection />
 
-        <ImagesSection />
-
         <PriceSection />
+
+        <ImagesSection />
 
         <InventorySection />
 

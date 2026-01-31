@@ -14,8 +14,10 @@ export const productFormSchema = z.object({
   images: z.array(z.string()),
 
   // Price section
-  price: z.number().min(0, 'Cena je obavezna'),
-  compareAtPrice: z.number().nullish(),
+  price: z
+    .number({ message: 'Cena mora biti veća od 0' })
+    .gt(0, 'Cena mora biti veća od 0'),
+  compareAtPrice: z.number().optional().catch(undefined),
   currency: z.enum(['RSD', 'EUR', 'USD']),
 
   // Inventory section
@@ -58,12 +60,12 @@ export const productFormSchema = z.object({
 
 export type ProductFormSchema = z.infer<typeof productFormSchema>
 
-export const defaultValues: ProductFormSchema = {
+export const defaultValues: Partial<ProductFormSchema> = {
   name: '',
   slug: '',
   description: '',
-  price: 0,
-  compareAtPrice: 0,
+  price: undefined,
+  compareAtPrice: undefined,
   currency: 'RSD',
   images: [],
   unit: 'piece',

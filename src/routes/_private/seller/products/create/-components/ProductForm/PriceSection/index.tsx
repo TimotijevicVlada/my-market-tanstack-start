@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -17,9 +16,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { FormField } from '@/components/custom/FormField'
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+} from '@/components/ui/alert'
 
 export const PriceSection = () => {
-  const { register, control } = useFormContext<ProductFormSchema>()
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<ProductFormSchema>()
 
   const { field: priceField } = useController({
     name: 'price',
@@ -57,50 +67,44 @@ export const PriceSection = () => {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="space-y-2">
-            <Label htmlFor="price">
-              Cena <span className="text-destructive">*</span>
-            </Label>
-            <div className="relative">
-              <Input
-                id="price"
-                type="number"
-                {...register('price')}
-                placeholder="0.00"
-                className="bg-input/50 pr-16 transition-colors focus:bg-input"
-              />
+          <FormField
+            required
+            label="Cena"
+            placeholder="0.00"
+            error={errors.price?.message}
+            type="number"
+            {...register('price', { valueAsNumber: true })}
+            endIcon={
               <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                 {getCurrencySymbol(currencyField.value)}
               </span>
-            </div>
-          </div>
+            }
+          />
 
-          <div className="space-y-2">
-            <Label htmlFor="compareAtPrice">Prethodna cena</Label>
-            <div className="relative">
-              <Input
-                id="compareAtPrice"
-                type="number"
-                {...register('compareAtPrice')}
-                placeholder="0.00"
-                className="bg-input/50 pr-16 transition-colors focus:bg-input"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                {getCurrencySymbol(currencyField.value)}
-              </span>
-            </div>
+          <div>
+            <FormField
+              label="Prethodna cena"
+              placeholder="0.00"
+              error={errors.compareAtPrice?.message}
+              {...register('compareAtPrice', { valueAsNumber: true })}
+              endIcon={
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                  {getCurrencySymbol(currencyField.value)}
+                </span>
+              }
+            />
             <p className="text-xs text-muted-foreground">
               Precrtana cena za prikaz popusta
             </p>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="currency">Valuta</Label>
+          <div className="">
+            <Label className="mb-2">Valuta</Label>
             <Select
               value={currencyField.value}
               onValueChange={currencyField.onChange}
             >
-              <SelectTrigger id="currency" className="bg-input/50 w-full">
+              <SelectTrigger className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -115,27 +119,28 @@ export const PriceSection = () => {
         </div>
 
         {/* Discount preview */}
-        {priceField.value &&
-          compareAtPriceField.value &&
-          Number(compareAtPriceField.value) > Number(priceField.value) && (
-            <div className="flex items-center gap-3 rounded-lg border border-green-500/30 bg-green-500/10 p-4">
-              <Info className="size-5 text-green-500" />
-              <div className="text-sm">
-                <span className="font-medium text-green-500">
-                  Popust aktivan:{' '}
-                </span>
-                <span className="text-muted-foreground">
-                  {Math.round(
-                    ((Number(compareAtPriceField.value) -
-                      Number(priceField.value)) /
-                      Number(compareAtPriceField.value)) *
-                      100,
-                  )}
-                  % niža cena od prethodne
-                </span>
-              </div>
-            </div>
-          )}
+        {priceField.value && compareAtPriceField.value
+          ? compareAtPriceField.value > priceField.value && (
+              <Alert variant="success" appearance="light">
+                <AlertIcon>
+                  <Info className="size-5 text-green-500" />
+                </AlertIcon>
+                <div>
+                  <AlertTitle>Popust aktivan</AlertTitle>
+                  <AlertDescription>
+                    <span className="text-muted-foreground">
+                      {Math.round(
+                        ((compareAtPriceField.value - priceField.value) /
+                          compareAtPriceField.value) *
+                          100,
+                      )}
+                      % niža cena od prethodne
+                    </span>
+                  </AlertDescription>
+                </div>
+              </Alert>
+            )
+          : null}
       </CardContent>
     </Card>
   )

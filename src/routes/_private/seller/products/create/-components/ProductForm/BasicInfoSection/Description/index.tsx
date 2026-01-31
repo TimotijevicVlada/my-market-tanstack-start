@@ -6,7 +6,7 @@ import { useController, useFormContext } from 'react-hook-form'
 import { Placeholder } from '@tiptap/extensions'
 import { Link } from '@tiptap/extension-link'
 import Emoji from '@tiptap/extension-emoji'
-import { FileText } from 'lucide-react'
+import { ListPlus } from 'lucide-react'
 import { MenuBar } from './MenuBar'
 import type { ProductFormSchema } from '../../zod-schema'
 import { Label } from '@/components/ui/label'
@@ -86,7 +86,7 @@ export const RichTextEditorDescription = () => {
       <div className="flex items-end justify-between mb-2">
         <Label className="mb-2">Opis proizvoda</Label>
         <Button variant="outline" type="button" onClick={handleAddTemplate}>
-          <FileText className="size-4" /> Dodaj šablon
+          <ListPlus className="size-4" /> Dodaj šablon
         </Button>
       </div>
       <Tiptap instance={editor}>
