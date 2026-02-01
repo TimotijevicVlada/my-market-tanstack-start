@@ -72,7 +72,7 @@ export const ImagesSection = () => {
           </div>
           {value.length > 0 && (
             <Button
-              variant="outline"
+              variant="destructive"
               type="button"
               onClick={() => onChange([])}
             >
@@ -94,7 +94,7 @@ export const ImagesSection = () => {
             handleChange={handleChange}
             multiple
           >
-            <div className="rounded-lg border border-dashed border-border py-12 text-center">
+            <div className="rounded-lg border border-dashed border-border py-12 text-center border-2 hover:border-primary/50 hover:bg-primary/5 transition-all">
               <ImageIcon className="mx-auto size-10 text-muted-foreground" />
               <p className="mt-3 font-medium">Nema dodatih slika</p>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -153,7 +153,7 @@ export const ImagesSection = () => {
                   handleChange={handleChange}
                   multiple
                 >
-                  <div className="rounded-lg border border-dashed border-border text-center w-full h-full flex flex-col items-center justify-center">
+                  <div className="rounded-lg border border-dashed border-border text-center w-full h-full flex flex-col items-center justify-center border-2 hover:border-primary/50 hover:bg-primary/5 transition-all">
                     <UploaderIcon className="text-muted-foreground" />
                     <p className="mt-2 text-sm">Dodajte još slika</p>
                   </div>
