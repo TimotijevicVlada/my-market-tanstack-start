@@ -1,10 +1,10 @@
 import { useController, useFormContext } from 'react-hook-form'
 import type { ProductFormSchema } from '../../zod-schema'
-import { useGetAllCategories } from '@/api/categories/queries'
+import { useGetLeafCategories } from '@/api/categories/queries'
 import { Select } from '@/components/custom/Select'
 
 export const CategorySelect = () => {
-  const { data: categories } = useGetAllCategories()
+  const { data: categories } = useGetLeafCategories()
 
   const { control } = useFormContext<ProductFormSchema>()
 

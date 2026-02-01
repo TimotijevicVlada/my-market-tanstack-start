@@ -5,6 +5,7 @@ import {
   deleteCategory,
   editCategory,
   getCategories,
+  getLeafCategories,
   getPagedCategories,
   toggleCategoryActiveStatus,
 } from './server'
@@ -22,6 +23,14 @@ export const useGetAllCategories = () => {
   return useQuery({
     queryKey: ['categories-all'],
     queryFn: () => getCategories(),
+    placeholderData: (prev) => prev,
+  })
+}
+
+export const useGetLeafCategories = () => {
+  return useQuery({
+    queryKey: ['categories-leaf'],
+    queryFn: () => getLeafCategories(),
     placeholderData: (prev) => prev,
   })
 }

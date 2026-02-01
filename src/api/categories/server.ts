@@ -7,7 +7,9 @@ import {
   eq,
   getTableColumns,
   ilike,
+  isNotNull,
   isNull,
+  notInArray,
   or,
 } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
@@ -33,6 +35,23 @@ export const getCategories = createServerFn({
 
     return result
   })
+
+// Categories that have no children (leaf categories)
+export const getLeafCategories = createServerFn({
+  method: 'GET',
+}).handler(async () => {
+  const parentIds = db
+    .select({ id: categories.parentId })
+    .from(categories)
+    .where(isNotNull(categories.parentId))
+
+  const result = await db.query.categories.findMany({
+    where: notInArray(categories.id, parentIds),
+    orderBy: (category) => [asc(category.name)],
+  })
+
+  return result
+})
 
 export const getPagedCategories = createServerFn({
   method: 'POST',
