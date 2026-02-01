@@ -1,4 +1,4 @@
-import { Eye, FileText, Save } from 'lucide-react'
+import { FileText, RefreshCcw, Save } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { StatusSection } from './StatusSection'
 import { BasicInfoSection } from './BasicInfoSection'
@@ -15,7 +15,7 @@ interface ProductFormProps {
 }
 
 export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
-  const { handleSubmit } = useFormContext<ProductFormSchema>()
+  const { handleSubmit, reset } = useFormContext<ProductFormSchema>()
 
   return (
     <form
@@ -48,17 +48,17 @@ export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
 
         <SeoSection />
 
-        <div className="flex flex-col-reverse gap-3 border-t border-border pt-6 sm:flex-row sm:justify-between">
-          <Button variant="outline" className="gap-2 bg-transparent">
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+          <Button variant="outline" type="button">
             <FileText className="size-4" />
             Sačuvaj kao nacrt
           </Button>
           <div className="flex gap-3">
-            <Button variant="outline" className="gap-2 bg-transparent">
-              <Eye className="size-4" />
-              Pregled
+            <Button variant="outline" type="button" onClick={() => reset()}>
+              <RefreshCcw />
+              Poništi
             </Button>
-            <Button className="gap-2">
+            <Button className="gap-2" type="submit">
               <Save className="size-4" />
               Sačuvaj i objavi
             </Button>

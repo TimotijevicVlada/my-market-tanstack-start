@@ -1,5 +1,5 @@
 import { Globe } from 'lucide-react'
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, useWatch } from 'react-hook-form'
 import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
@@ -13,10 +13,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 
 export const SeoSection = () => {
-  const { register, watch } = useFormContext<ProductFormSchema>()
+  const { register, control } = useFormContext<ProductFormSchema>()
 
-  const seoTitle = watch('seoTitle')
-  const seoDescription = watch('seoDescription')
+  const seoTitle = useWatch({ control, name: 'seoTitle' })
+  const seoDescription = useWatch({ control, name: 'seoDescription' })
 
   return (
     <Card className="border-border/50">
@@ -46,7 +46,6 @@ export const SeoSection = () => {
             {...register('seoTitle')}
             placeholder={'Naslov za pretraživače'}
             maxLength={70}
-            className="bg-input/50 transition-colors focus:bg-input"
           />
         </div>
         <div className="space-y-2">
@@ -57,11 +56,10 @@ export const SeoSection = () => {
             </span>
           </div>
           <Textarea
-            id="seoDescription"
             {...register('seoDescription')}
             placeholder="Kratak opis koji će se prikazati u rezultatima pretrage..."
             maxLength={160}
-            className="min-h-[80px] bg-input/50 transition-colors focus:bg-input"
+            className="min-h-20 resize-none"
           />
         </div>
       </CardContent>

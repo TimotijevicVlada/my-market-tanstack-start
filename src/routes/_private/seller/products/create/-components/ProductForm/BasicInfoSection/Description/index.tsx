@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Tiptap, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import TextAlign from '@tiptap/extension-text-align'
@@ -66,20 +67,26 @@ export const RichTextEditorDescription = () => {
   })
 
   const descriptionTemplate = `<h3>Ključne karakteristike</h3>
-<p>U ovoj sekciji možete opisati ključne karakteristike proizvoda.</p><br />
-<h3>Materijal / sastav</h3>
-<p>U ovoj sekciji možete opisati materijal / sastav proizvoda.</p><br />
-<h3>Dimenzije / veličina</h3>
-<p>U ovoj sekciji možete opisati dimenzije / veličinu proizvoda.</p><br />
-<h3>Održavanje</h3>
-<p>U ovoj sekciji možete opisati održavanje proizvoda.</p><br />
-<h3>Isporuka i povrat</h3>
-<p>U ovoj sekciji možete opisati isporuku i povrat proizvoda.</p>
-`
+  <p>U ovoj sekciji možete opisati ključne karakteristike proizvoda.</p><br />
+  <h3>Materijal / sastav</h3>
+  <p>U ovoj sekciji možete opisati materijal / sastav proizvoda.</p><br />
+  <h3>Dimenzije / veličina</h3>
+  <p>U ovoj sekciji možete opisati dimenzije / veličinu proizvoda.</p><br />
+  <h3>Održavanje</h3>
+  <p>U ovoj sekciji možete opisati održavanje proizvoda.</p><br />
+  <h3>Isporuka i povrat</h3>
+  <p>U ovoj sekciji možete opisati isporuku i povrat proizvoda.</p>
+  `
 
   const handleAddTemplate = () => {
     editor.chain().focus().setContent(descriptionTemplate).run()
   }
+
+  useEffect(() => {
+    if (field.value !== editor.getHTML()) {
+      editor.commands.setContent(field.value ?? '')
+    }
+  }, [editor, field.value])
 
   return (
     <div className="rich-text-editor-description">

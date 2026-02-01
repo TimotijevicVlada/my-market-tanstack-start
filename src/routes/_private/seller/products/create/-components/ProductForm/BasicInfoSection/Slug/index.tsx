@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
-import { useFormContext } from 'react-hook-form'
+import { useFormContext, useWatch } from 'react-hook-form'
 import slugify from 'slugify'
 import type { ProductFormSchema } from '../../zod-schema'
 import { FormField } from '@/components/custom/FormField'
 
 export const Slug = () => {
-  const { register, watch, setValue } = useFormContext<ProductFormSchema>()
+  const { register, control, setValue } = useFormContext<ProductFormSchema>()
 
-  const name = watch('name')
+  const name = useWatch({ control, name: 'name' })
 
   useEffect(() => {
     if (name) {
