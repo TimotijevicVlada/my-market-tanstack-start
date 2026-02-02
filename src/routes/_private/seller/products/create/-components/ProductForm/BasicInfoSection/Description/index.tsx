@@ -62,7 +62,7 @@ export const RichTextEditorDescription = () => {
       },
     },
     onUpdate: ({ editor: editorValue }) => {
-      field.onChange(editorValue.getHTML())
+      field.onChange(editorValue.getJSON())
     },
   })
 
@@ -82,11 +82,12 @@ export const RichTextEditorDescription = () => {
     editor.chain().focus().setContent(descriptionTemplate).run()
   }
 
+  const isEmptyDoc = !field.value.content?.length
   useEffect(() => {
-    if (field.value !== editor.getHTML()) {
-      editor.commands.setContent(field.value ?? '')
+    if (isEmptyDoc) {
+      editor.commands.setContent({ type: 'doc', content: [] })
     }
-  }, [editor, field.value])
+  }, [editor, isEmptyDoc])
 
   return (
     <div className="rich-text-editor-description">

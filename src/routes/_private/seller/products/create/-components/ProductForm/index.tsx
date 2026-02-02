@@ -1,4 +1,4 @@
-import { FileText, RefreshCcw, Save } from 'lucide-react'
+import { RefreshCcw, Save } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { StatusSection } from './StatusSection'
 import { BasicInfoSection } from './BasicInfoSection'
@@ -12,9 +12,14 @@ import { Button } from '@/components/custom/Button'
 interface ProductFormProps {
   title: string
   onFormSubmit: (data: ProductFormSchema) => void
+  isSubmitting: boolean
 }
 
-export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
+export const ProductForm = ({
+  title,
+  onFormSubmit,
+  isSubmitting,
+}: ProductFormProps) => {
   const { handleSubmit, reset } = useFormContext<ProductFormSchema>()
 
   return (
@@ -30,7 +35,13 @@ export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
               Popunite informacije o vašem proizvodu
             </p>
           </div>
-          <Button className="gap-2">
+          <Button
+            loading={{
+              state: isSubmitting,
+              text: 'Kreiranje proizvoda...',
+            }}
+            type="submit"
+          >
             <Save className="size-4" />
             Sačuvaj proizvod
           </Button>
@@ -48,19 +59,22 @@ export const ProductForm = ({ title, onFormSubmit }: ProductFormProps) => {
 
         <SeoSection />
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-          <Button variant="outline" type="button">
-            <FileText className="size-4" />
-            Sačuvaj kao nacrt
-          </Button>
+        <div className="flex justify-end">
           <div className="flex gap-3">
             <Button variant="outline" type="button" onClick={() => reset()}>
               <RefreshCcw />
               Poništi
             </Button>
-            <Button className="gap-2" type="submit">
+            <Button
+              className="gap-2"
+              type="submit"
+              loading={{
+                state: isSubmitting,
+                text: 'Kreiranje proizvoda...',
+              }}
+            >
               <Save className="size-4" />
-              Sačuvaj i objavi
+              Sačuvaj proizvod
             </Button>
           </div>
         </div>

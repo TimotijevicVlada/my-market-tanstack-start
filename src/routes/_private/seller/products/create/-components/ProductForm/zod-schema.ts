@@ -1,13 +1,18 @@
 import { z } from 'zod'
 
+export const tiptapDocSchema = z.object({
+  type: z.literal('doc'),
+  content: z.array(z.any()).optional(),
+})
+
 export const productFormSchema = z.object({
   // Status section
-  status: z.enum(['draft', 'published', 'out_of_stock', 'archived']),
+  status: z.enum(['draft', 'published', 'archived']),
 
   // Basic info section
   name: z.string().min(1, 'Naziv je obavezan'),
   slug: z.string().min(1, 'Slug je obavezan'),
-  description: z.string().nullish(),
+  description: tiptapDocSchema,
   sku: z.string().nullish(),
   categoryId: z.string().nullish(),
 
@@ -58,7 +63,7 @@ export type ProductFormSchema = z.infer<typeof productFormSchema>
 export const defaultValues: Partial<ProductFormSchema> = {
   name: '',
   slug: '',
-  description: '',
+  description: { type: 'doc', content: [] },
   sku: '',
   categoryId: null,
   price: undefined,

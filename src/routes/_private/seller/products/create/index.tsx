@@ -7,6 +7,7 @@ import {
   productFormSchema,
 } from './-components/ProductForm/zod-schema'
 import type { ProductFormSchema } from './-components/ProductForm/zod-schema'
+import { useCreateProduct } from '@/api/products/queries'
 
 export const Route = createFileRoute('/_private/seller/products/create/')({
   component: () => {
@@ -15,8 +16,17 @@ export const Route = createFileRoute('/_private/seller/products/create/')({
       defaultValues,
     })
 
+    const { mutate: createProduct, isPending } = useCreateProduct()
+
     const onFormSubmit = (data: ProductFormSchema) => {
-      console.log(data)
+      createProduct(
+        { data },
+        {
+          onSuccess: () => {
+            methods.reset()
+          },
+        },
+      )
     }
 
     return (
@@ -24,6 +34,7 @@ export const Route = createFileRoute('/_private/seller/products/create/')({
         <ProductForm
           title="Kreiranje novog proizvoda"
           onFormSubmit={onFormSubmit}
+          isSubmitting={isPending}
         />
       </FormProvider>
     )
