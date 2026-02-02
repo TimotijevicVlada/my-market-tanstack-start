@@ -1,12 +1,25 @@
-import {
-  GripVerticalIcon,
-  ImageIcon,
-  ImagePlusIcon,
-  Trash2Icon,
-} from 'lucide-react'
+import { useState } from 'react'
+import { ImageIcon, ImagePlusIcon, Trash2Icon } from 'lucide-react'
 import { useController, useFormContext } from 'react-hook-form'
 import { FileUploader } from 'react-drag-drop-files'
 import { toast } from 'sonner'
+import {
+  DndContext,
+  DragOverlay,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable'
+import { SortableImage } from './SortableImage'
+import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core'
 import type { ProductFormSchema } from '../zod-schema'
 import {
   Card,
@@ -23,6 +36,7 @@ const FILE_TYPES = ['JPG', 'JPEG', 'PNG', 'JFIF', 'WEBP', 'AVIF']
 
 export const ImagesSection = () => {
   const { control } = useFormContext<ProductFormSchema>()
+  const [activeId, setActiveId] = useState<string | null>(null)
 
   const {
     field: { value, onChange },
@@ -32,6 +46,32 @@ export const ImagesSection = () => {
   })
 
   const { mutateAsync: uploadImage, isPending } = useUploadToR2()
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  )
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string)
+  }
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event
+    setActiveId(null)
+
+    if (over && active.id !== over.id) {
+      const oldIndex = value.indexOf(active.id as string)
+      const newIndex = value.indexOf(over.id as string)
+      onChange(arrayMove(value, oldIndex, newIndex))
+    }
+  }
 
   const handleChange = async (file: File | Array<File>) => {
     let files: Array<File> = []
@@ -113,54 +153,55 @@ export const ImagesSection = () => {
         )}
 
         {value.length > 0 && (
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 mt-4">
-            {value.map((image, index) => (
-              <div
-                key={index}
-                className="aspect-square overflow-hidden rounded-lg relative"
-              >
-                <img
-                  src={image}
-                  alt={`Product image ${index + 1}`}
-                  className="w-full h-full object-cover"
-                />
-                <Button
-                  variant="secondary"
-                  size="icon-sm"
-                  type="button"
-                  className="absolute top-2 left-2 gap-2 rounded-full cursor-grab"
-                  onClick={() => onChange(value.filter((i) => i !== image))}
-                >
-                  <GripVerticalIcon className="size-4" />
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="icon-sm"
-                  type="button"
-                  className="absolute bottom-2 left-2 gap-2 rounded-full"
-                  onClick={() => onChange(value.filter((i) => i !== image))}
-                >
-                  <Trash2Icon className="size-4 text-red-500" />
-                </Button>
-              </div>
-            ))}
-            {value.length < 8 && (
-              <div className="w-full aspect-square">
-                <FileUploader
-                  types={FILE_TYPES}
-                  onTypeError={() => toast.error('Tip datoteke nije podržan')}
-                  hoverTitle="Ovde otpustite datoteku"
-                  handleChange={handleChange}
-                  multiple
-                >
-                  <div className="rounded-lg border border-dashed border-border text-center w-full h-full flex flex-col items-center justify-center border-2 hover:border-primary/50 hover:bg-primary/5 transition-all">
-                    <UploaderIcon className="text-muted-foreground" />
-                    <p className="mt-2 text-sm">Dodajte još slika</p>
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={value} strategy={rectSortingStrategy}>
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6 mt-4">
+                {value.map((image, index) => (
+                  <SortableImage
+                    key={image}
+                    id={image}
+                    index={index}
+                    onRemove={() => onChange(value.filter((i) => i !== image))}
+                  />
+                ))}
+                {value.length < 8 && (
+                  <div className="w-full aspect-square">
+                    <FileUploader
+                      types={FILE_TYPES}
+                      onTypeError={() =>
+                        toast.error('Tip datoteke nije podržan')
+                      }
+                      hoverTitle="Ovde otpustite datoteku"
+                      handleChange={handleChange}
+                      multiple
+                    >
+                      <div className="rounded-lg border border-dashed border-border text-center w-full h-full flex flex-col items-center justify-center border-2 hover:border-primary/50 hover:bg-primary/5 transition-all">
+                        <UploaderIcon className="text-muted-foreground" />
+                        <p className="mt-2 text-sm">Dodajte još slika</p>
+                      </div>
+                    </FileUploader>
                   </div>
-                </FileUploader>
+                )}
               </div>
-            )}
-          </div>
+            </SortableContext>
+
+            <DragOverlay>
+              {activeId ? (
+                <div className="aspect-square overflow-hidden rounded-lg shadow-lg">
+                  <img
+                    src={activeId}
+                    alt="Dragging"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : null}
+            </DragOverlay>
+          </DndContext>
         )}
       </CardContent>
     </Card>
