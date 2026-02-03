@@ -1,4 +1,4 @@
-import { RefreshCcw, Save } from 'lucide-react'
+import { Save } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
 import { StatusSection } from './StatusSection'
 import { BasicInfoSection } from './BasicInfoSection'
@@ -8,6 +8,7 @@ import { InventorySection } from './InventorySection'
 import { SeoSection } from './SeoSection'
 import type { ProductFormSchema } from './zod-schema'
 import { Button } from '@/components/custom/Button'
+import { ResetButton } from '@/components/custom/ResetButton'
 
 interface ProductFormProps {
   title: string
@@ -58,10 +59,11 @@ export const ProductForm = ({
 
         <div className="flex justify-end">
           <div className="flex gap-3">
-            <Button variant="outline" type="button" onClick={() => reset()}>
-              <RefreshCcw />
-              Poništi
-            </Button>
+            <ResetButton
+              variant="outline"
+              type="button"
+              onClick={() => reset()}
+            />
             <Button
               className="gap-2"
               type="submit"
