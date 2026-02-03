@@ -2,6 +2,10 @@ import type { ProductFormSchema } from '@/routes/_private/seller/products/create
 
 export type CreateProductPayload = ProductFormSchema
 
+export type UpdateProductPayload = CreateProductPayload & {
+  productId: string
+}
+
 export const formUnitToDbUnit: Record<
   string,
   | 'kg'

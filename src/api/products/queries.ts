@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { createProduct, getProductById } from './server'
+import { createProduct, getProductById, updateProduct } from './server'
 
 export const useCreateProduct = () => {
   return useMutation({
@@ -18,5 +18,17 @@ export const useGetProductById = (productId: string) => {
   return useQuery({
     queryKey: ['product-by-id', productId],
     queryFn: () => getProductById({ data: { productId } }),
+  })
+}
+
+export const useUpdateProduct = () => {
+  return useMutation({
+    mutationFn: updateProduct,
+    onSuccess: () => {
+      toast.success('Proizvod je uspešno ažuriran')
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 }

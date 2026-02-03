@@ -1,11 +1,39 @@
 import { createServerFn } from '@tanstack/react-start'
 import { asc, eq } from 'drizzle-orm'
 import { formUnitToDbUnit } from './types'
-import type { CreateProductPayload } from './types'
+import type { CreateProductPayload, UpdateProductPayload } from './types'
 import { db } from '@/db'
 import { productImages } from '@/db/schema/product-images'
 import { products } from '@/db/schema/products'
 import { authMiddleware, requireSellerMiddleware } from '@/lib/middleware'
+
+export const getProductById = createServerFn({
+  method: 'GET',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { productId: string }) => data)
+  .handler(async ({ data }) => {
+    const { productId } = data
+
+    const product = await db.query.products.findFirst({
+      where: (productsTable) => eq(productsTable.id, productId),
+    })
+
+    if (!product) {
+      throw new Error('Proizvod nije pronađen')
+    }
+
+    const images = await db.query.productImages.findMany({
+      where: (productImagesTable) =>
+        eq(productImagesTable.productId, product.id),
+      orderBy: (productImagesTable) => [asc(productImagesTable.sortOrder)],
+    })
+
+    return {
+      product,
+      images,
+    }
+  })
 
 export const createProduct = createServerFn({
   method: 'POST',
@@ -42,8 +70,8 @@ export const createProduct = createServerFn({
           imageUrls.map((imageUrl, index) => ({
             productId: product.id,
             url: imageUrl,
-            alt: product.name,
-            sortOrder: index,
+            alt: `${product.name} - ${index + 1}`,
+            sortOrder: index + 1,
             isPrimary: index === 0,
           })),
         )
@@ -58,30 +86,57 @@ export const createProduct = createServerFn({
     return result
   })
 
-export const getProductById = createServerFn({
-  method: 'GET',
+export const updateProduct = createServerFn({
+  method: 'POST',
 })
-  .middleware([authMiddleware])
-  .inputValidator((data: { productId: string }) => data)
+  .middleware([requireSellerMiddleware])
+  .inputValidator((data: UpdateProductPayload) => data)
   .handler(async ({ data }) => {
     const { productId } = data
 
     const product = await db.query.products.findFirst({
       where: (productsTable) => eq(productsTable.id, productId),
     })
-
     if (!product) {
       throw new Error('Proizvod nije pronađen')
     }
 
-    const images = await db.query.productImages.findMany({
-      where: (productImagesTable) =>
-        eq(productImagesTable.productId, product.id),
-      orderBy: (productImagesTable) => [asc(productImagesTable.sortOrder)],
+    const { images: imageUrls, unit: formUnit, ...rest } = data
+
+    const result = await db.transaction(async (tx) => {
+      const [updatedProduct] = await tx
+        .update(products)
+        .set({
+          ...rest,
+          unit: formUnitToDbUnit[formUnit] ?? formUnit,
+          stockQty: rest.stockQty ?? undefined,
+          lowStockThreshold: rest.lowStockThreshold ?? undefined,
+        })
+        .where(eq(products.id, productId))
+        .returning()
+
+      await tx
+        .delete(productImages)
+        .where(eq(productImages.productId, productId))
+
+      const [newImages] = await tx
+        .insert(productImages)
+        .values(
+          imageUrls.map((imageUrl, index) => ({
+            productId: product.id,
+            url: imageUrl,
+            alt: `${product.name} - ${index + 1}`,
+            sortOrder: index + 1,
+            isPrimary: index === 0,
+          })),
+        )
+        .returning()
+
+      return {
+        product: updatedProduct,
+        images: newImages,
+      }
     })
 
-    return {
-      product,
-      images,
-    }
+    return result
   })

@@ -9,7 +9,7 @@ import {
 } from '../create/-components/ProductForm/zod-schema'
 import type { ProductFormSchema } from '../create/-components/ProductForm/zod-schema'
 import { dbUnitToFormUnit } from '@/api/products/types'
-import { useGetProductById } from '@/api/products/queries'
+import { useGetProductById, useUpdateProduct } from '@/api/products/queries'
 
 export const Route = createFileRoute(
   '/_private/seller/products/edit/$productId',
@@ -24,8 +24,10 @@ export const Route = createFileRoute(
 
     const { data: product } = useGetProductById(productId)
 
+    const { mutate: updateProduct, isPending } = useUpdateProduct()
+
     const onFormSubmit = (data: ProductFormSchema) => {
-      console.log(data)
+      updateProduct({ data: { ...data, productId } })
     }
 
     useEffect(() => {
@@ -46,7 +48,7 @@ export const Route = createFileRoute(
         <ProductForm
           title="Uređivanje proizvoda"
           onFormSubmit={onFormSubmit}
-          isSubmitting={false}
+          isSubmitting={isPending}
           type="edit"
         />
       </FormProvider>
