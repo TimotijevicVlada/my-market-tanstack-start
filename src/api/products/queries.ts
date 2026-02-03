@@ -1,6 +1,12 @@
 import { toast } from 'sonner'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { createProduct, getProductById, updateProduct } from './server'
+import {
+  createProduct,
+  getPagedProducts,
+  getProductById,
+  updateProduct,
+} from './server'
+import type { GetProductsParams } from './types'
 
 export const useCreateProduct = () => {
   return useMutation({
@@ -30,5 +36,13 @@ export const useUpdateProduct = () => {
     onError: (error) => {
       toast.error(error.message)
     },
+  })
+}
+
+export const useGetProducts = (params: GetProductsParams) => {
+  return useQuery({
+    queryKey: ['products', params],
+    queryFn: () => getPagedProducts({ data: params }),
+    placeholderData: (prev) => prev,
   })
 }

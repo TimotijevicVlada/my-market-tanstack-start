@@ -1,11 +1,115 @@
 import { createServerFn } from '@tanstack/react-start'
-import { asc, eq } from 'drizzle-orm'
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  getTableColumns,
+  ilike,
+  or,
+} from 'drizzle-orm'
 import { formUnitToDbUnit } from './types'
-import type { CreateProductPayload, UpdateProductPayload } from './types'
+import type {
+  CreateProductPayload,
+  GetProductsParams,
+  UpdateProductPayload,
+} from './types'
 import { db } from '@/db'
 import { productImages } from '@/db/schema/product-images'
 import { products } from '@/db/schema/products'
 import { authMiddleware, requireSellerMiddleware } from '@/lib/middleware'
+import { categories } from '@/db/schema/categories'
+
+export const getPagedProducts = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireSellerMiddleware])
+  .inputValidator((data: GetProductsParams) => data)
+  .handler(async ({ context, data }) => {
+    const { user: sessionUser } = context
+    const seller = await db.query.sellers.findFirst({
+      where: (sellersTable) => eq(sellersTable.userId, sessionUser.id),
+    })
+    if (!seller) {
+      throw new Error('Prodavac nije pronađen za ovog korisnika')
+    }
+
+    const { page, limit, keyword, status, sort } = data
+    const trimmedKeyword = keyword?.trim()
+    const hasKeyword = trimmedKeyword !== ''
+
+    const offset = (page - 1) * limit
+
+    const conditions = [eq(products.sellerId, seller.id)]
+    if (hasKeyword) {
+      conditions.push(
+        or(
+          ilike(products.name, `%${trimmedKeyword}%`),
+          ilike(products.slug, `%${trimmedKeyword}%`),
+        )!,
+      )
+    }
+    if (status) {
+      conditions.push(eq(products.status, status))
+    }
+
+    const totalQuery = db
+      .select({ count: count() })
+      .from(products)
+      .where(and(...conditions))
+
+    const [totalResult] = await totalQuery
+    const total = totalResult.count
+
+    const sortableColumns = {
+      id: products.id,
+      name: products.name,
+      slug: products.slug,
+      status: products.status,
+      price: products.price,
+      createdAt: products.createdAt,
+      updatedAt: products.updatedAt,
+    } as const
+
+    const orderByColumn =
+      sort.key in sortableColumns
+        ? sortableColumns[sort.key as keyof typeof sortableColumns]
+        : products.id
+
+    const result = await db
+      .select({
+        ...getTableColumns(products),
+        categoryName: categories.name,
+        primaryImageUrl: productImages.url,
+      })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .leftJoin(
+        productImages,
+        and(
+          eq(productImages.productId, products.id),
+          eq(productImages.isPrimary, true),
+        ),
+      )
+      .where(and(...conditions))
+      .orderBy(
+        sort.order === 'asc' ? asc(orderByColumn) : desc(orderByColumn),
+        desc(products.id),
+      )
+      .limit(limit)
+      .offset(offset)
+
+    return {
+      data: result,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    }
+  })
 
 export const getProductById = createServerFn({
   method: 'GET',

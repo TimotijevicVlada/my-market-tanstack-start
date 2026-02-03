@@ -1,5 +1,6 @@
-import { Save } from 'lucide-react'
+import { ChevronLeftIcon, Save } from 'lucide-react'
 import { useFormContext } from 'react-hook-form'
+import { Link } from '@tanstack/react-router'
 import { StatusSection } from './StatusSection'
 import { BasicInfoSection } from './BasicInfoSection'
 import { ImagesSection } from './ImagesSection'
@@ -33,7 +34,12 @@ export const ProductForm = ({
       <div className="mx-auto max-w-5xl space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{title}</h1>
+            <Link to="/seller/products">
+              <div className="flex items-center gap-2">
+                <ChevronLeftIcon />
+                <h1 className="text-2xl font-bold">{title}</h1>
+              </div>
+            </Link>
             <p className="mt-1 text-muted-foreground">
               Popunite informacije o vašem proizvodu
             </p>
