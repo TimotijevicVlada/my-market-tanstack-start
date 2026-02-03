@@ -1,11 +1,11 @@
 import { createServerFn } from '@tanstack/react-start'
-import { eq } from 'drizzle-orm'
+import { asc, eq } from 'drizzle-orm'
 import { formUnitToDbUnit } from './types'
 import type { CreateProductPayload } from './types'
 import { db } from '@/db'
 import { productImages } from '@/db/schema/product-images'
 import { products } from '@/db/schema/products'
-import { requireSellerMiddleware } from '@/lib/middleware'
+import { authMiddleware, requireSellerMiddleware } from '@/lib/middleware'
 
 export const createProduct = createServerFn({
   method: 'POST',
@@ -39,9 +39,12 @@ export const createProduct = createServerFn({
       const [images] = await tx
         .insert(productImages)
         .values(
-          imageUrls.map((imageUrl) => ({
+          imageUrls.map((imageUrl, index) => ({
             productId: product.id,
             url: imageUrl,
+            alt: product.name,
+            sortOrder: index,
+            isPrimary: index === 0,
           })),
         )
         .returning()
@@ -53,4 +56,32 @@ export const createProduct = createServerFn({
     })
 
     return result
+  })
+
+export const getProductById = createServerFn({
+  method: 'GET',
+})
+  .middleware([authMiddleware])
+  .inputValidator((data: { productId: string }) => data)
+  .handler(async ({ data }) => {
+    const { productId } = data
+
+    const product = await db.query.products.findFirst({
+      where: (productsTable) => eq(productsTable.id, productId),
+    })
+
+    if (!product) {
+      throw new Error('Proizvod nije pronađen')
+    }
+
+    const images = await db.query.productImages.findMany({
+      where: (productImagesTable) =>
+        eq(productImagesTable.productId, product.id),
+      orderBy: (productImagesTable) => [asc(productImagesTable.sortOrder)],
+    })
+
+    return {
+      product,
+      images,
+    }
   })

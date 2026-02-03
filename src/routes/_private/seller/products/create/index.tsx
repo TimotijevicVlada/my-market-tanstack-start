@@ -35,6 +35,7 @@ export const Route = createFileRoute('/_private/seller/products/create/')({
           title="Kreiranje novog proizvoda"
           onFormSubmit={onFormSubmit}
           isSubmitting={isPending}
+          type="create"
         />
       </FormProvider>
     )

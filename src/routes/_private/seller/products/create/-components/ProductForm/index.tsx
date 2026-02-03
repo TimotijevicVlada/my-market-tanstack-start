@@ -13,12 +13,14 @@ interface ProductFormProps {
   title: string
   onFormSubmit: (data: ProductFormSchema) => void
   isSubmitting: boolean
+  type: 'create' | 'edit'
 }
 
 export const ProductForm = ({
   title,
   onFormSubmit,
   isSubmitting,
+  type,
 }: ProductFormProps) => {
   const { handleSubmit, reset } = useFormContext<ProductFormSchema>()
 
@@ -38,25 +40,20 @@ export const ProductForm = ({
           <Button
             loading={{
               state: isSubmitting,
-              text: 'Kreiranje proizvoda...',
+              text: 'Čuvanje...',
             }}
             type="submit"
           >
             <Save className="size-4" />
-            Sačuvaj proizvod
+            {type === 'create' ? 'Sačuvaj proizvod' : 'Sačuvaj izmene'}
           </Button>
         </div>
 
         <StatusSection />
-
         <BasicInfoSection />
-
         <PriceSection />
-
         <ImagesSection />
-
         <InventorySection />
-
         <SeoSection />
 
         <div className="flex justify-end">
@@ -70,11 +67,11 @@ export const ProductForm = ({
               type="submit"
               loading={{
                 state: isSubmitting,
-                text: 'Kreiranje proizvoda...',
+                text: 'Čuvanje...',
               }}
             >
               <Save className="size-4" />
-              Sačuvaj proizvod
+              {type === 'create' ? 'Sačuvaj proizvod' : 'Sačuvaj izmene'}
             </Button>
           </div>
         </div>

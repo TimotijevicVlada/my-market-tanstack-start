@@ -25,3 +25,12 @@ export const formUnitToDbUnit: Record<
   bottle: 'piece',
   can: 'piece',
 }
+
+export const dbUnitToFormUnit: Record<string, string> = {
+  liter: 'l',
+  gallon: 'l',
+  lb: 'kg',
+  oz: 'g',
+  bunch: 'piece',
+  dozen: 'piece',
+}
