@@ -28,6 +28,8 @@ export const SORTABLE_PRODUCT_COLUMNS = [
   'name',
   'slug',
   'status',
+  'stockQty',
+  'lowStockThreshold',
   'price',
   'createdAt',
   'updatedAt',

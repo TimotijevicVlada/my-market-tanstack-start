@@ -2,7 +2,11 @@ import z from 'zod'
 import { useState } from 'react'
 import { Link, createFileRoute, useSearch } from '@tanstack/react-router'
 import { BrushCleaningIcon, PencilIcon, PlusIcon } from 'lucide-react'
-import { productsColumns, statusBadgeConfig } from './-data'
+import {
+  productsColumns,
+  statusBadgeConfig,
+  statusFilterOptions,
+} from './-data'
 import type {
   GetProductsParams,
   Product,
@@ -29,6 +33,7 @@ import { formatDate } from '@/utils/format-date'
 import { Badge } from '@/components/ui/badge'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { TableFilter } from '@/components/custom/Table/TableFilter'
 
 const productsSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -48,6 +53,17 @@ export const Route = createFileRoute('/_private/seller/products/')({
       key: 'createdAt',
       order: 'desc',
     })
+
+    const handleStatusChange = (newStatus: {
+      id: ProductStatusFilter
+      label: string
+    }) => {
+      setStatus(newStatus.id === status ? null : newStatus.id)
+      navigate({
+        to: '/seller/products',
+        search: (prev) => ({ ...prev, page: 1 }),
+      })
+    }
 
     const handleSearch = (searchValue: string) => {
       setKeyword(searchValue)
@@ -105,6 +121,7 @@ export const Route = createFileRoute('/_private/seller/products/')({
                 onClick={() => {
                   setKeyword('')
                   setStatus(null)
+                  setKeyword('')
                   setSort({ key: 'createdAt', order: 'desc' })
                 }}
               >
@@ -121,24 +138,40 @@ export const Route = createFileRoute('/_private/seller/products/')({
         <Table>
           <TableHeader className="bg-muted">
             <TableRow>
-              {productsColumns.map(({ key, options, label }) => {
+              {productsColumns.map(({ key, options, label, hasSort }) => {
+                if (key === 'status') {
+                  return (
+                    <div className="flex items-center">
+                      <TableFilter
+                        label={label}
+                        dropdownProps={{
+                          options: statusFilterOptions,
+                          handleOptionChange: handleStatusChange,
+                          labelKey: 'label',
+                          active: { key: 'id', value: status },
+                        }}
+                      />
+                      <TableSort
+                        sort={sort}
+                        columnKey={key as keyof Product}
+                        handleSort={handleSort}
+                      />
+                    </div>
+                  )
+                }
                 return (
                   <TableHead key={key} {...options}>
                     <div
                       className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
                     >
                       {label}
-                      {key !== 'actions' &&
-                        key !== 'order' &&
-                        SORTABLE_PRODUCT_COLUMNS.includes(
-                          key as (typeof SORTABLE_PRODUCT_COLUMNS)[number],
-                        ) && (
-                          <TableSort
-                            sort={sort}
-                            columnKey={key}
-                            handleSort={handleSort}
-                          />
-                        )}
+                      {hasSort && (
+                        <TableSort
+                          sort={sort}
+                          columnKey={key as keyof Product}
+                          handleSort={handleSort}
+                        />
+                      )}
                     </div>
                   </TableHead>
                 )

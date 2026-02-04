@@ -62,20 +62,7 @@ export const getPagedProducts = createServerFn({
     const [totalResult] = await totalQuery
     const total = totalResult.count
 
-    const sortableColumns = {
-      id: products.id,
-      name: products.name,
-      slug: products.slug,
-      status: products.status,
-      price: products.price,
-      createdAt: products.createdAt,
-      updatedAt: products.updatedAt,
-    } as const
-
-    const orderByColumn =
-      sort.key in sortableColumns
-        ? sortableColumns[sort.key as keyof typeof sortableColumns]
-        : products.id
+    const orderByColumn = products[sort.key]
 
     const result = await db
       .select({
