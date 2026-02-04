@@ -34,8 +34,27 @@ export async function seedProducts() {
   const findSeller = (displayName: string) =>
     allSellers.find((seller) => seller.displayName === displayName)!
 
+  // Helper to convert description string to TiptapDoc format
+  const toTiptapDoc = (text: string) => ({
+    type: 'doc' as const,
+    content: [
+      {
+        type: 'paragraph',
+        content: [
+          {
+            type: 'text',
+            text: text,
+          },
+        ],
+      },
+    ],
+  })
+
+  // Helper to convert price string to priceCents (integer)
+  const priceToCents = (price: string) => Math.round(parseFloat(price) * 100)
+
   // Create fake products data
-  const fakeProducts = [
+  const fakeProductsRaw = [
     // Johnson's Organic Farm - Fresh Produce
     {
       sellerId: findSeller("Johnson's Organic Farm").id,
@@ -204,6 +223,36 @@ export async function seedProducts() {
     },
   ]
 
+  // Transform to match new schema
+  const fakeProducts = fakeProductsRaw.map((product) => {
+    const tags: Array<string> = []
+    if (product.isOrganic) {
+      tags.push('organic')
+    }
+
+    const attributes: Record<string, string | number | boolean | null> = {}
+    if (product.originPlace) {
+      attributes.originPlace = product.originPlace
+    }
+
+    const result: any = {
+      sellerId: product.sellerId,
+      name: product.name,
+      slug: product.slug,
+      description: toTiptapDoc(product.description),
+      currency: 'RSD' as const,
+      price: priceToCents(product.price),
+      unit: product.unit,
+      stockQty: product.quantity,
+      tags,
+      attributes,
+      status: product.status,
+      publishedAt: new Date(), // All products in seed are published
+    }
+
+    return result
+  })
+
   // Delete all existing products to override
   console.log('🗑️  Deleting existing products...')
   await db.delete(products)
@@ -217,10 +266,14 @@ export async function seedProducts() {
 
   console.log(`✅ Successfully inserted ${insertedProducts.length} products:`)
   insertedProducts.forEach((product) => {
+    const price = (product.price / 100).toFixed(2)
     console.log(
-      `   - ${product.name} (${product.slug}) - $${product.price}/${product.unit}`,
+      `   - ${product.name} (${product.slug}) - ${price} ${product.currency}/${product.unit}`,
     )
   })
+
+  // Note: categoryMappings can be used to seed product-categories table separately
+  // if needed in the future
 
   return { inserted: insertedProducts.length, skipped: false }
 }

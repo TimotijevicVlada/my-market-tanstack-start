@@ -1,0 +1,89 @@
+import { ChevronLeftIcon, Save } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
+import { Link } from '@tanstack/react-router'
+import { StatusSection } from './StatusSection'
+import { BasicInfoSection } from './BasicInfoSection'
+import { ImagesSection } from './ImagesSection'
+import { PriceSection } from './PriceSection'
+import { InventorySection } from './InventorySection'
+import { SeoSection } from './SeoSection'
+import type { ProductFormSchema } from './zod-schema'
+import { Button } from '@/components/custom/Button'
+import { ResetButton } from '@/components/custom/ResetButton'
+
+interface ProductFormProps {
+  title: string
+  onFormSubmit: (data: ProductFormSchema) => void
+  isSubmitting: boolean
+  type: 'create' | 'edit'
+}
+
+export const ProductForm = ({
+  title,
+  onFormSubmit,
+  isSubmitting,
+  type,
+}: ProductFormProps) => {
+  const { handleSubmit, reset } = useFormContext<ProductFormSchema>()
+
+  return (
+    <form
+      className="min-h-screen bg-background"
+      onSubmit={handleSubmit(onFormSubmit)}
+    >
+      <div className="mx-auto max-w-5xl space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <Link to="/seller/products">
+              <div className="flex items-center gap-2">
+                <ChevronLeftIcon />
+                <h1 className="text-2xl font-bold">{title}</h1>
+              </div>
+            </Link>
+            <p className="mt-1 text-muted-foreground">
+              Popunite informacije o vašem proizvodu
+            </p>
+          </div>
+          <Button
+            loading={{
+              state: isSubmitting,
+              text: 'Čuvanje...',
+            }}
+            type="submit"
+          >
+            <Save className="size-4" />
+            {type === 'create' ? 'Sačuvaj proizvod' : 'Sačuvaj izmene'}
+          </Button>
+        </div>
+
+        <StatusSection />
+        <BasicInfoSection />
+        <PriceSection />
+        <ImagesSection />
+        <InventorySection />
+        <SeoSection />
+
+        <div className="flex justify-end">
+          <div className="flex gap-3">
+            <ResetButton
+              variant="outline"
+              type="button"
+              onClick={() => reset()}
+            />
+            <Button
+              className="gap-2"
+              type="submit"
+              loading={{
+                state: isSubmitting,
+                text: 'Čuvanje...',
+              }}
+            >
+              <Save className="size-4" />
+              {type === 'create' ? 'Sačuvaj proizvod' : 'Sačuvaj izmene'}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </form>
+  )
+}

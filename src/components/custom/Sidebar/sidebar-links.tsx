@@ -2,6 +2,8 @@ import {
   FolderTreeIcon,
   HandbagIcon,
   PackageIcon,
+  PencilIcon,
+  PlusIcon,
   StoreIcon,
   UserIcon,
   UsersIcon,
@@ -15,6 +17,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
 import { authClient } from '@/lib/auth-client'
 
@@ -22,6 +27,7 @@ interface SidebarLink {
   name: string
   url: FileRouteTypes['to']
   icon: React.ElementType
+  sublink?: Array<SidebarLink>
 }
 
 interface SidebarLinkGroup {
@@ -37,6 +43,14 @@ export function SidebarLinks() {
   const location = useLocation()
 
   const groups = user ? sidebarLinks[user.role as User['role']] : []
+
+  const getSublink = (link: SidebarLink) => {
+    return link.sublink?.find((sublink) => {
+      if (location.pathname === sublink.url) return true
+      const pattern = sublink.url.replace(/\$[\w]+/g, '')
+      return pattern && location.pathname.startsWith(pattern)
+    })
+  }
 
   return (
     <>
@@ -56,6 +70,17 @@ export function SidebarLinks() {
                     <span>{link.name}</span>
                   </Link>
                 </SidebarMenuButton>
+                {getSublink(link) && (
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem key={getSublink(link)?.name}>
+                      <SidebarMenuSubButton asChild isActive>
+                        <Link to={location.pathname}>
+                          {getSublink(link)?.name}
+                        </Link>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                )}
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -111,6 +136,18 @@ const sidebarLinks: Record<User['role'], Array<SidebarLinkGroup>> = {
           name: 'Proizvodi',
           url: '/seller/products',
           icon: PackageIcon,
+          sublink: [
+            {
+              name: 'Kreiranje proizvoda',
+              url: '/seller/products/create',
+              icon: PlusIcon,
+            },
+            {
+              name: 'Izmena proizvoda',
+              url: '/seller/products/edit/$productId',
+              icon: PencilIcon,
+            },
+          ],
         },
       ],
     },

@@ -1,0 +1,123 @@
+import { Warehouse } from 'lucide-react'
+import { useController, useFormContext } from 'react-hook-form'
+import type { ProductFormSchema } from '../zod-schema'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { NumberFormField } from '@/components/shadcn-studio/input/NumberTextField'
+
+export const InventorySection = () => {
+  const { control } = useFormContext<ProductFormSchema>()
+
+  const { field: unitField } = useController({
+    name: 'unit',
+    control,
+  })
+
+  const { field: trackInventoryField } = useController({
+    name: 'trackInventory',
+    control,
+  })
+
+  const { field: stockQtyField } = useController({
+    name: 'stockQty',
+    control,
+  })
+
+  const { field: lowStockThresholdField } = useController({
+    name: 'lowStockThreshold',
+    control,
+  })
+
+  return (
+    <Card className="border-border/50">
+      <CardHeader className="pb-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+            <Warehouse className="size-5 text-primary" />
+          </div>
+          <div>
+            <CardTitle className="text-lg">Zalihe</CardTitle>
+            <CardDescription>
+              Upravljajte količinom i jedinicom mere
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <div className="flex items-center justify-between rounded-lg border border-border/50 bg-muted/30 p-4">
+          <div className="space-y-1">
+            <p className="font-medium">Praćenje zaliha</p>
+            <p className="text-sm text-muted-foreground">
+              Automatski pratite količinu proizvoda na stanju
+            </p>
+          </div>
+          <Switch
+            checked={trackInventoryField.value}
+            onCheckedChange={trackInventoryField.onChange}
+          />
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="space-y-2">
+            <Label htmlFor="unit">Jedinica mere</Label>
+            <Select value={unitField.value} onValueChange={unitField.onChange}>
+              <SelectTrigger id="unit" className="bg-input/50 w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {units.map((u) => (
+                  <SelectItem key={u.value} value={u.value}>
+                    {u.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {trackInventoryField.value && (
+            <>
+              <NumberFormField
+                label="Količina na stanju"
+                value={stockQtyField.value ?? 0}
+                onChange={stockQtyField.onChange}
+                minValue={0}
+                placeholder="0"
+              />
+
+              <NumberFormField
+                label="Upozorenje za nisku zalihu"
+                value={lowStockThresholdField.value ?? 0}
+                onChange={lowStockThresholdField.onChange}
+                minValue={0}
+                placeholder="0"
+                description="Dobićete obaveštenje kada zaliha padne ispod ovog broja"
+              />
+            </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+const units = [
+  { value: 'piece', label: 'Komad' },
+  { value: 'kg', label: 'Kilogram (kg)' },
+  { value: 'g', label: 'Gram (g)' },
+  { value: 'liter', label: 'Litar (L)' },
+  { value: 'box', label: 'Kutija' },
+]
