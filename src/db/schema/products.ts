@@ -22,15 +22,10 @@ export const productStatusEnum = pgEnum('product_status', [
 export const currencyEnum = pgEnum('currency_code', ['RSD', 'EUR', 'USD'])
 
 export const productUnitEnum = pgEnum('product_unit', [
+  'piece', // default
   'kg',
-  'lb',
   'g',
-  'oz',
-  'piece',
-  'bunch',
-  'dozen',
   'liter',
-  'gallon',
   'box',
 ])
 

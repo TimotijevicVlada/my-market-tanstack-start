@@ -118,11 +118,6 @@ const units = [
   { value: 'piece', label: 'Komad' },
   { value: 'kg', label: 'Kilogram (kg)' },
   { value: 'g', label: 'Gram (g)' },
-  { value: 'lb', label: 'Funta (lb)' },
-  { value: 'oz', label: 'Unca (oz)' },
   { value: 'liter', label: 'Litar (L)' },
-  { value: 'gallon', label: 'Galon' },
-  { value: 'bunch', label: 'Svežanj' },
-  { value: 'dozen', label: 'Tuce (12 kom)' },
   { value: 'box', label: 'Kutija' },
 ]

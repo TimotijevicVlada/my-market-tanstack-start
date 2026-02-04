@@ -8,7 +8,6 @@ import {
   productFormSchema,
 } from '../create/-components/ProductForm/zod-schema'
 import type { ProductFormSchema } from '../create/-components/ProductForm/zod-schema'
-import { dbUnitToFormUnit } from '@/api/products/types'
 import { useGetProductById, useUpdateProduct } from '@/api/products/queries'
 
 export const Route = createFileRoute(
@@ -37,8 +36,6 @@ export const Route = createFileRoute(
           ...p,
           images: product.images.map((image) => image.url),
           compareAtPrice: p.compareAtPrice ?? undefined, // TODO: Adjust validation for compareAtPrice later
-          unit: (dbUnitToFormUnit[p.unit] ?? // TODO: Reduce number of units later
-            p.unit) as ProductFormSchema['unit'],
         })
       }
     }, [product])

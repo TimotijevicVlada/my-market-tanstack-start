@@ -37,21 +37,13 @@ export const SORTABLE_PRODUCT_COLUMNS = [
 
 export type SortableProductColumns = (typeof SORTABLE_PRODUCT_COLUMNS)[number]
 
-export const formUnitToDbUnit: Record<
-  string,
-  | 'kg'
-  | 'lb'
-  | 'g'
-  | 'oz'
-  | 'piece'
-  | 'bunch'
-  | 'dozen'
-  | 'liter'
-  | 'gallon'
-  | 'box'
-> = {
-  l: 'liter',
+export type ProductUnit = 'piece' | 'kg' | 'g' | 'liter' | 'box'
+
+export const formUnitToDbUnit: Record<string, ProductUnit> = {
   pcs: 'piece',
+  kg: 'kg',
+  g: 'g',
+  l: 'liter',
   ml: 'liter',
   pack: 'piece',
   bag: 'box',
@@ -61,11 +53,10 @@ export const formUnitToDbUnit: Record<
   can: 'piece',
 }
 
-export const dbUnitToFormUnit: Record<string, string> = {
+export const dbUnitToFormUnit: Record<ProductUnit, string> = {
+  piece: 'pcs',
+  kg: 'kg',
+  g: 'g',
   liter: 'l',
-  gallon: 'l',
-  lb: 'kg',
-  oz: 'g',
-  bunch: 'piece',
-  dozen: 'piece',
+  box: 'box',
 }

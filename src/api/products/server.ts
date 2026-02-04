@@ -231,3 +231,19 @@ export const updateProduct = createServerFn({
 
     return result
   })
+
+export const deleteProduct = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireSellerMiddleware])
+  .inputValidator((data: { productId: string }) => data)
+  .handler(async ({ data }) => {
+    const { productId } = data
+
+    const [deletedProduct] = await db
+      .delete(products)
+      .where(eq(products.id, productId))
+      .returning()
+
+    return deletedProduct
+  })

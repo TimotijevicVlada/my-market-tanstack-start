@@ -2,6 +2,7 @@ import z from 'zod'
 import { useState } from 'react'
 import { Link, createFileRoute, useSearch } from '@tanstack/react-router'
 import { BrushCleaningIcon, PencilIcon, PlusIcon } from 'lucide-react'
+import { DeleteProduct } from './-components/DeleteProduct'
 import {
   productsColumns,
   statusBadgeConfig,
@@ -34,6 +35,7 @@ import { Badge } from '@/components/ui/badge'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { TableFilter } from '@/components/custom/Table/TableFilter'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 const productsSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -239,7 +241,12 @@ export const Route = createFileRoute('/_private/seller/products/')({
                   if (key === 'price') {
                     return (
                       <TableCell key={key}>
-                        {`${product[key]} ${product.currency}`}
+                        {`${product.currency} ${product[key]}`}
+                        {product.compareAtPrice && (
+                          <span className="ml-2 text-xs text-gray-500 line-through">
+                            {product.compareAtPrice}
+                          </span>
+                        )}
                       </TableCell>
                     )
                   }
@@ -263,14 +270,19 @@ export const Route = createFileRoute('/_private/seller/products/')({
                         key={key}
                         className="sticky right-0 text-right"
                       >
-                        <Button variant="ghost" size="icon-sm" asChild>
-                          <Link
-                            to="/seller/products/edit/$productId"
-                            params={{ productId: product.id }}
-                          >
-                            <PencilIcon className="text-orange-500" />
-                          </Link>
-                        </Button>
+                        <div className="flex items-center justify-end gap-1">
+                          <Tooltip title="Uređivanje proizvoda">
+                            <Button variant="ghost" size="icon-sm" asChild>
+                              <Link
+                                to="/seller/products/edit/$productId"
+                                params={{ productId: product.id }}
+                              >
+                                <PencilIcon className="text-orange-500" />
+                              </Link>
+                            </Button>
+                          </Tooltip>
+                          <DeleteProduct product={product} />
+                        </div>
                       </TableCell>
                     )
                   }
