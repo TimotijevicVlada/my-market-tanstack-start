@@ -1,19 +1,22 @@
 import { EmptyData } from '../EmptyData'
+import type { EmptyDataProps } from '../EmptyData'
 import { TableCell, TableRow } from '@/components/ui/table'
 
-interface TableEmptyHolderProps {
+interface TableEmptyHolderProps extends EmptyDataProps {
   colSpan: number
-  title: string
 }
 
-export const TableEmptyHolder = ({ colSpan, title }: TableEmptyHolderProps) => {
+export const TableEmptyHolder = ({
+  colSpan,
+  ...rest
+}: TableEmptyHolderProps) => {
   return (
     <TableRow>
       <TableCell
         colSpan={colSpan}
         className="text-center text-muted-foreground"
       >
-        <EmptyData title={title} />
+        <EmptyData {...rest} />
       </TableCell>
     </TableRow>
   )

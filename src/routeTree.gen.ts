@@ -34,6 +34,7 @@ import { Route as PrivateAdminCategoriesIndexRouteImport } from './routes/_priva
 import { Route as PrivateAccountOrdersIndexRouteImport } from './routes/_private/account/orders/index'
 import { Route as ApiAuthDeleteUserCallbackRouteImport } from './routes/api/auth/delete-user/callback'
 import { Route as PrivateSellerProductsCreateIndexRouteImport } from './routes/_private/seller/products/create/index'
+import { Route as PrivateSellerProductsPreviewProductIdRouteImport } from './routes/_private/seller/products/preview/$productId'
 import { Route as PrivateSellerProductsEditProductIdRouteImport } from './routes/_private/seller/products/edit/$productId'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
@@ -164,6 +165,12 @@ const PrivateSellerProductsCreateIndexRoute =
     path: '/products/create/',
     getParentRoute: () => PrivateSellerRouteRoute,
   } as any)
+const PrivateSellerProductsPreviewProductIdRoute =
+  PrivateSellerProductsPreviewProductIdRouteImport.update({
+    id: '/products/preview/$productId',
+    path: '/products/preview/$productId',
+    getParentRoute: () => PrivateSellerRouteRoute,
+  } as any)
 const PrivateSellerProductsEditProductIdRoute =
   PrivateSellerProductsEditProductIdRouteImport.update({
     id: '/products/edit/$productId',
@@ -194,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/seller/info/': typeof PrivateSellerInfoIndexRoute
   '/seller/products/': typeof PrivateSellerProductsIndexRoute
   '/seller/products/edit/$productId': typeof PrivateSellerProductsEditProductIdRoute
+  '/seller/products/preview/$productId': typeof PrivateSellerProductsPreviewProductIdRoute
   '/seller/products/create/': typeof PrivateSellerProductsCreateIndexRoute
 }
 export interface FileRoutesByTo {
@@ -219,6 +227,7 @@ export interface FileRoutesByTo {
   '/seller/info': typeof PrivateSellerInfoIndexRoute
   '/seller/products': typeof PrivateSellerProductsIndexRoute
   '/seller/products/edit/$productId': typeof PrivateSellerProductsEditProductIdRoute
+  '/seller/products/preview/$productId': typeof PrivateSellerProductsPreviewProductIdRoute
   '/seller/products/create': typeof PrivateSellerProductsCreateIndexRoute
 }
 export interface FileRoutesById {
@@ -248,6 +257,7 @@ export interface FileRoutesById {
   '/_private/seller/info/': typeof PrivateSellerInfoIndexRoute
   '/_private/seller/products/': typeof PrivateSellerProductsIndexRoute
   '/_private/seller/products/edit/$productId': typeof PrivateSellerProductsEditProductIdRoute
+  '/_private/seller/products/preview/$productId': typeof PrivateSellerProductsPreviewProductIdRoute
   '/_private/seller/products/create/': typeof PrivateSellerProductsCreateIndexRoute
 }
 export interface FileRouteTypes {
@@ -275,6 +285,7 @@ export interface FileRouteTypes {
     | '/seller/info/'
     | '/seller/products/'
     | '/seller/products/edit/$productId'
+    | '/seller/products/preview/$productId'
     | '/seller/products/create/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -300,6 +311,7 @@ export interface FileRouteTypes {
     | '/seller/info'
     | '/seller/products'
     | '/seller/products/edit/$productId'
+    | '/seller/products/preview/$productId'
     | '/seller/products/create'
   id:
     | '__root__'
@@ -328,6 +340,7 @@ export interface FileRouteTypes {
     | '/_private/seller/info/'
     | '/_private/seller/products/'
     | '/_private/seller/products/edit/$productId'
+    | '/_private/seller/products/preview/$productId'
     | '/_private/seller/products/create/'
   fileRoutesById: FileRoutesById
 }
@@ -516,6 +529,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateSellerProductsCreateIndexRouteImport
       parentRoute: typeof PrivateSellerRouteRoute
     }
+    '/_private/seller/products/preview/$productId': {
+      id: '/_private/seller/products/preview/$productId'
+      path: '/products/preview/$productId'
+      fullPath: '/seller/products/preview/$productId'
+      preLoaderRoute: typeof PrivateSellerProductsPreviewProductIdRouteImport
+      parentRoute: typeof PrivateSellerRouteRoute
+    }
     '/_private/seller/products/edit/$productId': {
       id: '/_private/seller/products/edit/$productId'
       path: '/products/edit/$productId'
@@ -574,6 +594,7 @@ interface PrivateSellerRouteRouteChildren {
   PrivateSellerInfoIndexRoute: typeof PrivateSellerInfoIndexRoute
   PrivateSellerProductsIndexRoute: typeof PrivateSellerProductsIndexRoute
   PrivateSellerProductsEditProductIdRoute: typeof PrivateSellerProductsEditProductIdRoute
+  PrivateSellerProductsPreviewProductIdRoute: typeof PrivateSellerProductsPreviewProductIdRoute
   PrivateSellerProductsCreateIndexRoute: typeof PrivateSellerProductsCreateIndexRoute
 }
 
@@ -582,6 +603,8 @@ const PrivateSellerRouteRouteChildren: PrivateSellerRouteRouteChildren = {
   PrivateSellerProductsIndexRoute: PrivateSellerProductsIndexRoute,
   PrivateSellerProductsEditProductIdRoute:
     PrivateSellerProductsEditProductIdRoute,
+  PrivateSellerProductsPreviewProductIdRoute:
+    PrivateSellerProductsPreviewProductIdRoute,
   PrivateSellerProductsCreateIndexRoute: PrivateSellerProductsCreateIndexRoute,
 }
 
