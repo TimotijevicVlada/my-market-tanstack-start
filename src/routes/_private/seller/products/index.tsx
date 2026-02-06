@@ -1,7 +1,7 @@
 import z from 'zod'
 import { useState } from 'react'
 import { Link, createFileRoute, useSearch } from '@tanstack/react-router'
-import { BrushCleaningIcon, PencilIcon, PlusIcon } from 'lucide-react'
+import { BrushCleaningIcon, EyeIcon, PencilIcon, PlusIcon } from 'lucide-react'
 import { DeleteProduct } from './-components/DeleteProduct'
 import {
   productsColumns,
@@ -26,7 +26,6 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Pagination } from '@/components/custom/Pagination'
-import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
 import { useGetProducts } from '@/api/products/queries'
@@ -36,6 +35,8 @@ import { TableSort } from '@/components/custom/Table/TableSort'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { Tooltip } from '@/components/custom/Tooltip'
+import { EmptyData } from '@/components/custom/EmptyData'
+import { Separator } from '@/components/ui/separator'
 
 const productsSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -137,162 +138,184 @@ export const Route = createFileRoute('/_private/seller/products/')({
             Kreiraj proizvod
           </Button>
         </div>
-        <Table>
-          <TableHeader className="bg-muted">
-            <TableRow>
-              {productsColumns.map(({ key, options, label, hasSort }) => {
-                if (key === 'status') {
-                  return (
-                    <div className="flex items-center">
-                      <TableFilter
-                        label={label}
-                        dropdownProps={{
-                          options: statusFilterOptions,
-                          handleOptionChange: handleStatusChange,
-                          labelKey: 'label',
-                          active: { key: 'id', value: status },
-                        }}
-                      />
-                      <TableSort
-                        sort={sort}
-                        columnKey={key as keyof Product}
-                        handleSort={handleSort}
-                      />
-                    </div>
-                  )
-                }
-                return (
-                  <TableHead key={key} {...options}>
-                    <div
-                      className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
-                    >
-                      {label}
-                      {hasSort && (
+        {data?.data.length === 0 && (
+          <div>
+            <Separator className="my-4" />
+            <EmptyData
+              title="Nemate proizvode"
+              description="Kreirajte svoj prvi proizvod i započnite da prodajete."
+              button={{
+                text: 'Kreiraj prvi proizvod',
+                icon: <PlusIcon />,
+                onClick: () => navigate({ to: '/seller/products/create' }),
+              }}
+            />
+          </div>
+        )}
+        {data?.data && data.data.length > 0 && (
+          <Table>
+            <TableHeader className="bg-muted">
+              <TableRow>
+                {productsColumns.map(({ key, options, label, hasSort }) => {
+                  if (key === 'status') {
+                    return (
+                      <div className="flex items-center">
+                        <TableFilter
+                          label={label}
+                          dropdownProps={{
+                            options: statusFilterOptions,
+                            handleOptionChange: handleStatusChange,
+                            labelKey: 'label',
+                            active: { key: 'id', value: status },
+                          }}
+                        />
                         <TableSort
                           sort={sort}
                           columnKey={key as keyof Product}
                           handleSort={handleSort}
                         />
-                      )}
-                    </div>
-                  </TableHead>
-                )
-              })}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data?.data.length === 0 && (
-              <TableEmptyHolder
-                colSpan={productsColumns.length}
-                title="Nema proizvoda"
-              />
-            )}
-            {data?.data.map((product, index) => (
-              <TableRow key={product.id} className="group">
-                {productsColumns.map(({ key }) => {
-                  if (key === 'order') {
-                    return (
-                      <TableCell key={key}>
-                        {(page - 1) * limit + index + 1}
-                      </TableCell>
+                      </div>
                     )
                   }
-                  if (key === 'status') {
-                    const statusConfig = statusBadgeConfig[product.status]
-                    return (
-                      <TableCell key={key}>
-                        <Badge
-                          variant="secondary"
-                          className={`${statusConfig.className} text-white border-0`}
-                        >
-                          {statusConfig.label}
-                        </Badge>
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'name') {
-                    return (
-                      <TableCell key={key}>
-                        <div className="flex items-center gap-2">
-                          <Avatar>
-                            <AvatarImage
-                              src={product.primaryImageUrl ?? undefined}
-                              alt={product.name}
-                              className="rounded-sm"
-                            />
-                            <AvatarFallback className="rounded-sm">
-                              {product.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          {product[key]}
-                        </div>
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'slug') {
-                    return (
-                      <TableCell key={key}>
-                        <Badge variant="secondary" className="rounded-sm">
-                          {product[key]}
-                        </Badge>
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'price') {
-                    return (
-                      <TableCell key={key}>
-                        {`${product.currency} ${product[key]}`}
-                        {product.compareAtPrice && (
-                          <span className="ml-2 text-xs text-gray-500 line-through">
-                            {product.compareAtPrice}
-                          </span>
-                        )}
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'categoryId') {
-                    return (
-                      <TableCell key={key}>
-                        {product.categoryName || '/'}
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'createdAt' || key === 'updatedAt') {
-                    return (
-                      <TableCell key={key}>
-                        {formatDate(product[key])}
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'actions') {
-                    return (
-                      <TableCell
-                        key={key}
-                        className="sticky right-0 text-right"
+                  return (
+                    <TableHead key={key} {...options}>
+                      <div
+                        className={`flex items-center gap-2 ${key === 'actions' ? 'justify-end' : ''}`}
                       >
-                        <div className="flex items-center justify-end gap-1">
-                          <Tooltip title="Uređivanje proizvoda">
-                            <Button variant="ghost" size="icon-sm" asChild>
-                              <Link
-                                to="/seller/products/edit/$productId"
-                                params={{ productId: product.id }}
-                              >
-                                <PencilIcon className="text-orange-500" />
-                              </Link>
-                            </Button>
-                          </Tooltip>
-                          <DeleteProduct product={product} />
-                        </div>
-                      </TableCell>
-                    )
-                  }
-                  const value = product[key]
-                  return <TableCell key={key}>{String(value) || '/'}</TableCell>
+                        {label}
+                        {hasSort && (
+                          <TableSort
+                            sort={sort}
+                            columnKey={key as keyof Product}
+                            handleSort={handleSort}
+                          />
+                        )}
+                      </div>
+                    </TableHead>
+                  )
                 })}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {data.data.map((product, index) => (
+                <TableRow key={product.id} className="group">
+                  {productsColumns.map(({ key }) => {
+                    if (key === 'order') {
+                      return (
+                        <TableCell key={key}>
+                          {(page - 1) * limit + index + 1}
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'status') {
+                      const statusConfig = statusBadgeConfig[product.status]
+                      return (
+                        <TableCell key={key}>
+                          <Badge
+                            variant="secondary"
+                            className={`${statusConfig.className} text-white border-0`}
+                          >
+                            {statusConfig.label}
+                          </Badge>
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'name') {
+                      return (
+                        <TableCell key={key}>
+                          <div className="flex items-center gap-2">
+                            <Avatar>
+                              <AvatarImage
+                                src={product.primaryImageUrl ?? undefined}
+                                alt={product.name}
+                                className="rounded-sm"
+                              />
+                              <AvatarFallback className="rounded-sm">
+                                {product.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+                            {product[key]}
+                          </div>
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'slug') {
+                      return (
+                        <TableCell key={key}>
+                          <Badge variant="secondary" className="rounded-sm">
+                            {product[key]}
+                          </Badge>
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'price') {
+                      return (
+                        <TableCell key={key}>
+                          {`${product.currency} ${product[key]}`}
+                          {product.compareAtPrice && (
+                            <span className="ml-2 text-xs text-gray-500 line-through">
+                              {product.compareAtPrice}
+                            </span>
+                          )}
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'categoryId') {
+                      return (
+                        <TableCell key={key}>
+                          {product.categoryName || '/'}
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'createdAt' || key === 'updatedAt') {
+                      return (
+                        <TableCell key={key}>
+                          {formatDate(product[key])}
+                        </TableCell>
+                      )
+                    }
+                    if (key === 'actions') {
+                      return (
+                        <TableCell
+                          key={key}
+                          className="sticky right-0 text-right"
+                        >
+                          <div className="flex items-center justify-end gap-1">
+                            <Tooltip title="Pregled proizvoda">
+                              <Button variant="ghost" size="icon-sm" asChild>
+                                <Link
+                                  to="/seller/products/preview/$productId"
+                                  params={{ productId: product.id }}
+                                >
+                                  <EyeIcon className="text-blue-500" />
+                                </Link>
+                              </Button>
+                            </Tooltip>
+                            <Tooltip title="Uređivanje proizvoda">
+                              <Button variant="ghost" size="icon-sm" asChild>
+                                <Link
+                                  to="/seller/products/edit/$productId"
+                                  params={{ productId: product.id }}
+                                >
+                                  <PencilIcon className="text-orange-500" />
+                                </Link>
+                              </Button>
+                            </Tooltip>
+                            <DeleteProduct product={product} />
+                          </div>
+                        </TableCell>
+                      )
+                    }
+                    const value = product[key]
+                    return (
+                      <TableCell key={key}>{String(value) || '/'}</TableCell>
+                    )
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
         {data?.pagination && (
           <div className="mt-4">
             <Pagination

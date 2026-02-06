@@ -9,7 +9,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty'
 
-interface EmptyDataProps {
+export interface EmptyDataProps {
   title: string
   description?: string
   button?: {

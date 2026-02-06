@@ -1,4 +1,4 @@
-import type { ProductFormSchema } from '@/routes/_private/seller/products/create/-components/ProductForm/zod-schema'
+import type { ProductFormSchema } from '@/routes/_private/seller/products/-components/ProductForm/zod-schema'
 import type { products } from '@/db/schema/products'
 
 export type Product = typeof products.$inferSelect

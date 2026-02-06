@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ProductForm } from '../create/-components/ProductForm'
+import { ProductForm } from '../-components/ProductForm'
 import {
   defaultValues,
   productFormSchema,
-} from '../create/-components/ProductForm/zod-schema'
-import type { ProductFormSchema } from '../create/-components/ProductForm/zod-schema'
+} from '../-components/ProductForm/zod-schema'
+import type { ProductFormSchema } from '../-components/ProductForm/zod-schema'
 import { useGetProductById, useUpdateProduct } from '@/api/products/queries'
 
 export const Route = createFileRoute(
