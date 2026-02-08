@@ -11,18 +11,16 @@ import {
   Tag,
   Truck,
 } from 'lucide-react'
-import type { mockProduct } from '../../$productId'
+import { Route } from '../../$productId'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/custom/Button'
 import { Card, CardContent } from '@/components/ui/card'
 
-interface ProductInfoProps {
-  product: typeof mockProduct
-}
+export const ProductInfo = () => {
+  const product = Route.useLoaderData()
 
-export const ProductInfo = ({ product }: ProductInfoProps) => {
   const isLowStock =
     product.stockQty <= product.lowStockThreshold && product.stockQty > 0
 
@@ -34,7 +32,7 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="secondary" className="gap-1.5">
           <Tag className="size-3" />
-          {product.category.name}
+          {product.categoryName}
         </Badge>
         {product.sku && (
           <Badge variant="outline" className="text-muted-foreground">
@@ -74,7 +72,7 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
                   key={i}
                   className={cn(
                     'size-3.5',
-                    i < Math.floor(product.seller.ratingAvg)
+                    i < Math.floor(Number(product.seller.ratingAvg))
                       ? 'fill-primary text-primary'
                       : 'fill-muted text-muted',
                   )}
@@ -230,8 +228,7 @@ export const ProductInfo = ({ product }: ProductInfoProps) => {
   )
 }
 
-function formatPrice(cents: number, currency: string) {
-  const amount = cents / 100
+function formatPrice(amount: number, currency: string) {
   const symbols: Record<string, string> = {
     RSD: 'RSD',
     EUR: '€',

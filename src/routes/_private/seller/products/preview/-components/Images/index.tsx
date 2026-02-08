@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Route } from '../../$productId'
+import { statusBadgeConfig } from './data'
 import type { CarouselApi } from '@/components/ui/carousel'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -61,19 +62,11 @@ export const Images = () => {
         <Badge
           variant="outline"
           className={cn(
-            'absolute right-4 top-4 z-10 border-amber-500/50 text-amber-500',
-            product.status === 'draft'
-              ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/50'
-              : product.status === 'published'
-                ? 'bg-green-500/10 text-green-500 border-green-500/50'
-                : 'bg-muted-foreground/10 text-muted-foreground border-muted-foreground/50',
+            'absolute right-4 top-4 z-10',
+            statusBadgeConfig[product.status].className,
           )}
         >
-          {product.status === 'draft'
-            ? 'Nacrt'
-            : product.status === 'published'
-              ? 'Objavljeno'
-              : 'Arhiviran'}
+          {statusBadgeConfig[product.status].label}
         </Badge>
 
         <Carousel className="w-full" opts={{ loop: true }} setApi={setMainApi}>
