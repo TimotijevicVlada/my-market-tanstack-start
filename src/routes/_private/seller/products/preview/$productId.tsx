@@ -65,19 +65,19 @@ export function ProductPreview() {
           <Images />
 
           {/* Product Info Section */}
-          <ProductInfo product={mockProduct} />
+          <ProductInfo />
         </div>
 
         {/* Description Section */}
-        <Description product={mockProduct} />
+        <Description product={product} />
 
         {/* Additional Info */}
         <div className="mt-8 grid gap-6 md:grid-cols-2">
           {/* Product Details */}
-          <ProductDetails product={mockProduct} />
+          <ProductDetails />
 
           {/* Seller Card */}
-          <SellerInfo product={mockProduct} />
+          <SellerInfo />
         </div>
       </div>
     </div>

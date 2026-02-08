@@ -1,13 +1,12 @@
 import { Star, Store } from 'lucide-react'
-import type { mockProduct } from '../../$productId'
+import { Route } from '../../$productId'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/custom/Button'
 import { cn } from '@/lib/utils'
 
-interface SellerInfoProps {
-  product: typeof mockProduct
-}
-export const SellerInfo = ({ product }: SellerInfoProps) => {
+export const SellerInfo = () => {
+  const product = Route.useLoaderData()
+
   return (
     <Card className="border-border/50">
       <CardContent className="p-6">
@@ -39,7 +38,7 @@ export const SellerInfo = ({ product }: SellerInfoProps) => {
                     key={i}
                     className={cn(
                       'size-4',
-                      i < Math.floor(product.seller.ratingAvg)
+                      i < Math.floor(Number(product.seller.ratingAvg))
                         ? 'fill-primary text-primary'
                         : 'fill-muted text-muted',
                     )}

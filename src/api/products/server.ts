@@ -114,14 +114,30 @@ export const getProductById = createServerFn({
       throw new Error('Proizvod nije pronađen')
     }
 
-    const images = await db.query.productImages.findMany({
-      where: (productImagesTable) =>
-        eq(productImagesTable.productId, product.id),
-      orderBy: (productImagesTable) => [asc(productImagesTable.sortOrder)],
-    })
+    const [category, seller, images] = await Promise.all([
+      db.query.categories.findFirst({
+        where: (categoriesTable) =>
+          eq(categoriesTable.id, product.categoryId ?? ''),
+        columns: { name: true },
+      }),
+      db.query.sellers.findFirst({
+        where: (sellersTable) => eq(sellersTable.id, product.sellerId),
+      }),
+      db.query.productImages.findMany({
+        where: (productImagesTable) =>
+          eq(productImagesTable.productId, product.id),
+        orderBy: (productImagesTable) => [asc(productImagesTable.sortOrder)],
+      }),
+    ])
+
+    if (!seller) {
+      throw new Error('Prodavac nije pronađen')
+    }
 
     return {
       ...product,
+      categoryName: category?.name,
+      seller,
       images,
     }
   })
