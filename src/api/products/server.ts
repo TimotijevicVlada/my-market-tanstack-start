@@ -121,7 +121,7 @@ export const getProductById = createServerFn({
     })
 
     return {
-      product,
+      ...product,
       images,
     }
   })
