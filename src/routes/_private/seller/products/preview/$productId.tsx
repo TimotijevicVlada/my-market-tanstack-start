@@ -3,6 +3,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { Images } from './-components/Images'
 import { ProductInfo } from './-components/ProductInfo'
 import { Description } from './-components/Description'
+import { RelatedProducts } from './-components/RelatedProducts'
 import { Separator } from '@/components/ui/separator'
 import { getProductById } from '@/api/products/server'
 
@@ -43,14 +44,6 @@ export function ProductPreview() {
         <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
           <span className="hover:text-foreground cursor-pointer">Početna</span>
           <ChevronRight className="size-4" />
-
-          <>
-            <span className="hover:text-foreground cursor-pointer">
-              {product.categoryName}
-            </span>
-            <ChevronRight className="size-4" />
-          </>
-
           <span className="hover:text-foreground cursor-pointer">
             {product.categoryName}
           </span>
@@ -68,6 +61,8 @@ export function ProductPreview() {
 
         {/* Description Section */}
         <Description />
+
+        <RelatedProducts />
       </div>
     </div>
   )

@@ -46,7 +46,7 @@ export const Description = () => {
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm dark:prose-invert max-w-none text-muted-foreground leading-relaxed [&_.tiptap]:p-0 [&_.tiptap]:min-h-0',
+          'prose prose-sm dark:prose-invert max-w-none leading-relaxed [&_.tiptap]:p-0 [&_.tiptap]:min-h-0',
       },
     },
   })

@@ -7,6 +7,8 @@ import {
   eq,
   getTableColumns,
   ilike,
+  inArray,
+  ne,
   or,
 } from 'drizzle-orm'
 import { formUnitToDbUnit } from './types'
@@ -114,7 +116,7 @@ export const getProductById = createServerFn({
       throw new Error('Proizvod nije pronađen')
     }
 
-    const [category, seller, images] = await Promise.all([
+    const [category, seller, images, relatedProducts] = await Promise.all([
       db.query.categories.findFirst({
         where: (categoriesTable) =>
           eq(categoriesTable.id, product.categoryId ?? ''),
@@ -128,7 +130,32 @@ export const getProductById = createServerFn({
           eq(productImagesTable.productId, product.id),
         orderBy: (productImagesTable) => [asc(productImagesTable.sortOrder)],
       }),
+      db.query.products.findMany({
+        where: (productsTable) =>
+          and(
+            eq(productsTable.sellerId, product.sellerId),
+            ne(productsTable.id, product.id),
+          ),
+        columns: { id: true, name: true, slug: true },
+        limit: 15,
+      }),
     ])
+
+    const relatedProductIds = relatedProducts.map((p) => p.id)
+    const relatedImages = await db.query.productImages.findMany({
+      where: (productImagesTable) =>
+        and(
+          inArray(productImagesTable.productId, relatedProductIds),
+          eq(productImagesTable.sortOrder, 1),
+        ),
+    })
+    const imageByProductId = Object.fromEntries(
+      relatedImages.map((img) => [img.productId, img]),
+    )
+    const relatedProductsWithImage = relatedProducts.map((p) => ({
+      ...p,
+      image: imageByProductId[p.id] ?? null,
+    }))
 
     if (!seller) {
       throw new Error('Prodavac nije pronađen')
@@ -139,6 +166,7 @@ export const getProductById = createServerFn({
       categoryName: category?.name,
       seller,
       images,
+      relatedProducts: relatedProductsWithImage,
     }
   })
 
