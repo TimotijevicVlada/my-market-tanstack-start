@@ -85,6 +85,10 @@ export const ProductInfo = () => {
             </span>
           </div>
         </div>
+        <Button variant="outline" className="ml-auto" disabled>
+          <Store className="size-4" />
+          Poseti prodavnicu
+        </Button>
       </div>
 
       <Separator />
