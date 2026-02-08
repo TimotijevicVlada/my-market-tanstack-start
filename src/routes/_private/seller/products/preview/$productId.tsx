@@ -6,11 +6,19 @@ import { Description } from './-components/Description'
 import { ProductDetails } from './-components/ProductDetails'
 import { SellerInfo } from './-components/SellerInfo'
 import { Separator } from '@/components/ui/separator'
+import { getProductById } from '@/api/products/server'
 
 export const Route = createFileRoute(
   '/_private/seller/products/preview/$productId',
 )({
   component: ProductPreview,
+  loader: async ({ params }) => {
+    const { productId } = params
+    const product = await getProductById({
+      data: { productId },
+    })
+    return product
+  },
 })
 
 export function ProductPreview() {
@@ -54,7 +62,7 @@ export function ProductPreview() {
 
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
           {/* Image Gallery Section */}
-          <Images product={mockProduct} />
+          <Images />
 
           {/* Product Info Section */}
           <ProductInfo product={mockProduct} />

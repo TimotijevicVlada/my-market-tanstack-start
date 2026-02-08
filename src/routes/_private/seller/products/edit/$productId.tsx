@@ -31,11 +31,10 @@ export const Route = createFileRoute(
 
     useEffect(() => {
       if (product) {
-        const p = product.product
         methods.reset({
-          ...p,
+          ...product,
           images: product.images.map((image) => image.url),
-          compareAtPrice: p.compareAtPrice ?? undefined, // TODO: Adjust validation for compareAtPrice later
+          compareAtPrice: product.compareAtPrice ?? undefined, // TODO: Adjust validation for compareAtPrice later
         })
       }
     }, [product])

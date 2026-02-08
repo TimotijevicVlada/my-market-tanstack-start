@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { Route } from '../../$productId'
 import type { CarouselApi } from '@/components/ui/carousel'
-import type { mockProduct } from '../../$productId'
 import { Badge } from '@/components/ui/badge'
 import {
   Carousel,
@@ -11,18 +11,12 @@ import {
 import { Button } from '@/components/custom/Button'
 import { cn } from '@/lib/utils'
 
-interface ImagesProps {
-  product: typeof mockProduct
-}
+export const Images = () => {
+  const product = Route.useLoaderData()
 
-export const Images = ({ product }: ImagesProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [mainApi, setMainApi] = useState<CarouselApi>()
   const [thumbApi, setThumbApi] = useState<CarouselApi>()
-
-  const sortedImages = [...product.images].sort(
-    (a, b) => a.sortOrder - b.sortOrder,
-  )
 
   const discountPercentage = product.compareAtPrice
     ? Math.round(
@@ -66,19 +60,30 @@ export const Images = ({ product }: ImagesProps) => {
 
         <Badge
           variant="outline"
-          className="absolute right-4 top-4 z-10 border-amber-500/50 bg-amber-500/10 text-amber-500"
+          className={cn(
+            'absolute right-4 top-4 z-10 border-amber-500/50 text-amber-500',
+            product.status === 'draft'
+              ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/50'
+              : product.status === 'published'
+                ? 'bg-green-500/10 text-green-500 border-green-500/50'
+                : 'bg-muted-foreground/10 text-muted-foreground border-muted-foreground/50',
+          )}
         >
-          Nacrt
+          {product.status === 'draft'
+            ? 'Nacrt'
+            : product.status === 'published'
+              ? 'Objavljeno'
+              : 'Arhiviran'}
         </Badge>
 
         <Carousel className="w-full" opts={{ loop: true }} setApi={setMainApi}>
           <CarouselContent>
-            {sortedImages.map((image) => (
+            {product.images.map((image) => (
               <CarouselItem key={image.id}>
                 <div className="group relative aspect-square cursor-zoom-in overflow-hidden">
                   <img
-                    src={image.url || '/placeholder.svg'}
-                    alt={image.alt || product.name}
+                    src={image.url}
+                    alt={image.alt ?? 'Slika proizvoda'}
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
@@ -121,7 +126,7 @@ export const Images = ({ product }: ImagesProps) => {
         setApi={setThumbApi}
       >
         <CarouselContent className="-ml-2">
-          {sortedImages.map((image, index) => (
+          {product.images.map((image, index) => (
             <CarouselItem
               key={image.id}
               className="basis-1/4 pl-2 sm:basis-1/5"
@@ -136,8 +141,8 @@ export const Images = ({ product }: ImagesProps) => {
                 )}
               >
                 <img
-                  src={image.url || '/placeholder.svg'}
-                  alt={image.alt || `${product.name} thumbnail ${index + 1}`}
+                  src={image.url}
+                  alt={image.alt ?? `Slika proizvoda ${index + 1}`}
                   className="object-cover"
                 />
                 {selectedImageIndex !== index && (
