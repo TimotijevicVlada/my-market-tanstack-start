@@ -280,7 +280,7 @@ export function MarketplaceLanding() {
         {/* Promotion Banner */}
         <section className="relative overflow-hidden rounded-2xl">
           <img
-            src="/promo-mid-banner.jpg"
+            src="../../../public/become-seller-banner.avif"
             alt="Promocija"
             className="h-[200px] w-full object-cover md:h-[280px]"
           />
