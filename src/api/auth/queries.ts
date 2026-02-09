@@ -1,7 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { useNavigate } from '@tanstack/react-router'
-import { getLinkedAccounts, getSessionUser, linkAccountWithCredentials, updateSessionUserAvatar, updateSessionUserBasicInfo } from './server'
+import {
+  getLinkedAccounts,
+  getSessionUser,
+  linkAccountWithCredentials,
+  updateSessionUserAvatar,
+  updateSessionUserBasicInfo,
+} from './server'
 import type { Session } from '@/lib/auth'
 import type { LoginData, RegisterData } from './types'
 import type { Provider } from '@/routes/_private/account/-components/AccountsSection'
@@ -36,7 +42,7 @@ export function useLogin() {
 
 export function useGoogleSignIn() {
   return useMutation({
-    mutationFn: () => authClient.signIn.social({ provider: "google" }),
+    mutationFn: () => authClient.signIn.social({ provider: 'google' }),
     onError: (error) => {
       toast.error(error.message)
     },
@@ -45,7 +51,7 @@ export function useGoogleSignIn() {
 
 export function useFacebookSignIn() {
   return useMutation({
-    mutationFn: () => authClient.signIn.social({ provider: "facebook" }),
+    mutationFn: () => authClient.signIn.social({ provider: 'facebook' }),
     onError: (error) => {
       toast.error(error.message)
     },
@@ -125,12 +131,12 @@ export const useUpdateSessionUserAvatar = () => {
   })
 }
 
-
 export const useUpdateSessionUserBasicInfo = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: { name: string; email: string }) => updateSessionUserBasicInfo({ data }),
+    mutationFn: (data: { name: string; email: string }) =>
+      updateSessionUserBasicInfo({ data }),
     onSuccess: () => {
       toast.success('Vaše osnovne informacije su uspešno izmenjene')
       queryClient.invalidateQueries({ queryKey: ['sessionUser'] })
@@ -143,7 +149,10 @@ export const useUpdateSessionUserBasicInfo = () => {
 
 export function useChangeSessionUserPassword() {
   return useMutation({
-    mutationFn: async (params: { currentPassword: string; newPassword: string }) => {
+    mutationFn: async (params: {
+      currentPassword: string
+      newPassword: string
+    }) => {
       const result = await authClient.changePassword({
         currentPassword: params.currentPassword,
         newPassword: params.newPassword,
@@ -177,7 +186,8 @@ export const useGetLinkedAccounts = () => {
 
 export const useLinkAccountWithCredentials = () => {
   return useMutation({
-    mutationFn: (data: { password: string }) => linkAccountWithCredentials({ data }),
+    mutationFn: (data: { password: string }) =>
+      linkAccountWithCredentials({ data }),
     onSuccess: () => {
       toast.success('Vaša lozinka je uspešno povezana')
     },
@@ -190,7 +200,10 @@ export const useLinkAccountWithCredentials = () => {
 export const useConnectProvider = (provider: Provider) => {
   return useMutation({
     mutationFn: async () => {
-      const result = await authClient.linkSocial({ provider, callbackURL: '/account' })
+      const result = await authClient.linkSocial({
+        provider,
+        callbackURL: '/account',
+      })
 
       if (result.error) {
         throw new Error(errorMapper(result.error.message))
@@ -210,9 +223,7 @@ export const useConnectProvider = (provider: Provider) => {
 export const useDisconnectProvider = (providerId: Provider) => {
   return useMutation({
     mutationFn: async (accountId: string | undefined) => {
-      const result = await authClient.unlinkAccount(
-        { providerId, accountId },
-      )
+      const result = await authClient.unlinkAccount({ providerId, accountId })
 
       if (result.error) {
         throw new Error(errorMapper(result.error.message))
@@ -234,7 +245,7 @@ export const useRequestPasswordReset = () => {
     mutationFn: async (data: { email: string }) => {
       const result = await authClient.requestPasswordReset({
         email: data.email,
-        redirectTo: "/reset-password",
+        redirectTo: '/reset-password',
       })
 
       if (result.error) {
@@ -279,7 +290,7 @@ export const useDeleteUser = () => {
   return useMutation({
     mutationFn: async () => {
       const result = await authClient.deleteUser({
-        callbackURL: "/goodbye",
+        callbackURL: '/goodbye',
       })
 
       if (result.error) {
