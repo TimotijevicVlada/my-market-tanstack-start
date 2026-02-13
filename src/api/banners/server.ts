@@ -93,7 +93,6 @@ export const updateBannerSortOrder = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: Array<{ id: string; sortOrder: number }>) => data)
   .handler(async ({ data }) => {
-    console.log(data)
     await db.transaction(async (tx) => {
       await Promise.all(
         data.map(({ id, sortOrder }) =>

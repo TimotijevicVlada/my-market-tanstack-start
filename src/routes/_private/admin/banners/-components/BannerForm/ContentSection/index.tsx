@@ -3,12 +3,15 @@ import { useFormContext, useWatch } from 'react-hook-form'
 import type { BannerFormSchema } from '../zod-schema'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/custom/Textarea'
 import { SectionHead } from '@/components/custom/SectionHead'
+import { FormField } from '@/components/custom/FormField'
 
 export const ContentSection = () => {
-  const { register } = useFormContext<BannerFormSchema>()
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<BannerFormSchema>()
 
   const title = useWatch({ name: 'title' })
   const subtitle = useWatch({ name: 'subtitle' })
@@ -24,14 +27,12 @@ export const ContentSection = () => {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="banner-title">
-            Naslov <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            id="banner-title"
+          <FormField
+            required
+            label="Naslov"
             placeholder="npr. Velika zimska rasprodaja"
             maxLength={120}
-            className="bg-input/50 transition-colors focus:bg-input"
+            error={errors.title?.message}
             {...register('title')}
           />
           <div className="flex items-center justify-between">
@@ -48,7 +49,6 @@ export const ContentSection = () => {
         <div className="space-y-2">
           <Label htmlFor="banner-subtitle">Podnaslov</Label>
           <Textarea
-            id="banner-subtitle"
             {...register('subtitle')}
             placeholder="npr. Popusti do 50% na sve proizvode"
             maxLength={200}

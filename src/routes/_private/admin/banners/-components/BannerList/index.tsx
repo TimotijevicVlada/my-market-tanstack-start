@@ -27,6 +27,7 @@ import {
   useGetBannersByPlacement,
   useUpdateBannerSortOrder,
 } from '@/api/banners/queries'
+import { Spinner } from '@/components/ui/spinner'
 
 const placementLabels: Record<BannerPlacement, string> = {
   home: 'Pocetna strana',
@@ -45,7 +46,8 @@ export const BannerList = ({ filterPlacement }: BannerListProps) => {
 
   const { mutate: updateBannerSortOrder } = useUpdateBannerSortOrder()
   const { mutate: deleteBanner, isPending: isDeleting } = useDeleteBanner()
-  const { data: bannerList } = useGetBannersByPlacement(filterPlacement)
+  const { data: bannerList, isLoading } =
+    useGetBannersByPlacement(filterPlacement)
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -96,7 +98,12 @@ export const BannerList = ({ filterPlacement }: BannerListProps) => {
           />
         </CardHeader>
         <CardContent>
-          {banners.length === 0 ? (
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2 h-[10rem]">
+              <Spinner className="w-6 h-6" />
+              <span className="text-lg">Učitavanje...</span>
+            </div>
+          ) : banners.length === 0 ? (
             <EmptyData
               title="Nema banera"
               description={`Nemate banere za poziciju "${placementLabels[filterPlacement]}".`}

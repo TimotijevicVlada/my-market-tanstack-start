@@ -1,15 +1,22 @@
-import { Link2, MousePointerClick } from 'lucide-react'
-import { useFormContext, useWatch } from 'react-hook-form'
+import { MousePointerClick } from 'lucide-react'
+import { useController, useFormContext } from 'react-hook-form'
+import { BANNER_CTA_OPTIONS } from '../bannerCtaRoutes'
 import type { BannerFormSchema } from '../zod-schema'
+import type { FileRoutesByFullPath } from '@/routeTree.gen'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Input } from '@/components/ui/input'
 import { SectionHead } from '@/components/custom/SectionHead'
+import { Select } from '@/components/custom/Select'
+import { FormField } from '@/components/custom/FormField'
 
 export const CtaSection = () => {
-  const { register } = useFormContext<BannerFormSchema>()
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<BannerFormSchema>()
 
-  const ctaLabel = useWatch({ name: 'ctaLabel' })
+  const { field: ctaLabelField } = useController({ name: 'ctaLabel', control })
+  const { field: ctaHrefField } = useController({ name: 'ctaHref', control })
 
   return (
     <Card>
@@ -23,37 +30,28 @@ export const CtaSection = () => {
       <CardContent>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="banner-cta-label">
-              Tekst dugmeta <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              {...register('ctaLabel')}
+            <FormField
+              required
+              label="Tekst dugmeta"
               placeholder="npr. Kupuj sada"
               maxLength={40}
-              className="bg-input/50 transition-colors focus:bg-input"
+              error={errors.ctaLabel?.message}
+              {...register('ctaLabel')}
+              description={`${ctaLabelField.value.length}/40`}
             />
-            <p
-              className={`text-right text-xs ${ctaLabel.length > 30 ? 'text-primary' : 'text-muted-foreground'}`}
-            >
-              {ctaLabel.length}/40
-            </p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="banner-cta-href">
-              Link dugmeta <span className="text-destructive">*</span>
-            </Label>
-            <div className="relative">
-              <Link2 className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                {...register('ctaHref')}
-                placeholder="/rasprodaja"
-                maxLength={255}
-                className="bg-input/50 pl-10 transition-colors focus:bg-input"
-              />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Relativni ili apsolutni URL
-            </p>
+            <Select
+              required
+              options={BANNER_CTA_OPTIONS}
+              label="Link dugmeta"
+              placeholder="Izaberite link dugmeta"
+              value={ctaHrefField.value as keyof FileRoutesByFullPath | null}
+              keys={{ label: 'name', value: 'id' }}
+              onSelect={(option) => ctaHrefField.onChange(option?.id)}
+              description="Stranice iz TanStack Router-a"
+              error={errors.ctaHref?.message}
+            />
           </div>
         </div>
       </CardContent>

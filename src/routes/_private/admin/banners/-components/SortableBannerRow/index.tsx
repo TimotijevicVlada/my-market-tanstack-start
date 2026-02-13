@@ -45,7 +45,7 @@ export const SortableBannerRow = ({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: isDragging ? transition : 'none',
   }
 
   const PlacementIcon = placementIcons[banner.placement]
@@ -54,7 +54,7 @@ export const SortableBannerRow = ({
     <div
       ref={setNodeRef}
       style={style}
-      className={`group flex items-center gap-4 rounded-xl border border-border/50 bg-card p-4 transition-all ${
+      className={`group flex items-center gap-4 rounded-xl border border-border/50 bg-card p-4 ${
         isDragging
           ? 'z-50 scale-[1.02] shadow-xl shadow-primary/10 ring-2 ring-primary/30'
           : 'hover:border-border'
