@@ -31,11 +31,14 @@ import { Route as PrivateBuyerOrdersIndexRouteImport } from './routes/_private/b
 import { Route as PrivateAdminUsersIndexRouteImport } from './routes/_private/admin/users/index'
 import { Route as PrivateAdminSellersIndexRouteImport } from './routes/_private/admin/sellers/index'
 import { Route as PrivateAdminCategoriesIndexRouteImport } from './routes/_private/admin/categories/index'
+import { Route as PrivateAdminBannersIndexRouteImport } from './routes/_private/admin/banners/index'
 import { Route as PrivateAccountOrdersIndexRouteImport } from './routes/_private/account/orders/index'
 import { Route as ApiAuthDeleteUserCallbackRouteImport } from './routes/api/auth/delete-user/callback'
 import { Route as PrivateSellerProductsCreateIndexRouteImport } from './routes/_private/seller/products/create/index'
+import { Route as PrivateAdminBannersCreateIndexRouteImport } from './routes/_private/admin/banners/create/index'
 import { Route as PrivateSellerProductsPreviewProductIdRouteImport } from './routes/_private/seller/products/preview/$productId'
 import { Route as PrivateSellerProductsEditProductIdRouteImport } from './routes/_private/seller/products/edit/$productId'
+import { Route as PrivateAdminBannersEditBannerIdRouteImport } from './routes/_private/admin/banners/edit/$bannerId'
 
 const PublicRouteRoute = PublicRouteRouteImport.update({
   id: '/_public',
@@ -147,6 +150,12 @@ const PrivateAdminCategoriesIndexRoute =
     path: '/categories/',
     getParentRoute: () => PrivateAdminRouteRoute,
   } as any)
+const PrivateAdminBannersIndexRoute =
+  PrivateAdminBannersIndexRouteImport.update({
+    id: '/banners/',
+    path: '/banners/',
+    getParentRoute: () => PrivateAdminRouteRoute,
+  } as any)
 const PrivateAccountOrdersIndexRoute =
   PrivateAccountOrdersIndexRouteImport.update({
     id: '/account/orders/',
@@ -165,6 +174,12 @@ const PrivateSellerProductsCreateIndexRoute =
     path: '/products/create/',
     getParentRoute: () => PrivateSellerRouteRoute,
   } as any)
+const PrivateAdminBannersCreateIndexRoute =
+  PrivateAdminBannersCreateIndexRouteImport.update({
+    id: '/banners/create/',
+    path: '/banners/create/',
+    getParentRoute: () => PrivateAdminRouteRoute,
+  } as any)
 const PrivateSellerProductsPreviewProductIdRoute =
   PrivateSellerProductsPreviewProductIdRouteImport.update({
     id: '/products/preview/$productId',
@@ -176,6 +191,12 @@ const PrivateSellerProductsEditProductIdRoute =
     id: '/products/edit/$productId',
     path: '/products/edit/$productId',
     getParentRoute: () => PrivateSellerRouteRoute,
+  } as any)
+const PrivateAdminBannersEditBannerIdRoute =
+  PrivateAdminBannersEditBannerIdRouteImport.update({
+    id: '/banners/edit/$bannerId',
+    path: '/banners/edit/$bannerId',
+    getParentRoute: () => PrivateAdminRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -194,14 +215,17 @@ export interface FileRoutesByFullPath {
   '/seller-apply/': typeof PublicSellerApplyIndexRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/account/orders/': typeof PrivateAccountOrdersIndexRoute
+  '/admin/banners/': typeof PrivateAdminBannersIndexRoute
   '/admin/categories/': typeof PrivateAdminCategoriesIndexRoute
   '/admin/sellers/': typeof PrivateAdminSellersIndexRoute
   '/admin/users/': typeof PrivateAdminUsersIndexRoute
   '/buyer/orders/': typeof PrivateBuyerOrdersIndexRoute
   '/seller/info/': typeof PrivateSellerInfoIndexRoute
   '/seller/products/': typeof PrivateSellerProductsIndexRoute
+  '/admin/banners/edit/$bannerId': typeof PrivateAdminBannersEditBannerIdRoute
   '/seller/products/edit/$productId': typeof PrivateSellerProductsEditProductIdRoute
   '/seller/products/preview/$productId': typeof PrivateSellerProductsPreviewProductIdRoute
+  '/admin/banners/create/': typeof PrivateAdminBannersCreateIndexRoute
   '/seller/products/create/': typeof PrivateSellerProductsCreateIndexRoute
 }
 export interface FileRoutesByTo {
@@ -220,14 +244,17 @@ export interface FileRoutesByTo {
   '/seller-apply': typeof PublicSellerApplyIndexRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/account/orders': typeof PrivateAccountOrdersIndexRoute
+  '/admin/banners': typeof PrivateAdminBannersIndexRoute
   '/admin/categories': typeof PrivateAdminCategoriesIndexRoute
   '/admin/sellers': typeof PrivateAdminSellersIndexRoute
   '/admin/users': typeof PrivateAdminUsersIndexRoute
   '/buyer/orders': typeof PrivateBuyerOrdersIndexRoute
   '/seller/info': typeof PrivateSellerInfoIndexRoute
   '/seller/products': typeof PrivateSellerProductsIndexRoute
+  '/admin/banners/edit/$bannerId': typeof PrivateAdminBannersEditBannerIdRoute
   '/seller/products/edit/$productId': typeof PrivateSellerProductsEditProductIdRoute
   '/seller/products/preview/$productId': typeof PrivateSellerProductsPreviewProductIdRoute
+  '/admin/banners/create': typeof PrivateAdminBannersCreateIndexRoute
   '/seller/products/create': typeof PrivateSellerProductsCreateIndexRoute
 }
 export interface FileRoutesById {
@@ -250,14 +277,17 @@ export interface FileRoutesById {
   '/_public/seller-apply/': typeof PublicSellerApplyIndexRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/_private/account/orders/': typeof PrivateAccountOrdersIndexRoute
+  '/_private/admin/banners/': typeof PrivateAdminBannersIndexRoute
   '/_private/admin/categories/': typeof PrivateAdminCategoriesIndexRoute
   '/_private/admin/sellers/': typeof PrivateAdminSellersIndexRoute
   '/_private/admin/users/': typeof PrivateAdminUsersIndexRoute
   '/_private/buyer/orders/': typeof PrivateBuyerOrdersIndexRoute
   '/_private/seller/info/': typeof PrivateSellerInfoIndexRoute
   '/_private/seller/products/': typeof PrivateSellerProductsIndexRoute
+  '/_private/admin/banners/edit/$bannerId': typeof PrivateAdminBannersEditBannerIdRoute
   '/_private/seller/products/edit/$productId': typeof PrivateSellerProductsEditProductIdRoute
   '/_private/seller/products/preview/$productId': typeof PrivateSellerProductsPreviewProductIdRoute
+  '/_private/admin/banners/create/': typeof PrivateAdminBannersCreateIndexRoute
   '/_private/seller/products/create/': typeof PrivateSellerProductsCreateIndexRoute
 }
 export interface FileRouteTypes {
@@ -278,14 +308,17 @@ export interface FileRouteTypes {
     | '/seller-apply/'
     | '/api/auth/delete-user/callback'
     | '/account/orders/'
+    | '/admin/banners/'
     | '/admin/categories/'
     | '/admin/sellers/'
     | '/admin/users/'
     | '/buyer/orders/'
     | '/seller/info/'
     | '/seller/products/'
+    | '/admin/banners/edit/$bannerId'
     | '/seller/products/edit/$productId'
     | '/seller/products/preview/$productId'
+    | '/admin/banners/create/'
     | '/seller/products/create/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -304,14 +337,17 @@ export interface FileRouteTypes {
     | '/seller-apply'
     | '/api/auth/delete-user/callback'
     | '/account/orders'
+    | '/admin/banners'
     | '/admin/categories'
     | '/admin/sellers'
     | '/admin/users'
     | '/buyer/orders'
     | '/seller/info'
     | '/seller/products'
+    | '/admin/banners/edit/$bannerId'
     | '/seller/products/edit/$productId'
     | '/seller/products/preview/$productId'
+    | '/admin/banners/create'
     | '/seller/products/create'
   id:
     | '__root__'
@@ -333,14 +369,17 @@ export interface FileRouteTypes {
     | '/_public/seller-apply/'
     | '/api/auth/delete-user/callback'
     | '/_private/account/orders/'
+    | '/_private/admin/banners/'
     | '/_private/admin/categories/'
     | '/_private/admin/sellers/'
     | '/_private/admin/users/'
     | '/_private/buyer/orders/'
     | '/_private/seller/info/'
     | '/_private/seller/products/'
+    | '/_private/admin/banners/edit/$bannerId'
     | '/_private/seller/products/edit/$productId'
     | '/_private/seller/products/preview/$productId'
+    | '/_private/admin/banners/create/'
     | '/_private/seller/products/create/'
   fileRoutesById: FileRoutesById
 }
@@ -508,6 +547,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateAdminCategoriesIndexRouteImport
       parentRoute: typeof PrivateAdminRouteRoute
     }
+    '/_private/admin/banners/': {
+      id: '/_private/admin/banners/'
+      path: '/banners'
+      fullPath: '/admin/banners/'
+      preLoaderRoute: typeof PrivateAdminBannersIndexRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
+    }
     '/_private/account/orders/': {
       id: '/_private/account/orders/'
       path: '/account/orders'
@@ -529,6 +575,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivateSellerProductsCreateIndexRouteImport
       parentRoute: typeof PrivateSellerRouteRoute
     }
+    '/_private/admin/banners/create/': {
+      id: '/_private/admin/banners/create/'
+      path: '/banners/create'
+      fullPath: '/admin/banners/create/'
+      preLoaderRoute: typeof PrivateAdminBannersCreateIndexRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
+    }
     '/_private/seller/products/preview/$productId': {
       id: '/_private/seller/products/preview/$productId'
       path: '/products/preview/$productId'
@@ -542,6 +595,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/seller/products/edit/$productId'
       preLoaderRoute: typeof PrivateSellerProductsEditProductIdRouteImport
       parentRoute: typeof PrivateSellerRouteRoute
+    }
+    '/_private/admin/banners/edit/$bannerId': {
+      id: '/_private/admin/banners/edit/$bannerId'
+      path: '/banners/edit/$bannerId'
+      fullPath: '/admin/banners/edit/$bannerId'
+      preLoaderRoute: typeof PrivateAdminBannersEditBannerIdRouteImport
+      parentRoute: typeof PrivateAdminRouteRoute
     }
   }
 }
@@ -565,15 +625,21 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface PrivateAdminRouteRouteChildren {
+  PrivateAdminBannersIndexRoute: typeof PrivateAdminBannersIndexRoute
   PrivateAdminCategoriesIndexRoute: typeof PrivateAdminCategoriesIndexRoute
   PrivateAdminSellersIndexRoute: typeof PrivateAdminSellersIndexRoute
   PrivateAdminUsersIndexRoute: typeof PrivateAdminUsersIndexRoute
+  PrivateAdminBannersEditBannerIdRoute: typeof PrivateAdminBannersEditBannerIdRoute
+  PrivateAdminBannersCreateIndexRoute: typeof PrivateAdminBannersCreateIndexRoute
 }
 
 const PrivateAdminRouteRouteChildren: PrivateAdminRouteRouteChildren = {
+  PrivateAdminBannersIndexRoute: PrivateAdminBannersIndexRoute,
   PrivateAdminCategoriesIndexRoute: PrivateAdminCategoriesIndexRoute,
   PrivateAdminSellersIndexRoute: PrivateAdminSellersIndexRoute,
   PrivateAdminUsersIndexRoute: PrivateAdminUsersIndexRoute,
+  PrivateAdminBannersEditBannerIdRoute: PrivateAdminBannersEditBannerIdRoute,
+  PrivateAdminBannersCreateIndexRoute: PrivateAdminBannersCreateIndexRoute,
 }
 
 const PrivateAdminRouteRouteWithChildren =

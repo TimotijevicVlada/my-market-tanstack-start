@@ -1,5 +1,6 @@
 import { Pencil } from 'lucide-react'
 import { Button } from '../ui/button'
+import { CardDescription, CardTitle } from '../ui/card'
 import { cn } from '@/lib/utils'
 
 interface SectionHeadProps {
@@ -24,8 +25,8 @@ export const SectionHead = ({
           <Icon className="size-5 text-primary" />
         </div>
         <div>
-          <h2 className="font-semibold">{title}</h2>
-          <p className="text-sm text-muted-foreground">{description}</p>
+          <CardTitle className="text-lg">{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
         </div>
       </div>
       {onEdit && (
