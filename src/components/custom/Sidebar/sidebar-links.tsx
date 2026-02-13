@@ -1,6 +1,7 @@
 import {
   FolderTreeIcon,
   HandbagIcon,
+  ImageIcon,
   PackageIcon,
   PencilIcon,
   PlusIcon,
@@ -180,6 +181,23 @@ const sidebarLinks: Record<User['role'], Array<SidebarLinkGroup>> = {
           name: 'Prodavci',
           url: '/admin/sellers',
           icon: StoreIcon,
+        },
+        {
+          name: 'Baneri',
+          url: '/admin/banners',
+          icon: ImageIcon,
+          sublink: [
+            {
+              name: 'Kreiranje banera',
+              url: '/admin/banners/create',
+              icon: PlusIcon,
+            },
+            {
+              name: 'Izmena banera',
+              url: '/admin/banners/edit/$bannerId',
+              icon: PencilIcon,
+            },
+          ],
         },
       ],
     },

@@ -1,20 +1,31 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
-import { Button } from '@/components/custom/Button'
+import { Link } from '@tanstack/react-router'
+import { useGetActiveBannersByPlacement } from '@/api/banners/queries'
+import { Button } from '@/components/ui/button'
+
+const BANNER_INTERVAL_MS = 6000
 
 export const Banner = () => {
   const [currentBanner, setCurrentBanner] = useState(0)
+  const [intervalResetKey, setIntervalResetKey] = useState(0)
+
+  const { data: activeBanner } = useGetActiveBannersByPlacement('home')
+
+  const activeBannerLength = activeBanner?.length ?? 0
 
   useEffect(() => {
+    if (activeBannerLength === 0) return
+    setCurrentBanner((prev) => (prev < activeBannerLength ? prev : 0))
     const timer = setInterval(() => {
-      setCurrentBanner((prev) => (prev + 1) % heroBanners.length)
-    }, 6000)
+      setCurrentBanner((prev) => (prev + 1) % activeBannerLength)
+    }, BANNER_INTERVAL_MS)
     return () => clearInterval(timer)
-  }, [])
+  }, [activeBannerLength, intervalResetKey])
 
   return (
     <section className="relative overflow-hidden h-[17.5rem] md:h-[23.75rem]">
-      {heroBanners.map((banner, i) => (
+      {activeBanner?.map((banner, i) => (
         <div
           key={i}
           className={`absolute inset-0 transition-opacity duration-1000 ${
@@ -24,7 +35,7 @@ export const Banner = () => {
           }`}
         >
           <img
-            src={banner.image}
+            src={banner.imageUrl}
             alt={banner.title}
             className="object-cover w-full h-full"
           />
@@ -38,9 +49,15 @@ export const Banner = () => {
                 <p className="text-pretty text-lg text-muted-foreground md:text-xl">
                   {banner.subtitle}
                 </p>
-                <Button size="lg" className="gap-2 text-base font-semibold">
-                  {banner.cta}
-                  <ArrowRight className="size-5" />
+                <Button
+                  size="lg"
+                  className="gap-2 text-base font-semibold"
+                  asChild
+                >
+                  <Link to={banner.ctaHref}>
+                    {banner.ctaLabel}
+                    <ArrowRight className="size-5" />
+                  </Link>
                 </Button>
               </div>
             </div>
@@ -50,10 +67,13 @@ export const Banner = () => {
 
       {/* Banner Dots */}
       <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 gap-2">
-        {heroBanners.map((_, i) => (
+        {activeBanner?.map((_, i) => (
           <button
             key={i}
-            onClick={() => setCurrentBanner(i)}
+            onClick={() => {
+              setCurrentBanner(i)
+              setIntervalResetKey((k) => k + 1)
+            }}
             className={`h-2 rounded-full transition-all duration-300 ${
               i === currentBanner ? 'w-8 bg-primary' : 'w-2 bg-foreground/30'
             }`}
@@ -67,11 +87,12 @@ export const Banner = () => {
         variant="ghost"
         size="icon"
         className="absolute left-4 top-1/2 size-10 -translate-y-1/2 rounded-full bg-background/30 backdrop-blur-sm hover:bg-background/50"
-        onClick={() =>
+        onClick={() => {
           setCurrentBanner(
-            (prev) => (prev - 1 + heroBanners.length) % heroBanners.length,
+            (prev) => (prev - 1 + activeBannerLength) % activeBannerLength,
           )
-        }
+          setIntervalResetKey((k) => k + 1)
+        }}
       >
         <ChevronLeft className="size-5" />
       </Button>
@@ -79,27 +100,13 @@ export const Banner = () => {
         variant="ghost"
         size="icon"
         className="absolute right-4 top-1/2 size-10 -translate-y-1/2 rounded-full bg-background/30 backdrop-blur-sm hover:bg-background/50"
-        onClick={() =>
-          setCurrentBanner((prev) => (prev + 1) % heroBanners.length)
-        }
+        onClick={() => {
+          setCurrentBanner((prev) => (prev + 1) % activeBannerLength)
+          setIntervalResetKey((k) => k + 1)
+        }}
       >
         <ChevronRight className="size-5" />
       </Button>
     </section>
   )
 }
-
-const heroBanners = [
-  {
-    image: '/banner1.png',
-    title: 'Otkrijte najbolje proizvode',
-    subtitle: 'Hiljadama prodavaca, milioni proizvoda - sve na jednom mestu',
-    cta: 'Pogledaj ponudu',
-  },
-  {
-    image: '/banner2.jpg',
-    title: 'Zimska rasprodaja',
-    subtitle: 'Do 50% popusta na odabrane proizvode iz svih kategorija',
-    cta: 'Kupi sada',
-  },
-]
