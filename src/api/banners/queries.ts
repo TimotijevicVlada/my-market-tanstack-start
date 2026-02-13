@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import {
   createBanner,
   deleteBanner,
+  getActiveBannersByPlacement,
   getBannerById,
   getBannersByPlacement,
   toggleBannerActive,
@@ -88,5 +89,12 @@ export const useUpdateBannerSortOrder = () => {
     onError: (error) => {
       toast.error(error.message)
     },
+  })
+}
+
+export const useGetActiveBannersByPlacement = (placement: BannerPlacement) => {
+  return useQuery({
+    queryKey: ['activeBanners', placement],
+    queryFn: () => getActiveBannersByPlacement({ data: { placement } }),
   })
 }

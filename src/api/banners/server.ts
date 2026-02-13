@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import { asc, eq } from 'drizzle-orm'
+import { and, asc, eq } from 'drizzle-orm'
 import type { BannerPlacement } from './types'
 import type { BannerFormSchema } from '@/routes/_private/admin/banners/-components/BannerForm/zod-schema'
 import { requireAdminMiddleware } from '@/lib/middleware'
@@ -101,4 +101,19 @@ export const updateBannerSortOrder = createServerFn({
       )
     })
     return { success: true }
+  })
+
+export const getActiveBannersByPlacement = createServerFn({
+  method: 'GET',
+})
+  .inputValidator((data: { placement: BannerPlacement }) => data)
+  .handler(async ({ data }) => {
+    const activeBanner = await db.query.banners.findMany({
+      where: (bannersTable) =>
+        and(
+          eq(bannersTable.placement, data.placement),
+          eq(bannersTable.isActive, true),
+        ),
+    })
+    return activeBanner
   })
