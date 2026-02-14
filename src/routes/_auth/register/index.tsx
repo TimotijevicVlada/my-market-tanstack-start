@@ -2,6 +2,7 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { MailIcon, ShieldEllipsis, UserIcon } from 'lucide-react'
+import { OauthButtons } from '../-components/OauthButtons'
 import { defaultValues, registerSchema } from './-schema'
 import type { RegisterFormData } from './-schema'
 import { Button } from '@/components/custom/Button'
@@ -14,12 +15,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card'
 import {
   Field,
   FieldDescription,
   FieldGroup,
-} from "@/components/ui/field"
+  FieldSeparator,
+} from '@/components/ui/field'
 
 export const Route = createFileRoute('/_auth/register/')({
   component: RegisterComponent,
@@ -61,12 +63,16 @@ function RegisterComponent() {
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Kreirajte svoj nalog</CardTitle>
           <CardDescription>
-            Unesite podatke da biste kreirali svoj nalog
+            Registrujte se pomoću Google ili Facebook naloga
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
+              <OauthButtons />
+              <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+                Ili nastavite sa
+              </FieldSeparator>
               <div className="flex flex-col gap-4">
                 {(error || errors.root) && (
                   <div className="bg-destructive/15 text-destructive px-4 py-2 rounded-md text-sm">
@@ -99,7 +105,9 @@ function RegisterComponent() {
                   error={errors.password?.message}
                   startIcon={<ShieldEllipsis />}
                   autoComplete="new-password"
-                  forgotPasswordLink={<span className="ml-auto text-sm">Minimum 6 karaktera</span>}
+                  forgotPasswordLink={
+                    <span className="ml-auto text-sm">Minimum 6 karaktera</span>
+                  }
                   {...registerField('password')}
                 />
                 <FormFieldPassword
@@ -132,8 +140,9 @@ function RegisterComponent() {
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        Klikom na Registruj se, slažete se sa našim <a href="#">Uslovima korišćenja</a>{" "}
-        i <a href="#">Politikom privatnosti</a>.
+        Klikom na Registruj se, slažete se sa našim{' '}
+        <a href="#">Uslovima korišćenja</a> i{' '}
+        <a href="#">Politikom privatnosti</a>.
       </FieldDescription>
     </div>
   )
