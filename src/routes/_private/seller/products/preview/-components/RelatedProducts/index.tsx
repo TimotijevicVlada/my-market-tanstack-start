@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Route } from '../../$productId'
 import {
   Carousel,
@@ -22,13 +23,22 @@ export const RelatedProducts = () => {
         <CarouselContent className="-ml-3">
           {product.relatedProducts.map((p) => (
             <CarouselItem key={p.id} className="basis-1/3 pl-3 sm:basis-1/6">
-              <button
+              <div
                 className={cn(
                   'relative aspect-square w-full overflow-hidden rounded-lg transition-all',
                 )}
               >
-                <img src={p.image.url} alt={p.name} className="object-cover" />
-              </button>
+                <Link
+                  to={`/seller/products/preview/$productId`}
+                  params={{ productId: p.id }}
+                >
+                  <img
+                    src={p.image.url}
+                    alt={p.name}
+                    className="object-cover"
+                  />
+                </Link>
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>

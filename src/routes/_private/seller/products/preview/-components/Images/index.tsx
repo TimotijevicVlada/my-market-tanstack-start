@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { Route } from '../../$productId'
 import { statusBadgeConfig } from './data'
+import { ImagePreviewModal } from './ImagePreviewModal'
 import type { CarouselApi } from '@/components/ui/carousel'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -18,6 +19,7 @@ export const Images = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [mainApi, setMainApi] = useState<CarouselApi>()
   const [thumbApi, setThumbApi] = useState<CarouselApi>()
+  const [previewOpen, setPreviewOpen] = useState(false)
 
   const discountPercentage = product.compareAtPrice
     ? Math.round(
@@ -70,21 +72,25 @@ export const Images = () => {
         </Badge>
 
         <Carousel className="w-full" opts={{ loop: true }} setApi={setMainApi}>
-          <CarouselContent>
+          <CarouselContent className="items-start">
             {product.images.map((image) => (
-              <CarouselItem key={image.id}>
-                <div className="group relative aspect-square cursor-zoom-in overflow-hidden">
+              <CarouselItem key={image.id} className="min-h-0">
+                <button
+                  type="button"
+                  className="group relative block aspect-square w-full cursor-zoom-in overflow-hidden"
+                  onClick={() => setPreviewOpen(true)}
+                >
                   <img
                     src={image.url}
                     alt={image.alt ?? 'Slika proizvoda'}
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="block size-full object-contain transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all group-hover:bg-black/20 group-hover:opacity-100">
                     <div className="flex size-12 items-center justify-center rounded-full bg-white/90">
                       <ZoomIn className="size-5 text-black/80" />
                     </div>
                   </div>
-                </div>
+                </button>
               </CarouselItem>
             ))}
           </CarouselContent>
@@ -118,7 +124,7 @@ export const Images = () => {
         }}
         setApi={setThumbApi}
       >
-        <CarouselContent className="-ml-2">
+        <CarouselContent className="-ml-2 items-start">
           {product.images.map((image, index) => (
             <CarouselItem
               key={image.id}
@@ -127,7 +133,7 @@ export const Images = () => {
               <button
                 onClick={() => onThumbClick(index)}
                 className={cn(
-                  'relative aspect-square w-full overflow-hidden rounded-lg border-2 transition-all',
+                  'relative block aspect-square w-full overflow-hidden rounded-lg border-2 transition-all',
                   selectedImageIndex === index
                     ? 'border-primary ring-2 ring-primary/20'
                     : 'border-border/50 hover:border-border',
@@ -136,7 +142,7 @@ export const Images = () => {
                 <img
                   src={image.url}
                   alt={image.alt ?? `Slika proizvoda ${index + 1}`}
-                  className="object-cover"
+                  className="block size-full object-cover"
                 />
                 {selectedImageIndex !== index && (
                   <div className="absolute inset-0 bg-black/20" />
@@ -146,6 +152,13 @@ export const Images = () => {
           ))}
         </CarouselContent>
       </Carousel>
+
+      <ImagePreviewModal
+        open={previewOpen}
+        onOpenChange={setPreviewOpen}
+        images={product.images}
+        initialIndex={selectedImageIndex}
+      />
     </div>
   )
 }
