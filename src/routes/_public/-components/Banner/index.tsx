@@ -24,21 +24,17 @@ export const Banner = () => {
   }, [activeBannerLength, intervalResetKey])
 
   return (
-    <section className="relative overflow-hidden h-[17.5rem] md:h-[23.75rem]">
+    <section className="relative overflow-hidden w-full aspect-[5/1]">
       {activeBanner?.map((banner, i) => (
         <div
           key={i}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
+          className={`absolute inset-0 transition-opacity duration-1000 size-full ${
             i === currentBanner
               ? 'opacity-100'
               : 'pointer-events-none opacity-0'
           }`}
         >
-          <img
-            src={banner.imageUrl}
-            alt={banner.title}
-            className="object-cover w-full h-full"
-          />
+          <img src={banner.imageUrl} alt={banner.title} className="size-full" />
           <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto w-full max-w-7xl px-6">

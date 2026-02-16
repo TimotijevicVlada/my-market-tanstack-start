@@ -71,12 +71,12 @@ export const SortableBannerRow = ({
       </button>
 
       {/* Banner Image Thumbnail */}
-      <div className="relative size-16 flex-shrink-0 overflow-hidden rounded-lg border border-border/50 bg-muted md:h-20 md:w-32">
+      <div className="relative flex-shrink-0 overflow-hidden rounded-md border border-border/50 bg-muted h-20 aspect-[5/1]">
         {banner.imageUrl ? (
           <img
             src={banner.imageUrl}
             alt={banner.altText || banner.title}
-            className="size-full object-cover"
+            className="size-full"
             crossOrigin="anonymous"
           />
         ) : (
@@ -137,8 +137,9 @@ export const SortableBannerRow = ({
         </div>
       </div>
 
-      <div className="flex flex-shrink-0 items-center gap-2">
+      <div className="flex flex-col flex-shrink-0 items-center gap-2">
         <Switch
+          size="sm"
           checked={banner.isActive}
           onCheckedChange={() =>
             toggleBannerActive({ data: { id: banner.id } })
