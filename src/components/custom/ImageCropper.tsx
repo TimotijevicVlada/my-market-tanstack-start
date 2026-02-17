@@ -25,6 +25,7 @@ interface ImageCropperProps {
   setSelectedFile: React.Dispatch<React.SetStateAction<FileWithPreview | null>>
   aspectRatio?: number
   onSave: (image: string) => void
+  circularCrop?: boolean
 }
 
 export function ImageCropper({
@@ -34,6 +35,7 @@ export function ImageCropper({
   setSelectedFile,
   aspectRatio = 1,
   onSave,
+  circularCrop = false,
 }: ImageCropperProps) {
   const imgRef = React.useRef<HTMLImageElement | null>(null)
 
@@ -105,6 +107,7 @@ export function ImageCropper({
             onChange={(_, percentCrop) => setCrop(percentCrop)}
             onComplete={(c) => onCropComplete(c)}
             aspect={aspectRatio}
+            circularCrop={circularCrop}
             className="w-full"
           >
             <img
