@@ -20,7 +20,7 @@ export const ImagesSection = () => {
     <>
       <EditImages seller={seller} open={isEditOpen} onOpen={setIsEditOpen} />
       <Card className="overflow-hidden border-border/50 pt-0">
-        <div className="relative h-40 md:h-48 bg-gradient-to-br from-primary/30 via-primary/20 to-background">
+        <div className="relative aspect-[5/1] bg-gradient-to-br from-primary/30 via-primary/20 to-background">
           {seller?.coverImageUrl && (
             <img
               src={seller.coverImageUrl}
