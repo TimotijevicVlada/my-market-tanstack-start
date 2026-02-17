@@ -16,7 +16,13 @@ export const BackLinkHead = ({
 }: BackLinkHeadProps) => {
   return (
     <div className="flex items-center gap-4">
-      <Button variant="secondary" size="icon" className="size-10 rounded-lg">
+      <Button
+        variant="secondary"
+        size="icon"
+        type="button"
+        className="size-10 rounded-lg"
+        asChild
+      >
         <Link to={path}>
           <ChevronLeftIcon className="size-5" />
         </Link>

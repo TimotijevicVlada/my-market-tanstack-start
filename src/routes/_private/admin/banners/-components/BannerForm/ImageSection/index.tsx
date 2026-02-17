@@ -1,13 +1,16 @@
-import { ArrowRight, ImageIcon, ImagePlusIcon } from 'lucide-react'
+import { useState } from 'react'
+import { ArrowRight, ImageIcon, ImagePlusIcon, XIcon } from 'lucide-react'
 import { FileUploader } from 'react-drag-drop-files'
 import { toast } from 'sonner'
 import { useController, useFormContext, useWatch } from 'react-hook-form'
 import type { BannerFormSchema } from '../zod-schema'
+import type { FileWithPreview } from '@/components/custom/ImageCropper'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Spinner } from '@/components/ui/spinner'
 import { useUploadToR2 } from '@/api/uploads/queries'
 import { Button } from '@/components/custom/Button'
 import { SectionHead } from '@/components/custom/SectionHead'
+import { ImageCropper } from '@/components/custom/ImageCropper'
 
 const FILE_TYPES = ['JPG', 'JPEG', 'PNG', 'JFIF', 'WEBP', 'AVIF']
 
@@ -23,18 +26,41 @@ export const ImageSection = () => {
   const subtitle = useWatch({ control, name: 'subtitle' })
   const ctaLabel = useWatch({ control, name: 'ctaLabel' })
 
+  const [selectedFile, setSelectedFile] = useState<FileWithPreview | null>(null)
+
   const { mutateAsync: uploadImage, isPending } = useUploadToR2()
 
-  const handleChange = async (file: File | Array<File>) => {
-    if (Array.isArray(file)) return
+  const handleChange = (file: File | Array<File>) => {
+    const actualFile = Array.isArray(file) ? file[0] : file
+    const fileWithPreview = Object.assign(actualFile, {
+      preview: URL.createObjectURL(actualFile),
+    })
+    setSelectedFile(fileWithPreview)
+  }
+
+  const onSave = async (image: string) => {
+    const response = await fetch(image)
+    const blob = await response.blob()
+    const file = new File([blob], 'banner.png', { type: blob.type })
     const result = await uploadImage({ file, folder: 'test' })
     field.onChange(result.publicUrl)
+    setSelectedFile(null)
   }
 
   const UploaderIcon = isPending ? Spinner : ImagePlusIcon
 
   return (
     <Card>
+      {selectedFile && (
+        <ImageCropper
+          aspectRatio={5 / 1}
+          dialogOpen={!!selectedFile}
+          setDialogOpen={() => setSelectedFile(null)}
+          selectedFile={selectedFile}
+          setSelectedFile={setSelectedFile}
+          onSave={onSave}
+        />
+      )}
       <CardHeader className="pb-4">
         <SectionHead
           Icon={ImageIcon}
@@ -43,7 +69,7 @@ export const ImageSection = () => {
         />
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="w-full aspect-[3/1]">
+        <div className="w-full aspect-[5/1]">
           {field.value ? (
             <div className="w-full h-full relative rounded-lg overflow-hidden">
               <img
@@ -51,13 +77,21 @@ export const ImageSection = () => {
                 alt="Banner"
                 className="w-full h-full object-cover"
               />
+              <Button
+                size="icon-sm"
+                variant="secondary"
+                className="absolute top-2 right-2 rounded-full z-1"
+                onClick={() => field.onChange('')}
+              >
+                <XIcon />
+              </Button>
               {/* {Image overlay gradient for better text visibility} */}
               <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col items-start gap-3">
                 {title && <h1>{title}</h1>}
                 {subtitle && <p>{subtitle}</p>}
                 {ctaLabel && (
-                  <Button size="sm">
+                  <Button size="sm" type="button">
                     {ctaLabel} <ArrowRight className="size-4" />
                   </Button>
                 )}

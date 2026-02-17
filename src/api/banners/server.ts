@@ -12,7 +12,19 @@ export const createBanner = createServerFn({
   .middleware([requireAdminMiddleware])
   .inputValidator((data: BannerFormSchema) => data)
   .handler(async ({ data }) => {
-    const [banner] = await db.insert(banners).values(data).returning()
+    const [banner] = await db
+      .insert(banners)
+      .values({
+        ...data,
+        sortOrder:
+          (
+            await db.query.banners.findMany({
+              where: (bannersTable) =>
+                eq(bannersTable.placement, data.placement),
+            })
+          ).length + 1,
+      })
+      .returning()
     return banner
   })
 
