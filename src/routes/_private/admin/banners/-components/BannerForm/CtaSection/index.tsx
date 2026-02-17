@@ -49,7 +49,7 @@ export const CtaSection = () => {
               value={ctaHrefField.value as keyof FileRoutesByFullPath | null}
               keys={{ label: 'name', value: 'id' }}
               onSelect={(option) => ctaHrefField.onChange(option?.id)}
-              description="Stranice iz TanStack Router-a"
+              description="Stranice platforme"
               error={errors.ctaHref?.message}
             />
           </div>
