@@ -18,7 +18,7 @@ export const categories = pgTable('categories', {
   }),
   slug: varchar('slug', { length: 100 }).notNull().unique(),
   isActive: boolean('is_active').notNull().default(true),
-  sortOrder: integer('sort_order').notNull().default(0).unique(),
+  sortOrder: integer('sort_order').notNull().default(0),
   description: text('description'),
   imageUrl: text('image_url'),
   featured: boolean('featured').notNull().default(false),
