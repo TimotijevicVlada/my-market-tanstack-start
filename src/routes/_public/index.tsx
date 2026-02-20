@@ -5,7 +5,6 @@ import { TrustBadges } from './-components/TrustBadges'
 import { ProductSlider } from './-components/ProductsSlider'
 import { CategoryGrid } from './-components/CategoryGrid'
 import { PromotionBanner } from './-components/PromotionBanner'
-import { MoreCategories } from './-components/MoreCategories'
 import { Newsletter } from './-components/Newsletter'
 import { ScrollToTopButton } from './-components/ScrollToTopButton'
 import { getCategories } from '@/api/categories/server'
@@ -42,8 +41,6 @@ export function MarketplaceLanding() {
           products={trendingProducts}
           viewAllHref="/u-trendu"
         />
-
-        <MoreCategories />
 
         <Newsletter />
       </div>

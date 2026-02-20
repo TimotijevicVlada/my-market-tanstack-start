@@ -21,6 +21,7 @@ export const categories = pgTable('categories', {
   sortOrder: integer('sort_order').notNull().default(0).unique(),
   description: text('description'),
   imageUrl: text('image_url'),
+  featured: boolean('featured').notNull().default(false),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at')
     .default(sql`NULL`)

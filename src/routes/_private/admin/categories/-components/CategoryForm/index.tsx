@@ -1,4 +1,6 @@
+import { Save } from 'lucide-react'
 import { useController, useFormContext } from 'react-hook-form'
+import { SlugField } from './SlugField'
 import type { CategorySchema } from '../zod-schema'
 import { Button } from '@/components/custom/Button'
 import { FormField } from '@/components/custom/FormField'
@@ -7,6 +9,15 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { useGetAllCategories } from '@/api/categories/queries'
 import { Select } from '@/components/custom/Select'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Field,
+  FieldContent,
+  FieldDescription,
+  FieldLabel,
+  FieldTitle,
+} from '@/components/ui/field'
+import { ResetButton } from '@/components/custom/ResetButton'
 
 interface CategoryFormProps {
   onFormSubmit: (data: CategorySchema) => void
@@ -23,15 +34,19 @@ export const CategoryForm = ({
 
   const {
     control,
+    reset,
     handleSubmit,
     register,
     formState: { errors },
-    reset,
   } = useFormContext<CategorySchema>()
 
   const {
     field: { onChange, value: parentCategoryId },
   } = useController({ name: 'parentId', control })
+
+  const {
+    field: { onChange: onCheckboxChange, value: featured },
+  } = useController({ name: 'featured', control })
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit(onFormSubmit)}>
@@ -42,13 +57,7 @@ export const CategoryForm = ({
         error={errors.name?.message}
         {...register('name')}
       />
-      <FormField
-        required
-        label="Slug kategorije"
-        placeholder="Unesite slug kategorije"
-        error={errors.slug?.message}
-        {...register('slug')}
-      />
+      <SlugField />
       <Select
         options={categories ?? []}
         label="Nadređena kategorija"
@@ -57,6 +66,21 @@ export const CategoryForm = ({
         keys={{ label: 'name', value: 'id' }}
         onSelect={(category) => onChange(category?.id ?? null)}
       />
+      <FieldLabel>
+        <Field orientation="horizontal">
+          <Checkbox
+            id="toggle-checkbox-2"
+            checked={featured}
+            onCheckedChange={onCheckboxChange}
+          />
+          <FieldContent>
+            <FieldTitle>Istaknuta kategorija</FieldTitle>
+            <FieldDescription>
+              Istaknuta kategorija će biti prikazana na početnoj stranici
+            </FieldDescription>
+          </FieldContent>
+        </Field>
+      </FieldLabel>
       <div>
         <Label className="mb-2">Opis kategorije</Label>
         <Textarea
@@ -66,9 +90,7 @@ export const CategoryForm = ({
         />
       </div>
       <DialogFooter>
-        <Button variant="outline" type="button" onClick={() => reset()}>
-          Poništi
-        </Button>
+        <ResetButton variant="outline" type="button" onClick={() => reset()} />
         <Button
           type="submit"
           loading={{
@@ -76,6 +98,7 @@ export const CategoryForm = ({
             text: type === 'create' ? 'Kreiranje...' : 'Izmena...',
           }}
         >
+          <Save />
           {type === 'create' ? 'Sacuvaj' : 'Izmeni'}
         </Button>
       </DialogFooter>

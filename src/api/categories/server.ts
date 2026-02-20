@@ -31,6 +31,7 @@ export const getCategories = createServerFn({
       ...(rootCategoriesOnly && {
         where: (category) => isNull(category.parentId),
       }),
+      where: (category) => eq(category.isActive, true),
     })
 
     return result
