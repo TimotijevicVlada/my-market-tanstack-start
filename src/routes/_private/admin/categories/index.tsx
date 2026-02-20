@@ -1,5 +1,5 @@
 import z from 'zod'
-import { BrushCleaningIcon } from 'lucide-react'
+import { BrushCleaningIcon, Star } from 'lucide-react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
 import { useState } from 'react'
 import { StatusColumn } from './-components/StatusColumn'
@@ -195,6 +195,18 @@ function CategoriesPage() {
                         category={category}
                         refetchCategories={refetch}
                       />
+                    </TableCell>
+                  )
+                }
+                if (key === 'name') {
+                  return (
+                    <TableCell key={key}>
+                      <div className="flex items-center gap-1">
+                        {category[key]}
+                        {category.featured && (
+                          <Star className="h-4 w-4 fill-primary text-primary" />
+                        )}
+                      </div>
                     </TableCell>
                   )
                 }
