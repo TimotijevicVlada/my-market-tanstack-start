@@ -8,13 +8,30 @@ import { useDeleteCategory } from '@/api/categories/queries'
 
 interface DeleteCategoryProps {
   category: Category
-  params: GetCategoriesParams
+  params?: GetCategoriesParams
+  onSuccess?: () => void
 }
 
-export const DeleteCategory = ({ category, params }: DeleteCategoryProps) => {
+export const DeleteCategory = ({
+  category,
+  params,
+  onSuccess,
+}: DeleteCategoryProps) => {
   const { mutate: deleteCategory, isPending } = useDeleteCategory(params)
 
   const [isOpen, setIsOpen] = useState(false)
+
+  const handleDelete = () => {
+    deleteCategory(
+      { data: { categoryId: category.id } },
+      {
+        onSuccess: () => {
+          setIsOpen(false)
+          onSuccess?.()
+        },
+      },
+    )
+  }
 
   return (
     <>
@@ -33,7 +50,7 @@ export const DeleteCategory = ({ category, params }: DeleteCategoryProps) => {
         onOpenChange={() => setIsOpen(false)}
         title="Potvrdite brisanje kategorije"
         description={`Da li ste sigurni da želite da obrišete kategoriju ${category.name.toUpperCase()}?`}
-        onConfirm={() => deleteCategory({ data: { categoryId: category.id } })}
+        onConfirm={handleDelete}
         onCancel={() => setIsOpen(false)}
         confirmText="Obrisi"
         loading={{

@@ -1,10 +1,11 @@
 import z from 'zod'
-import { BrushCleaningIcon, Star } from 'lucide-react'
+import { BrushCleaningIcon, ChevronDownIcon, Star } from 'lucide-react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { StatusColumn } from './-components/StatusColumn'
 import { categoriesColumns, statusFilterOptions } from './-data'
 import { CreateCategory } from './-components/CreateCategory'
+import { SubCategories } from './-components/SubCategories'
 import { EditCategory } from './-components/EditCategory'
 import { DeleteCategory } from './-components/DeleteCategory'
 import type {
@@ -33,6 +34,7 @@ import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Button } from '@/components/custom/Button'
+import { cn } from '@/lib/utils'
 
 const categoriesSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -71,6 +73,9 @@ function CategoriesPage() {
   }
 
   const { data, isLoading, error, refetch } = useGetCategories(params)
+  const [subCategoriesOpenedId, setSubCategoriesOpenedId] = useState<
+    string | null
+  >(null)
 
   const categories = data?.data ?? []
   const pagination = data?.pagination
@@ -179,74 +184,107 @@ function CategoriesPage() {
             />
           )}
           {categories.map((category, index) => (
-            <TableRow key={category.id} className="group">
-              {categoriesColumns.map(({ key }) => {
-                if (key === 'order') {
-                  return (
-                    <TableCell key={key}>
-                      {(page - 1) * limit + index + 1}
-                    </TableCell>
-                  )
-                }
-                if (key === 'isActive') {
-                  return (
-                    <TableCell key={key}>
-                      <StatusColumn
-                        category={category}
-                        refetchCategories={refetch}
-                      />
-                    </TableCell>
-                  )
-                }
-                if (key === 'name') {
-                  return (
-                    <TableCell key={key}>
-                      <div className="flex items-center gap-1">
-                        {category[key]}
-                        {category.featured && (
-                          <Star className="h-4 w-4 fill-primary text-primary" />
-                        )}
-                      </div>
-                    </TableCell>
-                  )
-                }
-                if (key === 'parentName') {
-                  return <TableCell key={key}>{category[key] ?? '/'}</TableCell>
-                }
-                if (key === 'slug') {
-                  return (
-                    <TableCell key={key}>
-                      <Badge variant="secondary" className="rounded-sm">
-                        {category[key]}
-                      </Badge>
-                    </TableCell>
-                  )
-                }
-                if (key === 'createdAt' || key === 'updatedAt') {
-                  return (
-                    <TableCell key={key}>{formatDate(category[key])}</TableCell>
-                  )
-                }
-                if (key === 'description') {
-                  return (
-                    <TableCell key={key}>
-                      {truncateText(category[key])}
-                    </TableCell>
-                  )
-                }
-                if (key === 'actions') {
-                  return (
-                    <TableCell key={key} className="sticky right-0 text-right">
-                      <div className="flex justify-end gap-1">
-                        <EditCategory category={category} params={params} />
-                        <DeleteCategory category={category} params={params} />
-                      </div>
-                    </TableCell>
-                  )
-                }
-                return <TableCell key={key}>{category[key] || '/'}</TableCell>
-              })}
-            </TableRow>
+            <Fragment key={category.id}>
+              <TableRow className="group">
+                {categoriesColumns.map(({ key }) => {
+                  if (key === 'order') {
+                    return (
+                      <TableCell key={key}>
+                        {(page - 1) * limit + index + 1}
+                      </TableCell>
+                    )
+                  }
+                  if (key === 'isActive') {
+                    return (
+                      <TableCell key={key}>
+                        <div className="flex items-center gap-3">
+                          <Button
+                            variant="secondary"
+                            size="icon-sm"
+                            onClick={() =>
+                              setSubCategoriesOpenedId(
+                                subCategoriesOpenedId === category.id
+                                  ? null
+                                  : category.id,
+                              )
+                            }
+                          >
+                            <ChevronDownIcon
+                              className={cn(
+                                subCategoriesOpenedId === category.id
+                                  ? 'rotate-180'
+                                  : '',
+                              )}
+                            />
+                          </Button>
+                          <StatusColumn
+                            category={category}
+                            refetchCategories={refetch}
+                          />
+                        </div>
+                      </TableCell>
+                    )
+                  }
+                  if (key === 'name') {
+                    return (
+                      <TableCell key={key}>
+                        <div className="flex items-center gap-1">
+                          {category[key]}
+                          {category.featured && (
+                            <Star className="h-4 w-4 fill-primary text-primary" />
+                          )}
+                        </div>
+                      </TableCell>
+                    )
+                  }
+                  if (key === 'parentName') {
+                    return (
+                      <TableCell key={key}>{category[key] ?? '/'}</TableCell>
+                    )
+                  }
+                  if (key === 'slug') {
+                    return (
+                      <TableCell key={key}>
+                        <Badge variant="secondary" className="rounded-sm">
+                          {category[key]}
+                        </Badge>
+                      </TableCell>
+                    )
+                  }
+                  if (key === 'createdAt' || key === 'updatedAt') {
+                    return (
+                      <TableCell key={key}>
+                        {formatDate(category[key])}
+                      </TableCell>
+                    )
+                  }
+                  if (key === 'description') {
+                    return (
+                      <TableCell key={key}>
+                        {truncateText(category[key])}
+                      </TableCell>
+                    )
+                  }
+                  if (key === 'actions') {
+                    return (
+                      <TableCell
+                        key={key}
+                        className="sticky right-0 text-right"
+                      >
+                        <div className="flex justify-end gap-1">
+                          <EditCategory category={category} params={params} />
+                          <DeleteCategory category={category} params={params} />
+                        </div>
+                      </TableCell>
+                    )
+                  }
+                  return <TableCell key={key}>{category[key] || '/'}</TableCell>
+                })}
+              </TableRow>
+              {subCategoriesOpenedId === category.id && (
+                <SubCategories categoryId={subCategoriesOpenedId} />
+              )}
+            </Fragment>
           ))}
         </TableBody>
       </Table>

@@ -69,15 +69,14 @@ export const getPagedCategories = createServerFn({
 
     const parentCategory = alias(categories, 'parent_category')
 
-    const conditions = []
+    const conditions = [isNull(categories.parentId)]
     if (hasKeyword) {
-      conditions.push(
-        or(
-          ilike(categories.name, `%${trimmedKeyword}%`),
-          ilike(categories.slug, `%${trimmedKeyword}%`),
-          ilike(parentCategory.name, `%${trimmedKeyword}%`),
-        ),
+      const keywordCondition = or(
+        ilike(categories.name, `%${trimmedKeyword}%`),
+        ilike(categories.slug, `%${trimmedKeyword}%`),
+        ilike(parentCategory.name, `%${trimmedKeyword}%`),
       )
+      if (keywordCondition) conditions.push(keywordCondition)
     }
     if (status) {
       conditions.push(
@@ -243,4 +242,22 @@ export const getCategoryBySlug = createServerFn({
       category,
       subcategories,
     }
+  })
+
+export const getSubCategories = createServerFn({
+  method: 'GET',
+})
+  .inputValidator((data: { categoryId: string }) => data)
+  .handler(async ({ data }) => {
+    const { categoryId } = data
+
+    const subcategories = await db.query.categories.findMany({
+      where: (categoryTable) => eq(categoryTable.parentId, categoryId),
+      orderBy: (categoryTable) => [
+        asc(categoryTable.sortOrder),
+        asc(categoryTable.id),
+      ],
+    })
+
+    return subcategories
   })

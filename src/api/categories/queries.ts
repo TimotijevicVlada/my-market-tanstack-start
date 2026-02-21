@@ -7,6 +7,7 @@ import {
   getCategories,
   getLeafCategories,
   getPagedCategories,
+  getSubCategories,
   toggleCategoryActiveStatus,
 } from './server'
 import type { GetCategoriesParams } from './types'
@@ -50,7 +51,7 @@ export const useCreateCategory = (params: GetCategoriesParams) => {
   })
 }
 
-export const useEditCategory = (params: GetCategoriesParams) => {
+export const useEditCategory = (params?: GetCategoriesParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -79,7 +80,7 @@ export const useToggleCategoryActiveStatus = () => {
   })
 }
 
-export const useDeleteCategory = (params: GetCategoriesParams) => {
+export const useDeleteCategory = (params?: GetCategoriesParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -91,5 +92,13 @@ export const useDeleteCategory = (params: GetCategoriesParams) => {
     onError: (error) => {
       toast.error(error.message)
     },
+  })
+}
+
+export const useGetSubCategories = (categoryId: string) => {
+  return useQuery({
+    queryKey: ['subcategories', categoryId],
+    queryFn: () => getSubCategories({ data: { categoryId } }),
+    placeholderData: (prev) => prev,
   })
 }

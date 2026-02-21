@@ -18,11 +18,16 @@ import {
 import { Tooltip } from '@/components/custom/Tooltip'
 
 interface EditCategoryProps {
-  params: GetCategoriesParams
+  params?: GetCategoriesParams
   category: Category
+  onSuccess?: () => void
 }
 
-export const EditCategory = ({ params, category }: EditCategoryProps) => {
+export const EditCategory = ({
+  params,
+  category,
+  onSuccess,
+}: EditCategoryProps) => {
   const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null)
 
   const methods = useForm<CategorySchema>({
@@ -38,6 +43,7 @@ export const EditCategory = ({ params, category }: EditCategoryProps) => {
       {
         onSuccess: () => {
           setCategoryToEdit(null)
+          onSuccess?.()
         },
       },
     )
