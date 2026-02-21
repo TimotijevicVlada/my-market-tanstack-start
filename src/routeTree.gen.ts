@@ -19,6 +19,7 @@ import { Route as PrivateSellerRouteRouteImport } from './routes/_private/seller
 import { Route as PrivateBuyerRouteRouteImport } from './routes/_private/buyer/route'
 import { Route as PrivateAdminRouteRouteImport } from './routes/_private/admin/route'
 import { Route as PublicSellerApplyIndexRouteImport } from './routes/_public/seller-apply/index'
+import { Route as PublicCategoriesIndexRouteImport } from './routes/_public/categories/index'
 import { Route as PrivateAccountIndexRouteImport } from './routes/_private/account/index'
 import { Route as AuthResetPasswordIndexRouteImport } from './routes/_auth/reset-password/index'
 import { Route as AuthRegisterIndexRouteImport } from './routes/_auth/register/index'
@@ -34,6 +35,7 @@ import { Route as PrivateAdminCategoriesIndexRouteImport } from './routes/_priva
 import { Route as PrivateAdminBannersIndexRouteImport } from './routes/_private/admin/banners/index'
 import { Route as PrivateAccountOrdersIndexRouteImport } from './routes/_private/account/orders/index'
 import { Route as ApiAuthDeleteUserCallbackRouteImport } from './routes/api/auth/delete-user/callback'
+import { Route as PublicCategoriesCategorySlugRouteImport } from './routes/_public/categories/_category/$slug'
 import { Route as PrivateSellerProductsCreateIndexRouteImport } from './routes/_private/seller/products/create/index'
 import { Route as PrivateAdminBannersCreateIndexRouteImport } from './routes/_private/admin/banners/create/index'
 import { Route as PrivateSellerProductsPreviewProductIdRouteImport } from './routes/_private/seller/products/preview/$productId'
@@ -85,6 +87,11 @@ const PrivateAdminRouteRoute = PrivateAdminRouteRouteImport.update({
 const PublicSellerApplyIndexRoute = PublicSellerApplyIndexRouteImport.update({
   id: '/seller-apply/',
   path: '/seller-apply/',
+  getParentRoute: () => PublicRouteRoute,
+} as any)
+const PublicCategoriesIndexRoute = PublicCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
   getParentRoute: () => PublicRouteRoute,
 } as any)
 const PrivateAccountIndexRoute = PrivateAccountIndexRouteImport.update({
@@ -168,6 +175,12 @@ const ApiAuthDeleteUserCallbackRoute =
     path: '/api/auth/delete-user/callback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PublicCategoriesCategorySlugRoute =
+  PublicCategoriesCategorySlugRouteImport.update({
+    id: '/categories/_category/$slug',
+    path: '/categories/$slug',
+    getParentRoute: () => PublicRouteRoute,
+  } as any)
 const PrivateSellerProductsCreateIndexRoute =
   PrivateSellerProductsCreateIndexRouteImport.update({
     id: '/products/create/',
@@ -212,7 +225,9 @@ export interface FileRoutesByFullPath {
   '/register/': typeof AuthRegisterIndexRoute
   '/reset-password/': typeof AuthResetPasswordIndexRoute
   '/account/': typeof PrivateAccountIndexRoute
+  '/categories/': typeof PublicCategoriesIndexRoute
   '/seller-apply/': typeof PublicSellerApplyIndexRoute
+  '/categories/$slug': typeof PublicCategoriesCategorySlugRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/account/orders/': typeof PrivateAccountOrdersIndexRoute
   '/admin/banners/': typeof PrivateAdminBannersIndexRoute
@@ -241,7 +256,9 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterIndexRoute
   '/reset-password': typeof AuthResetPasswordIndexRoute
   '/account': typeof PrivateAccountIndexRoute
+  '/categories': typeof PublicCategoriesIndexRoute
   '/seller-apply': typeof PublicSellerApplyIndexRoute
+  '/categories/$slug': typeof PublicCategoriesCategorySlugRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/account/orders': typeof PrivateAccountOrdersIndexRoute
   '/admin/banners': typeof PrivateAdminBannersIndexRoute
@@ -274,7 +291,9 @@ export interface FileRoutesById {
   '/_auth/register/': typeof AuthRegisterIndexRoute
   '/_auth/reset-password/': typeof AuthResetPasswordIndexRoute
   '/_private/account/': typeof PrivateAccountIndexRoute
+  '/_public/categories/': typeof PublicCategoriesIndexRoute
   '/_public/seller-apply/': typeof PublicSellerApplyIndexRoute
+  '/_public/categories/_category/$slug': typeof PublicCategoriesCategorySlugRoute
   '/api/auth/delete-user/callback': typeof ApiAuthDeleteUserCallbackRoute
   '/_private/account/orders/': typeof PrivateAccountOrdersIndexRoute
   '/_private/admin/banners/': typeof PrivateAdminBannersIndexRoute
@@ -305,7 +324,9 @@ export interface FileRouteTypes {
     | '/register/'
     | '/reset-password/'
     | '/account/'
+    | '/categories/'
     | '/seller-apply/'
+    | '/categories/$slug'
     | '/api/auth/delete-user/callback'
     | '/account/orders/'
     | '/admin/banners/'
@@ -334,7 +355,9 @@ export interface FileRouteTypes {
     | '/register'
     | '/reset-password'
     | '/account'
+    | '/categories'
     | '/seller-apply'
+    | '/categories/$slug'
     | '/api/auth/delete-user/callback'
     | '/account/orders'
     | '/admin/banners'
@@ -366,7 +389,9 @@ export interface FileRouteTypes {
     | '/_auth/register/'
     | '/_auth/reset-password/'
     | '/_private/account/'
+    | '/_public/categories/'
     | '/_public/seller-apply/'
+    | '/_public/categories/_category/$slug'
     | '/api/auth/delete-user/callback'
     | '/_private/account/orders/'
     | '/_private/admin/banners/'
@@ -461,6 +486,13 @@ declare module '@tanstack/react-router' {
       path: '/seller-apply'
       fullPath: '/seller-apply/'
       preLoaderRoute: typeof PublicSellerApplyIndexRouteImport
+      parentRoute: typeof PublicRouteRoute
+    }
+    '/_public/categories/': {
+      id: '/_public/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof PublicCategoriesIndexRouteImport
       parentRoute: typeof PublicRouteRoute
     }
     '/_private/account/': {
@@ -567,6 +599,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/auth/delete-user/callback'
       preLoaderRoute: typeof ApiAuthDeleteUserCallbackRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_public/categories/_category/$slug': {
+      id: '/_public/categories/_category/$slug'
+      path: '/categories/$slug'
+      fullPath: '/categories/$slug'
+      preLoaderRoute: typeof PublicCategoriesCategorySlugRouteImport
+      parentRoute: typeof PublicRouteRoute
     }
     '/_private/seller/products/create/': {
       id: '/_private/seller/products/create/'
@@ -701,14 +740,18 @@ interface PublicRouteRouteChildren {
   PublicAuthRouteRoute: typeof PublicAuthRouteRoute
   PublicGoodbyeRouteRoute: typeof PublicGoodbyeRouteRoute
   PublicIndexRoute: typeof PublicIndexRoute
+  PublicCategoriesIndexRoute: typeof PublicCategoriesIndexRoute
   PublicSellerApplyIndexRoute: typeof PublicSellerApplyIndexRoute
+  PublicCategoriesCategorySlugRoute: typeof PublicCategoriesCategorySlugRoute
 }
 
 const PublicRouteRouteChildren: PublicRouteRouteChildren = {
   PublicAuthRouteRoute: PublicAuthRouteRoute,
   PublicGoodbyeRouteRoute: PublicGoodbyeRouteRoute,
   PublicIndexRoute: PublicIndexRoute,
+  PublicCategoriesIndexRoute: PublicCategoriesIndexRoute,
   PublicSellerApplyIndexRoute: PublicSellerApplyIndexRoute,
+  PublicCategoriesCategorySlugRoute: PublicCategoriesCategorySlugRoute,
 }
 
 const PublicRouteRouteWithChildren = PublicRouteRoute._addFileChildren(

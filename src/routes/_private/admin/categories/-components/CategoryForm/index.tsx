@@ -1,6 +1,7 @@
 import { Save } from 'lucide-react'
 import { useController, useFormContext } from 'react-hook-form'
 import { SlugField } from './SlugField'
+import { IconSelect } from './IconSelect'
 import type { CategorySchema } from '../zod-schema'
 import { Button } from '@/components/custom/Button'
 import { FormField } from '@/components/custom/FormField'
@@ -66,6 +67,7 @@ export const CategoryForm = ({
         keys={{ label: 'name', value: 'id' }}
         onSelect={(category) => onChange(category?.id ?? null)}
       />
+      <IconSelect />
       <FieldLabel>
         <Field orientation="horizontal">
           <Checkbox

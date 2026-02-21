@@ -253,6 +253,20 @@
       "when": 1771606715554,
       "tag": "0035_pink_cloak",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1771626515805,
+      "tag": "0036_striped_senator_kelly",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1771627052820,
+      "tag": "0037_polite_iron_lad",
+      "breakpoints": true
     }
   ]
 }

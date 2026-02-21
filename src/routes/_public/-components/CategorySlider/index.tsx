@@ -1,22 +1,9 @@
 import { useEffect, useState } from 'react'
-import {
-  // Baby,
-  // BookOpen,
-  ChevronLeft,
-  ChevronRight,
-  // Dumbbell,
-  // Gem,
-  // Home,
-  // Laptop,
-  // Leaf,
-  // Music,
-  // Paintbrush,
-  Shirt,
-  // Utensils,
-} from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Route } from '../..'
 import { Button } from '@/components/custom/Button'
+import { categoryIconOptions } from '@/routes/_private/admin/categories/-data'
 
 export const CategorySlider = () => {
   const allCategories = Route.useLoaderData()
@@ -63,11 +50,12 @@ export const CategorySlider = () => {
           onScroll={(e) => setCatScrollPos(e.currentTarget.scrollLeft)}
         >
           {allCategories.map((cat) => {
-            const Icon = Shirt
+            const Icon = categoryIconOptions[cat.icon]
             return (
               <Link
-                key={cat.slug}
-                to={`/`}
+                key={cat.id}
+                to="/categories/$slug"
+                params={{ slug: cat.slug }}
                 className="flex flex-shrink-0 items-center gap-2 rounded-full border border-border/50 bg-secondary/50 px-4 py-2 text-sm font-medium transition-all duration-200 hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
               >
                 <Icon className="size-4" />
@@ -89,42 +77,3 @@ export const CategorySlider = () => {
     </section>
   )
 }
-
-// const categories = [
-//   { name: 'Hrana i piće', icon: Utensils, slug: 'hrana-i-pice', count: 1240 },
-//   { name: 'Moda i odeća', icon: Shirt, slug: 'moda-i-odeca', count: 3560 },
-//   {
-//     name: 'Muzički instrumenti',
-//     icon: Music,
-//     slug: 'muzicki-instrumenti',
-//     count: 890,
-//   },
-//   { name: 'Kuća i bašta', icon: Home, slug: 'kuca-i-basta', count: 2100 },
-//   {
-//     name: 'Kancelarija i škola',
-//     icon: BookOpen,
-//     slug: 'kancelarija-i-skola',
-//     count: 1870,
-//   },
-//   {
-//     name: 'Umetnost i zanat',
-//     icon: Paintbrush,
-//     slug: 'umetnost-i-zanat',
-//     count: 640,
-//   },
-//   { name: 'Elektronika', icon: Laptop, slug: 'elektronika', count: 4200 },
-//   {
-//     name: 'Sport i rekreacija',
-//     icon: Dumbbell,
-//     slug: 'sport-i-rekreacija',
-//     count: 1560,
-//   },
-//   { name: 'Bebe i deca', icon: Baby, slug: 'bebe-i-deca', count: 980 },
-//   {
-//     name: 'Prirodni proizvodi',
-//     icon: Leaf,
-//     slug: 'prirodni-proizvodi',
-//     count: 720,
-//   },
-//   { name: 'Nakit i satovi', icon: Gem, slug: 'nakit-i-satovi', count: 1340 },
-// ]

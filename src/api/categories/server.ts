@@ -28,10 +28,11 @@ export const getCategories = createServerFn({
 
     const result = await db.query.categories.findMany({
       orderBy: (category) => [desc(category.createdAt), desc(category.id)],
-      ...(rootCategoriesOnly && {
-        where: (category) => isNull(category.parentId),
-      }),
-      where: (category) => eq(category.isActive, true),
+      where: (category) =>
+        and(
+          eq(category.isActive, true),
+          ...(rootCategoriesOnly ? [isNull(category.parentId)] : []),
+        ),
     })
 
     return result
@@ -217,4 +218,29 @@ export const deleteCategory = createServerFn({
       .returning()
 
     return deletedCategory
+  })
+
+export const getCategoryBySlug = createServerFn({
+  method: 'GET',
+})
+  .inputValidator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
+    const { slug } = data
+
+    const category = await db.query.categories.findFirst({
+      where: (categoryTable) => eq(categoryTable.slug, slug),
+    })
+
+    if (!category) {
+      throw new Error('Kategorija nije pronađena')
+    }
+
+    const subcategories = await db.query.categories.findMany({
+      where: (categoryTable) => eq(categoryTable.parentId, category.id),
+    })
+
+    return {
+      category,
+      subcategories,
+    }
   })
