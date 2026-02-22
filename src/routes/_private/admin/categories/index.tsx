@@ -137,6 +137,14 @@ function CategoriesPage() {
           setMainCategoriesSaveRequested(false)
           setMainCategoriesSortMode(false)
           refetch()
+          navigate({
+            to: '/admin/categories',
+            search: (prev) => ({
+              ...prev,
+              page: 1,
+              limit: DEFAULT_LIMIT,
+            }),
+          })
         },
       },
     )
