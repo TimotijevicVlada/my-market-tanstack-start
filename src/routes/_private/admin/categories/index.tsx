@@ -1,20 +1,11 @@
 import z from 'zod'
-import {
-  ArrowUpDownIcon,
-  BrushCleaningIcon,
-  ChevronDownIcon,
-  Star,
-} from 'lucide-react'
+import { ArrowUpDownIcon, BrushCleaningIcon } from 'lucide-react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
 import { Fragment, useState } from 'react'
-import { StatusColumn } from './-components/StatusColumn'
 import { categoriesColumns, statusFilterOptions } from './-data'
 import { CreateCategory } from './-components/CreateCategory'
 import { SubCategories } from './-components/SubCategories'
-import { EditCategory } from './-components/EditCategory'
-import { DeleteCategory } from './-components/DeleteCategory'
-import { CreateSubcategory } from './-components/CreateSubcategory'
-import { SortModeButton } from './-components/SortModeButton'
+import { MainTableRow } from './-components/MainTableRow'
 import type {
   CategorySort,
   CategoryStatus,
@@ -25,15 +16,11 @@ import { useGetCategories } from '@/api/categories/queries'
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
 import { Pagination } from '@/components/custom/Pagination'
-import { formatDate } from '@/utils/format-date'
-import { truncateText } from '@/utils/truncate-text'
 import { TableSearch } from '@/components/custom/TableSearch'
 import { TableLoading } from '@/components/custom/Table/TableLoading'
 import { TableError } from '@/components/custom/Table/TableError'
@@ -41,7 +28,6 @@ import { TableEmptyHolder } from '@/components/custom/Table/TableEmptyHolder'
 import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Button } from '@/components/custom/Button'
-import { cn } from '@/lib/utils'
 
 const categoriesSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -202,117 +188,21 @@ function CategoriesPage() {
           )}
           {categories.map((category, index) => (
             <Fragment key={category.id}>
-              <TableRow className="group">
-                {categoriesColumns.map(({ key }) => {
-                  if (key === 'order') {
-                    return (
-                      <TableCell key={key}>
-                        {(page - 1) * limit + index + 1}
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'isActive') {
-                    return (
-                      <TableCell key={key}>
-                        <div className="flex items-center gap-3">
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            onClick={() => {
-                              const nextOpened =
-                                subCategoriesOpenedId === category.id
-                                  ? null
-                                  : category.id
-                              setSubCategoriesOpenedId(nextOpened)
-                              if (
-                                nextOpened === null &&
-                                subcategorySortModeCategoryId === category.id
-                              ) {
-                                setSubcategorySortModeCategoryId(null)
-                              }
-                            }}
-                          >
-                            <ChevronDownIcon
-                              className={cn(
-                                subCategoriesOpenedId === category.id
-                                  ? 'rotate-180'
-                                  : '',
-                              )}
-                            />
-                          </Button>
-                          <StatusColumn
-                            category={category}
-                            refetchCategories={refetch}
-                          />
-                        </div>
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'name') {
-                    return (
-                      <TableCell key={key}>
-                        <div className="flex items-center gap-1">
-                          {category[key]}
-                          {category.featured && (
-                            <Star className="h-4 w-4 fill-primary text-primary" />
-                          )}
-                        </div>
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'slug') {
-                    return (
-                      <TableCell key={key}>
-                        <Badge variant="secondary" className="rounded-sm">
-                          {category[key]}
-                        </Badge>
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'createdAt' || key === 'updatedAt') {
-                    return (
-                      <TableCell key={key}>
-                        {formatDate(category[key])}
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'description') {
-                    return (
-                      <TableCell key={key}>
-                        {truncateText(category[key])}
-                      </TableCell>
-                    )
-                  }
-                  if (key === 'actions') {
-                    return (
-                      <TableCell
-                        key={key}
-                        className="sticky right-0 text-right"
-                      >
-                        <div className="flex justify-end gap-1">
-                          <SortModeButton
-                            categoryId={category.id}
-                            subcategorySortModeCategoryId={
-                              subcategorySortModeCategoryId
-                            }
-                            setSubcategorySortModeCategoryId={
-                              setSubcategorySortModeCategoryId
-                            }
-                            setSubCategoriesOpenedId={setSubCategoriesOpenedId}
-                            setSaveRequestedCategoryId={
-                              setSaveRequestedCategoryId
-                            }
-                          />
-                          <CreateSubcategory parentCategoryId={category.id} />
-                          <EditCategory category={category} params={params} />
-                          <DeleteCategory category={category} params={params} />
-                        </div>
-                      </TableCell>
-                    )
-                  }
-                  return <TableCell key={key}>{category[key] || '/'}</TableCell>
-                })}
-              </TableRow>
+              <MainTableRow
+                category={category}
+                index={index}
+                page={page}
+                limit={limit}
+                subCategoriesOpenedId={subCategoriesOpenedId}
+                setSubCategoriesOpenedId={setSubCategoriesOpenedId}
+                subcategorySortModeCategoryId={subcategorySortModeCategoryId}
+                setSubcategorySortModeCategoryId={
+                  setSubcategorySortModeCategoryId
+                }
+                refetch={refetch}
+                setSaveRequestedCategoryId={setSaveRequestedCategoryId}
+                params={params}
+              />
               {subCategoriesOpenedId === category.id && (
                 <SubCategories
                   categoryId={subCategoriesOpenedId}
