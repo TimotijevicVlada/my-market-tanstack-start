@@ -2,7 +2,6 @@ import z from 'zod'
 import {
   ArrowUpDownIcon,
   BrushCleaningIcon,
-  CheckCheck,
   ChevronDownIcon,
   Star,
 } from 'lucide-react'
@@ -15,6 +14,7 @@ import { SubCategories } from './-components/SubCategories'
 import { EditCategory } from './-components/EditCategory'
 import { DeleteCategory } from './-components/DeleteCategory'
 import { CreateSubcategory } from './-components/CreateSubcategory'
+import { SortModeButton } from './-components/SortModeButton'
 import type {
   CategorySort,
   CategoryStatus,
@@ -42,7 +42,6 @@ import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Button } from '@/components/custom/Button'
 import { cn } from '@/lib/utils'
-import { Tooltip } from '@/components/custom/Tooltip'
 
 const categoriesSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -217,7 +216,7 @@ function CategoriesPage() {
                       <TableCell key={key}>
                         <div className="flex items-center gap-3">
                           <Button
-                            variant="secondary"
+                            variant="ghost"
                             size="icon-sm"
                             onClick={() => {
                               const nextOpened =
@@ -291,39 +290,19 @@ function CategoriesPage() {
                         className="sticky right-0 text-right"
                       >
                         <div className="flex justify-end gap-1">
-                          <Tooltip
-                            title={
-                              subcategorySortModeCategoryId === category.id
-                                ? 'Sačuvaj redosled podkategorija'
-                                : 'Sortiraj podkategorije'
+                          <SortModeButton
+                            categoryId={category.id}
+                            subcategorySortModeCategoryId={
+                              subcategorySortModeCategoryId
                             }
-                          >
-                            <Button
-                              variant={
-                                subcategorySortModeCategoryId === category.id
-                                  ? 'default'
-                                  : 'ghost'
-                              }
-                              size="icon-sm"
-                              onClick={() => {
-                                if (
-                                  subcategorySortModeCategoryId === category.id
-                                ) {
-                                  setSaveRequestedCategoryId(category.id)
-                                } else {
-                                  setSubcategorySortModeCategoryId((prev) =>
-                                    prev === category.id ? null : category.id,
-                                  )
-                                }
-                              }}
-                            >
-                              {subcategorySortModeCategoryId === category.id ? (
-                                <CheckCheck />
-                              ) : (
-                                <ArrowUpDownIcon />
-                              )}
-                            </Button>
-                          </Tooltip>
+                            setSubcategorySortModeCategoryId={
+                              setSubcategorySortModeCategoryId
+                            }
+                            setSubCategoriesOpenedId={setSubCategoriesOpenedId}
+                            setSaveRequestedCategoryId={
+                              setSaveRequestedCategoryId
+                            }
+                          />
                           <CreateSubcategory parentCategoryId={category.id} />
                           <EditCategory category={category} params={params} />
                           <DeleteCategory category={category} params={params} />
