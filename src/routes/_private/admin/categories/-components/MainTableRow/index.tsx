@@ -1,4 +1,6 @@
-import { ChevronDownIcon, Star } from 'lucide-react'
+import { ChevronDownIcon, GripVertical, Star } from 'lucide-react'
+import { CSS } from '@dnd-kit/utilities'
+import { useSortable } from '@dnd-kit/sortable'
 import { StatusColumn } from '../StatusColumn'
 import { categoriesColumns } from '../../-data'
 import { SortModeButton } from '../SortModeButton'
@@ -19,6 +21,7 @@ interface MainTableRowProps {
   index: number
   page: number
   limit: number
+  sortMode?: boolean
   subCategoriesOpenedId: string | null
   setSubCategoriesOpenedId: Dispatch<SetStateAction<string | null>>
   subcategorySortModeCategoryId: string | null
@@ -33,6 +36,7 @@ export const MainTableRow = ({
   index,
   page,
   limit,
+  sortMode = false,
   subCategoriesOpenedId,
   setSubCategoriesOpenedId,
   subcategorySortModeCategoryId,
@@ -41,12 +45,47 @@ export const MainTableRow = ({
   setSaveRequestedCategoryId,
   params,
 }: MainTableRowProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition: isDragging ? transition : undefined,
+  }
+
   return (
-    <TableRow className="group">
+    <TableRow
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        'group',
+        isDragging && 'z-10 shadow-md bg-primary/20 [&_td]:bg-transparent',
+      )}
+    >
       {categoriesColumns.map(({ key }) => {
         if (key === 'order') {
           return (
-            <TableCell key={key}>{(page - 1) * limit + index + 1}</TableCell>
+            <TableCell key={key}>
+              {sortMode ? (
+                <button
+                  type="button"
+                  className="flex cursor-grab touch-none items-center justify-center rounded p-1 text-muted-foreground transition-colors hover:bg-muted-foreground/20 hover:text-foreground active:cursor-grabbing"
+                  {...attributes}
+                  {...listeners}
+                  aria-label="Prevuci za promenu redosleda"
+                >
+                  <GripVertical className="h-4 w-4" />
+                </button>
+              ) : (
+                (page - 1) * limit + index + 1
+              )}
+            </TableCell>
           )
         }
         if (key === 'isActive') {

@@ -110,13 +110,22 @@ export const useGetSubCategories = (categoryId: string) => {
 
 export const useUpdateSubcategoriesSortOrder = (categoryId: string) => {
   const queryClient = useQueryClient()
+  const isMainCategories = categoryId === 'main'
 
   return useMutation({
     mutationFn: (data: Array<{ id: string; sortOrder: number }>) =>
       updateSubcategoriesSortOrder({ data }),
     onSuccess: () => {
-      toast.success('Redosled podkategorija je uspešno sačuvan')
-      queryClient.invalidateQueries({ queryKey: ['subcategories', categoryId] })
+      toast.success(
+        isMainCategories
+          ? 'Redosled kategorija je uspešno sačuvan'
+          : 'Redosled podkategorija je uspešno sačuvan',
+      )
+      if (!isMainCategories) {
+        queryClient.invalidateQueries({
+          queryKey: ['subcategories', categoryId],
+        })
+      }
       queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
     },
     onError: (error) => {

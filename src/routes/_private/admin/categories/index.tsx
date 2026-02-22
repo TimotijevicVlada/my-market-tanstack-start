@@ -1,21 +1,42 @@
 import z from 'zod'
-import { ArrowUpDownIcon, BrushCleaningIcon } from 'lucide-react'
+import { BrushCleaningIcon } from 'lucide-react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
-import { Fragment, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { categoriesColumns, statusFilterOptions } from './-data'
 import { CreateCategory } from './-components/CreateCategory'
 import { SubCategories } from './-components/SubCategories'
 import { MainTableRow } from './-components/MainTableRow'
+import { MainSortModeButton } from './-components/MainSortModeButton'
+import type { DragEndEvent } from '@dnd-kit/core'
 import type {
+  Category,
   CategorySort,
   CategoryStatus,
   GetCategoriesParams,
   SortableCategoryColumns,
 } from '@/api/categories/types'
-import { useGetCategories } from '@/api/categories/queries'
+import {
+  useGetCategories,
+  useUpdateSubcategoriesSortOrder,
+} from '@/api/categories/queries'
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -31,6 +52,7 @@ import { Button } from '@/components/custom/Button'
 
 const categoriesSearchSchema = z.object({
   page: z.coerce.number().optional(),
+  limit: z.coerce.number().optional(),
 })
 
 export const Route = createFileRoute('/_private/admin/categories/')({
@@ -38,24 +60,26 @@ export const Route = createFileRoute('/_private/admin/categories/')({
   validateSearch: categoriesSearchSchema,
 })
 
+const DEFAULT_LIMIT = 10
+
 function CategoriesPage() {
-  const { page = 1 } = useSearch({ from: '/_private/admin/categories/' })
+  const { page = 1, limit: searchLimit } = useSearch({
+    from: '/_private/admin/categories/',
+  })
   const navigate = Route.useNavigate()
-
-  const limit = 10
-
+  const limit = searchLimit ?? DEFAULT_LIMIT
   const [keyword, setKeyword] = useState('')
   const [status, setStatus] = useState<CategoryStatus | null>(null)
   const [sort, setSort] = useState<CategorySort>({
-    key: 'createdAt',
-    order: 'desc',
+    key: 'sortOrder',
+    order: 'asc',
   })
 
   const hasFilters =
     status !== null ||
     keyword !== '' ||
-    sort.key !== 'createdAt' ||
-    sort.order !== 'desc'
+    sort.key !== 'sortOrder' ||
+    sort.order !== 'asc'
 
   const params: GetCategoriesParams = {
     page,
@@ -65,7 +89,9 @@ function CategoriesPage() {
     sort,
   }
 
-  const { data, isLoading, error, refetch } = useGetCategories(params)
+  const { data, isLoading, error, refetch, isFetching } =
+    useGetCategories(params)
+
   const [subCategoriesOpenedId, setSubCategoriesOpenedId] = useState<
     string | null
   >(null)
@@ -74,9 +100,74 @@ function CategoriesPage() {
   const [saveRequestedCategoryId, setSaveRequestedCategoryId] = useState<
     string | null
   >(null)
+  const [mainCategoriesSortMode, setMainCategoriesSortMode] = useState(false)
+  const [mainCategoriesSaveRequested, setMainCategoriesSaveRequested] =
+    useState(false)
+  const [orderedCategories, setOrderedCategories] = useState<Array<Category>>(
+    [],
+  )
+
+  const mainSortModeEnteredRef = useRef(false)
+
+  const { mutate: updateMainCategoriesSortOrder } =
+    useUpdateSubcategoriesSortOrder('main')
 
   const categories = data?.data ?? []
   const pagination = data?.pagination
+
+  useEffect(() => {
+    if (mainCategoriesSortMode && categories.length > 0) {
+      if (!mainSortModeEnteredRef.current) {
+        setOrderedCategories([...categories])
+        mainSortModeEnteredRef.current = true
+      } else if (categories.length > orderedCategories.length) {
+        setOrderedCategories([...categories])
+      }
+    } else {
+      mainSortModeEnteredRef.current = false
+    }
+  }, [mainCategoriesSortMode, categories, orderedCategories.length])
+
+  useEffect(() => {
+    if (!mainCategoriesSaveRequested || orderedCategories.length === 0) return
+    updateMainCategoriesSortOrder(
+      orderedCategories.map((c, i) => ({ id: c.id, sortOrder: i })),
+      {
+        onSuccess: () => {
+          setMainCategoriesSaveRequested(false)
+          setMainCategoriesSortMode(false)
+          refetch()
+        },
+      },
+    )
+  }, [mainCategoriesSaveRequested])
+
+  const mainSortSensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  )
+
+  const mainDisplayList =
+    mainCategoriesSortMode && orderedCategories.length > 0
+      ? orderedCategories
+      : categories
+
+  const handleMainDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id || mainDisplayList.length === 0) return
+      const oldIndex = mainDisplayList.findIndex((c) => c.id === active.id)
+      const newIndex = mainDisplayList.findIndex((c) => c.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return
+      const reordered = arrayMove([...mainDisplayList], oldIndex, newIndex)
+      if (mainCategoriesSortMode) {
+        setOrderedCategories(reordered)
+      }
+    },
+    [mainDisplayList, mainCategoriesSortMode],
+  )
 
   const handleSearch = (searchValue: string) => {
     setKeyword(searchValue)
@@ -128,7 +219,7 @@ function CategoriesPage() {
               onClick={() => {
                 setKeyword('')
                 setStatus(null)
-                setSort({ key: 'createdAt', order: 'desc' })
+                setSort({ key: 'sortOrder', order: 'asc' })
               }}
             >
               <BrushCleaningIcon />
@@ -137,9 +228,13 @@ function CategoriesPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline">
-            <ArrowUpDownIcon /> Sortiraj kategorije
-          </Button>
+          <MainSortModeButton
+            mainCategoriesSortMode={mainCategoriesSortMode}
+            setMainCategoriesSortMode={setMainCategoriesSortMode}
+            setMainCategoriesSaveRequested={setMainCategoriesSaveRequested}
+            totalRows={pagination?.total ?? 0}
+            DEFAULT_LIMIT={DEFAULT_LIMIT}
+          />
           <CreateCategory params={params} />
         </div>
       </div>
@@ -180,42 +275,70 @@ function CategoriesPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {categories.length === 0 && (
-            <TableEmptyHolder
-              colSpan={categoriesColumns.length}
-              title="Nema kategorija"
-            />
-          )}
-          {categories.map((category, index) => (
-            <Fragment key={category.id}>
-              <MainTableRow
-                category={category}
-                index={index}
-                page={page}
-                limit={limit}
-                subCategoriesOpenedId={subCategoriesOpenedId}
-                setSubCategoriesOpenedId={setSubCategoriesOpenedId}
-                subcategorySortModeCategoryId={subcategorySortModeCategoryId}
-                setSubcategorySortModeCategoryId={
-                  setSubcategorySortModeCategoryId
-                }
-                refetch={refetch}
-                setSaveRequestedCategoryId={setSaveRequestedCategoryId}
-                params={params}
+          {categories.length === 0 &&
+            !(mainCategoriesSortMode && isFetching) && (
+              <TableEmptyHolder
+                colSpan={categoriesColumns.length}
+                title="Nema kategorija"
               />
-              {subCategoriesOpenedId === category.id && (
-                <SubCategories
-                  categoryId={subCategoriesOpenedId}
-                  sortMode={subcategorySortModeCategoryId === category.id}
-                  saveRequested={saveRequestedCategoryId === category.id}
-                  onSaveDone={() => {
-                    setSaveRequestedCategoryId(null)
-                    setSubcategorySortModeCategoryId(null)
-                  }}
-                />
-              )}
-            </Fragment>
-          ))}
+            )}
+          {mainCategoriesSortMode &&
+            isFetching &&
+            categories.length < limit && (
+              <TableRow>
+                <TableCell
+                  colSpan={categoriesColumns.length}
+                  className="text-center py-8"
+                >
+                  <TableLoading label="Učitavanje kategorija za sortiranje..." />
+                </TableCell>
+              </TableRow>
+            )}
+
+          <DndContext
+            sensors={mainSortSensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleMainDragEnd}
+          >
+            <SortableContext
+              items={mainDisplayList.map((c) => c.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {mainDisplayList.map((category, index) => (
+                <Fragment key={category.id}>
+                  <MainTableRow
+                    category={category}
+                    index={index}
+                    page={page}
+                    limit={limit}
+                    sortMode={mainCategoriesSortMode}
+                    subCategoriesOpenedId={subCategoriesOpenedId}
+                    setSubCategoriesOpenedId={setSubCategoriesOpenedId}
+                    subcategorySortModeCategoryId={
+                      subcategorySortModeCategoryId
+                    }
+                    setSubcategorySortModeCategoryId={
+                      setSubcategorySortModeCategoryId
+                    }
+                    refetch={refetch}
+                    setSaveRequestedCategoryId={setSaveRequestedCategoryId}
+                    params={params}
+                  />
+                  {subCategoriesOpenedId === category.id && (
+                    <SubCategories
+                      categoryId={subCategoriesOpenedId}
+                      sortMode={subcategorySortModeCategoryId === category.id}
+                      saveRequested={saveRequestedCategoryId === category.id}
+                      onSaveDone={() => {
+                        setSaveRequestedCategoryId(null)
+                        setSubcategorySortModeCategoryId(null)
+                      }}
+                    />
+                  )}
+                </Fragment>
+              ))}
+            </SortableContext>
+          </DndContext>
         </TableBody>
       </Table>
       {pagination && (

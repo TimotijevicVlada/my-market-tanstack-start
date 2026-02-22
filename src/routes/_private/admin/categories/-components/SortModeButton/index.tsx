@@ -26,7 +26,7 @@ export const SortModeButton = ({
       <ButtonGroup>
         <Tooltip title="Sačuvaj redosled podkategorija">
           <Button
-            variant="outline"
+            variant="default"
             size="icon-sm"
             onClick={() => setSaveRequestedCategoryId(categoryId)}
           >

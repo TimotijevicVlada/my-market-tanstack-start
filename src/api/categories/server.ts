@@ -27,7 +27,7 @@ export const getCategories = createServerFn({
     const { rootCategoriesOnly } = data ?? {}
 
     const result = await db.query.categories.findMany({
-      orderBy: (category) => [desc(category.createdAt), desc(category.id)],
+      orderBy: (category) => [asc(category.sortOrder), asc(category.id)],
       where: (category) =>
         and(
           eq(category.isActive, true),
@@ -236,6 +236,7 @@ export const getCategoryBySlug = createServerFn({
 
     const subcategories = await db.query.categories.findMany({
       where: (categoryTable) => eq(categoryTable.parentId, category.id),
+      orderBy: (categoryTable) => [asc(categoryTable.sortOrder)],
     })
 
     return {
