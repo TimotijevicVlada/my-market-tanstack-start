@@ -1,22 +1,121 @@
-import { Star } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { categoriesColumns } from '../../-data'
-import { StatusColumn } from '../StatusColumn'
-import { EditCategory } from '../EditCategory'
-import { DeleteCategory } from '../DeleteCategory'
-import { Badge } from '@/components/ui/badge'
-import { useGetSubCategories } from '@/api/categories/queries'
+import { SortableRow } from './SortableRow'
+import type { DragEndEvent } from '@dnd-kit/core'
+import type { Category } from '@/api/categories/types'
+import {
+  useGetSubCategories,
+  useUpdateSubcategoriesSortOrder,
+} from '@/api/categories/queries'
 import { TableCell, TableRow } from '@/components/ui/table'
-import { formatDate } from '@/utils/format-date'
-import { truncateText } from '@/utils/truncate-text'
 
 interface SubCategoriesProps {
   categoryId: string
+  sortMode?: boolean
+  saveRequested?: boolean
+  onSaveDone?: () => void
 }
 
-export const SubCategories = ({ categoryId }: SubCategoriesProps) => {
-  const { data: subcategories, refetch } = useGetSubCategories(categoryId)
+export const SubCategories = ({
+  categoryId,
+  sortMode = false,
+  saveRequested = false,
+  onSaveDone,
+}: SubCategoriesProps) => {
+  const {
+    data: subcategories,
+    refetch,
+    isLoading,
+  } = useGetSubCategories(categoryId)
 
-  if (subcategories?.length === 0) {
+  const { mutate: updateSortOrder } =
+    useUpdateSubcategoriesSortOrder(categoryId)
+
+  const [orderedSubcategories, setOrderedSubcategories] = useState<
+    Array<Category & { parentName?: string | null }>
+  >([])
+  const sortModeEnteredRef = useRef(false)
+
+  useEffect(() => {
+    if (sortMode && subcategories?.length) {
+      if (!sortModeEnteredRef.current) {
+        setOrderedSubcategories(
+          subcategories.map((s) => ({ ...s, parentName: null })),
+        )
+        sortModeEnteredRef.current = true
+      }
+    } else {
+      sortModeEnteredRef.current = false
+    }
+  }, [sortMode, subcategories])
+
+  useEffect(() => {
+    if (!saveRequested || orderedSubcategories.length === 0) return
+    updateSortOrder(
+      orderedSubcategories.map((s, i) => ({ id: s.id, sortOrder: i })),
+      { onSuccess: () => onSaveDone?.() },
+    )
+  }, [saveRequested])
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  )
+
+  const displayList =
+    sortMode && orderedSubcategories.length > 0
+      ? orderedSubcategories
+      : (subcategories ?? [])
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event
+      if (!over || active.id === over.id || displayList.length === 0) return
+      const oldIndex = displayList.findIndex((s) => s.id === active.id)
+      const newIndex = displayList.findIndex((s) => s.id === over.id)
+      if (oldIndex === -1 || newIndex === -1) return
+      const reordered = arrayMove(
+        [...displayList],
+        oldIndex,
+        newIndex,
+      ) as Array<Category & { parentName?: string | null }>
+      if (sortMode) {
+        setOrderedSubcategories(reordered)
+      }
+    },
+    [displayList, sortMode],
+  )
+
+  if (isLoading) {
+    return (
+      <TableRow className="bg-muted border-l-4 border-l-primary/30">
+        <TableCell
+          colSpan={categoriesColumns.length}
+          className="font-medium text-md bg-transparent"
+        >
+          Učitavanje podkategorija...
+        </TableCell>
+      </TableRow>
+    )
+  }
+
+  if (!subcategories || subcategories.length === 0) {
     return (
       <TableRow className="bg-muted border-l-4 border-l-primary/30">
         <TableCell
@@ -30,109 +129,25 @@ export const SubCategories = ({ categoryId }: SubCategoriesProps) => {
   }
 
   return (
-    <>
-      {subcategories?.map((subcategory, index) => (
-        <TableRow
-          key={subcategory.id}
-          className="bg-muted !border-l-4 !border-l-primary/30"
-        >
-          {categoriesColumns.map(({ key }) => {
-            if (key === 'order') {
-              return (
-                <TableCell key={key} className="bg-transparent pl-8">
-                  {index + 1}
-                </TableCell>
-              )
-            }
-            if (key === 'isActive') {
-              return (
-                <TableCell key={key} className="bg-transparent pl-13">
-                  <StatusColumn
-                    category={{
-                      ...subcategory,
-                      parentName: '',
-                    }}
-                    refetchCategories={refetch}
-                  />
-                </TableCell>
-              )
-            }
-            if (key === 'name') {
-              return (
-                <TableCell key={key} className="bg-transparent pl-8">
-                  <div className="flex items-center gap-1">
-                    {subcategory[key]}
-                    {subcategory.featured && (
-                      <Star className="h-4 w-4 fill-primary text-primary" />
-                    )}
-                  </div>
-                </TableCell>
-              )
-            }
-            if (key === 'slug') {
-              return (
-                <TableCell key={key} className="bg-transparent">
-                  <Badge variant="secondary" className="rounded-sm">
-                    {subcategory[key]}
-                  </Badge>
-                </TableCell>
-              )
-            }
-            if (key === 'parentName') {
-              return (
-                <TableCell key={key} className="bg-transparent">
-                  /
-                </TableCell>
-              )
-            }
-            if (key === 'createdAt' || key === 'updatedAt') {
-              return (
-                <TableCell key={key} className="bg-transparent">
-                  {formatDate(subcategory[key])}
-                </TableCell>
-              )
-            }
-            if (key === 'description') {
-              return (
-                <TableCell key={key} className="bg-transparent">
-                  {truncateText(subcategory[key])}
-                </TableCell>
-              )
-            }
-            if (key === 'actions') {
-              return (
-                <TableCell
-                  key={key}
-                  className="bg-transparent sticky right-0 text-right"
-                >
-                  <div className="flex justify-end gap-1">
-                    <EditCategory
-                      category={{
-                        ...subcategory,
-                        parentName: '',
-                      }}
-                      onSuccess={refetch}
-                    />
-                    <DeleteCategory
-                      category={{
-                        ...subcategory,
-                        parentName: '',
-                      }}
-                      onSuccess={refetch}
-                    />
-                  </div>
-                </TableCell>
-              )
-            }
-
-            return (
-              <TableCell key={key} className="bg-transparent">
-                {subcategory[key] ?? '/'}
-              </TableCell>
-            )
-          })}
-        </TableRow>
-      ))}
-    </>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCenter}
+      onDragEnd={handleDragEnd}
+    >
+      <SortableContext
+        items={displayList.map((s) => s.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        {displayList.map((subcategory, index) => (
+          <SortableRow
+            key={subcategory.id}
+            subcategory={{ ...subcategory, parentName: null }}
+            index={index}
+            sortMode={sortMode}
+            refetch={refetch}
+          />
+        ))}
+      </SortableContext>
+    </DndContext>
   )
 }

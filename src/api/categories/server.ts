@@ -261,3 +261,19 @@ export const getSubCategories = createServerFn({
 
     return subcategories
   })
+
+export const updateSubcategoriesSortOrder = createServerFn({
+  method: 'POST',
+})
+  .middleware([requireAdminMiddleware])
+  .inputValidator((data: Array<{ id: string; sortOrder: number }>) => data)
+  .handler(async ({ data }) => {
+    await db.transaction(async (tx) => {
+      await Promise.all(
+        data.map(({ id, sortOrder }) =>
+          tx.update(categories).set({ sortOrder }).where(eq(categories.id, id)),
+        ),
+      )
+    })
+    return { success: true }
+  })

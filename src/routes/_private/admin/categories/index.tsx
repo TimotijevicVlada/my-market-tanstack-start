@@ -2,6 +2,7 @@ import z from 'zod'
 import {
   ArrowUpDownIcon,
   BrushCleaningIcon,
+  CheckCheck,
   ChevronDownIcon,
   Star,
 } from 'lucide-react'
@@ -41,6 +42,7 @@ import { TableFilter } from '@/components/custom/Table/TableFilter'
 import { TableSort } from '@/components/custom/Table/TableSort'
 import { Button } from '@/components/custom/Button'
 import { cn } from '@/lib/utils'
+import { Tooltip } from '@/components/custom/Tooltip'
 
 const categoriesSearchSchema = z.object({
   page: z.coerce.number().optional(),
@@ -80,6 +82,11 @@ function CategoriesPage() {
 
   const { data, isLoading, error, refetch } = useGetCategories(params)
   const [subCategoriesOpenedId, setSubCategoriesOpenedId] = useState<
+    string | null
+  >(null)
+  const [subcategorySortModeCategoryId, setSubcategorySortModeCategoryId] =
+    useState<string | null>(null)
+  const [saveRequestedCategoryId, setSaveRequestedCategoryId] = useState<
     string | null
   >(null)
 
@@ -212,13 +219,19 @@ function CategoriesPage() {
                           <Button
                             variant="secondary"
                             size="icon-sm"
-                            onClick={() =>
-                              setSubCategoriesOpenedId(
+                            onClick={() => {
+                              const nextOpened =
                                 subCategoriesOpenedId === category.id
                                   ? null
-                                  : category.id,
-                              )
-                            }
+                                  : category.id
+                              setSubCategoriesOpenedId(nextOpened)
+                              if (
+                                nextOpened === null &&
+                                subcategorySortModeCategoryId === category.id
+                              ) {
+                                setSubcategorySortModeCategoryId(null)
+                              }
+                            }}
                           >
                             <ChevronDownIcon
                               className={cn(
@@ -278,6 +291,39 @@ function CategoriesPage() {
                         className="sticky right-0 text-right"
                       >
                         <div className="flex justify-end gap-1">
+                          <Tooltip
+                            title={
+                              subcategorySortModeCategoryId === category.id
+                                ? 'Sačuvaj redosled podkategorija'
+                                : 'Sortiraj podkategorije'
+                            }
+                          >
+                            <Button
+                              variant={
+                                subcategorySortModeCategoryId === category.id
+                                  ? 'default'
+                                  : 'ghost'
+                              }
+                              size="icon-sm"
+                              onClick={() => {
+                                if (
+                                  subcategorySortModeCategoryId === category.id
+                                ) {
+                                  setSaveRequestedCategoryId(category.id)
+                                } else {
+                                  setSubcategorySortModeCategoryId((prev) =>
+                                    prev === category.id ? null : category.id,
+                                  )
+                                }
+                              }}
+                            >
+                              {subcategorySortModeCategoryId === category.id ? (
+                                <CheckCheck />
+                              ) : (
+                                <ArrowUpDownIcon />
+                              )}
+                            </Button>
+                          </Tooltip>
                           <CreateSubcategory parentCategoryId={category.id} />
                           <EditCategory category={category} params={params} />
                           <DeleteCategory category={category} params={params} />
@@ -289,7 +335,15 @@ function CategoriesPage() {
                 })}
               </TableRow>
               {subCategoriesOpenedId === category.id && (
-                <SubCategories categoryId={subCategoriesOpenedId} />
+                <SubCategories
+                  categoryId={subCategoriesOpenedId}
+                  sortMode={subcategorySortModeCategoryId === category.id}
+                  saveRequested={saveRequestedCategoryId === category.id}
+                  onSaveDone={() => {
+                    setSaveRequestedCategoryId(null)
+                    setSubcategorySortModeCategoryId(null)
+                  }}
+                />
               )}
             </Fragment>
           ))}

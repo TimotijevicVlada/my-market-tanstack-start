@@ -9,6 +9,7 @@ import {
   getPagedCategories,
   getSubCategories,
   toggleCategoryActiveStatus,
+  updateSubcategoriesSortOrder,
 } from './server'
 import type { GetCategoriesParams } from './types'
 
@@ -104,5 +105,22 @@ export const useGetSubCategories = (categoryId: string) => {
     queryKey: ['subcategories', categoryId],
     queryFn: () => getSubCategories({ data: { categoryId } }),
     placeholderData: (prev) => prev,
+  })
+}
+
+export const useUpdateSubcategoriesSortOrder = (categoryId: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: Array<{ id: string; sortOrder: number }>) =>
+      updateSubcategoriesSortOrder({ data }),
+    onSuccess: () => {
+      toast.success('Redosled podkategorija je uspešno sačuvan')
+      queryClient.invalidateQueries({ queryKey: ['subcategories', categoryId] })
+      queryClient.invalidateQueries({ queryKey: ['categories'], exact: false })
+    },
+    onError: (error) => {
+      toast.error(error.message)
+    },
   })
 }
