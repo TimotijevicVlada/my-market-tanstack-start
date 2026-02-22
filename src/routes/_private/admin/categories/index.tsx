@@ -1,5 +1,10 @@
 import z from 'zod'
-import { BrushCleaningIcon, ChevronDownIcon, Star } from 'lucide-react'
+import {
+  ArrowUpDownIcon,
+  BrushCleaningIcon,
+  ChevronDownIcon,
+  Star,
+} from 'lucide-react'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
 import { Fragment, useState } from 'react'
 import { StatusColumn } from './-components/StatusColumn'
@@ -8,6 +13,7 @@ import { CreateCategory } from './-components/CreateCategory'
 import { SubCategories } from './-components/SubCategories'
 import { EditCategory } from './-components/EditCategory'
 import { DeleteCategory } from './-components/DeleteCategory'
+import { CreateSubcategory } from './-components/CreateSubcategory'
 import type {
   CategorySort,
   CategoryStatus,
@@ -138,7 +144,12 @@ function CategoriesPage() {
             </Button>
           )}
         </div>
-        <CreateCategory params={params} />
+        <div className="flex items-center gap-2">
+          <Button variant="outline">
+            <ArrowUpDownIcon /> Sortiraj kategorije
+          </Button>
+          <CreateCategory params={params} />
+        </div>
       </div>
       <Table>
         <TableHeader className="bg-muted">
@@ -237,11 +248,6 @@ function CategoriesPage() {
                       </TableCell>
                     )
                   }
-                  if (key === 'parentName') {
-                    return (
-                      <TableCell key={key}>{category[key] ?? '/'}</TableCell>
-                    )
-                  }
                   if (key === 'slug') {
                     return (
                       <TableCell key={key}>
@@ -272,6 +278,7 @@ function CategoriesPage() {
                         className="sticky right-0 text-right"
                       >
                         <div className="flex justify-end gap-1">
+                          <CreateSubcategory parentCategoryId={category.id} />
                           <EditCategory category={category} params={params} />
                           <DeleteCategory category={category} params={params} />
                         </div>

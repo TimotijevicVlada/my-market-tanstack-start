@@ -38,7 +38,7 @@ export const DeleteCategory = ({
       <Tooltip title="Brisanje kategorije">
         <Button
           variant="ghost"
-          size="icon"
+          size="icon-sm"
           onClick={() => setIsOpen(true)}
           loading={{ state: isPending, text: 'Brisanje...' }}
         >

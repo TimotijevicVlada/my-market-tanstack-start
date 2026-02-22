@@ -40,7 +40,6 @@ export const categoriesColumns: Array<Column> = [
   { label: 'Status', key: 'isActive' },
   { label: 'Naziv', key: 'name' },
   { label: 'Slug', key: 'slug' },
-  { label: 'Nadređena kategorija', key: 'parentName' },
   { label: 'Opis', key: 'description' },
   { label: 'Kreirano', key: 'createdAt' },
   { label: 'Ažurirano', key: 'updatedAt' },

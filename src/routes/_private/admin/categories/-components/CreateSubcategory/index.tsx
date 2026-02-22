@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { PencilIcon } from 'lucide-react'
+import { PlusIcon } from 'lucide-react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { categorySchema, defaultValues } from '../zod-schema'
 import { CategoryForm } from '../CategoryForm'
-import type { Category, GetCategoriesParams } from '@/api/categories/types'
 import type { CategorySchema } from '../zod-schema'
-import { useEditCategory } from '@/api/categories/queries'
+import { useCreateCategory } from '@/api/categories/queries'
 import { Button } from '@/components/custom/Button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -17,72 +16,61 @@ import {
 } from '@/components/ui/dialog'
 import { Tooltip } from '@/components/custom/Tooltip'
 
-interface EditCategoryProps {
-  params?: GetCategoriesParams
-  category: Category
-  onSuccess?: () => void
+interface CreateSubcategoryProps {
+  parentCategoryId: string
 }
 
-export const EditCategory = ({
-  params,
-  category,
-  onSuccess,
-}: EditCategoryProps) => {
-  const [categoryToEdit, setCategoryToEdit] = useState<Category | null>(null)
+export const CreateSubcategory = ({
+  parentCategoryId,
+}: CreateSubcategoryProps) => {
+  const [isOpen, setIsOpen] = useState(false)
 
   const methods = useForm<CategorySchema>({
     resolver: zodResolver(categorySchema),
     defaultValues: defaultValues,
   })
 
-  const { mutate: editCategory, isPending } = useEditCategory(params)
+  const { reset } = methods
+
+  const { mutate: createCategory, isPending } = useCreateCategory()
 
   const onFormSubmit = (data: CategorySchema) => {
-    editCategory(
-      { data: { ...data, categoryId: category.id } },
+    createCategory(
+      { data },
       {
         onSuccess: () => {
-          setCategoryToEdit(null)
-          onSuccess?.()
+          reset()
+          setIsOpen(false)
         },
       },
     )
   }
 
   useEffect(() => {
-    if (categoryToEdit) {
-      methods.reset(categoryToEdit)
+    if (parentCategoryId && isOpen) {
+      methods.setValue('parentId', parentCategoryId)
     }
-  }, [categoryToEdit])
+  }, [parentCategoryId, isOpen])
 
   return (
     <>
-      <Tooltip title="Izmena kategorije">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          onClick={() => setCategoryToEdit(category)}
-          disabled={!category.isActive}
-        >
-          <PencilIcon
-            className={`${!category.isActive ? 'text-muted-foreground' : 'text-orange-500'}`}
-          />
+      <Tooltip title="Dodaj podkategoriju">
+        <Button variant="ghost" size="icon-sm" onClick={() => setIsOpen(true)}>
+          <PlusIcon className="text-green-500" />
         </Button>
       </Tooltip>
-      <Dialog
-        open={!!categoryToEdit}
-        onOpenChange={() => setCategoryToEdit(null)}
-      >
+      <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
         <DialogContent className="max-w-sm sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Izmena kategorije</DialogTitle>
+            <DialogTitle>Dodavanje podkategorije</DialogTitle>
             <Separator />
           </DialogHeader>
           <FormProvider {...methods}>
             <CategoryForm
               onFormSubmit={onFormSubmit}
               isSubmitting={isPending}
-              type="edit"
+              type="create"
+              createSubcategory
             />
           </FormProvider>
         </DialogContent>

@@ -31,6 +31,7 @@ interface SelectProps<T> {
   required?: boolean
   error?: string
   description?: string
+  disabled?: boolean
 }
 
 export const Select = <T extends { id: string }>({
@@ -43,6 +44,7 @@ export const Select = <T extends { id: string }>({
   required = false,
   error,
   description,
+  disabled = false,
 }: SelectProps<T>) => {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -55,7 +57,7 @@ export const Select = <T extends { id: string }>({
         </Label>
       )}
       <Popover open={isOpen} onOpenChange={(open) => setIsOpen(open)}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger asChild disabled={disabled}>
           <Button
             variant="outline"
             role="combobox"
@@ -73,6 +75,7 @@ export const Select = <T extends { id: string }>({
             <div className="flex items-center gap-2">
               {value && (
                 <Button
+                  type="button"
                   variant="ghost"
                   size="icon-sm"
                   className="w-7 h-7"

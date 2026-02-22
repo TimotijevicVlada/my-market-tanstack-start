@@ -36,7 +36,7 @@ export const useGetLeafCategories = () => {
   })
 }
 
-export const useCreateCategory = (params: GetCategoriesParams) => {
+export const useCreateCategory = (params?: GetCategoriesParams) => {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -44,6 +44,10 @@ export const useCreateCategory = (params: GetCategoriesParams) => {
     onSuccess: () => {
       toast.success('Kategorija je uspešno kreirana')
       queryClient.invalidateQueries({ queryKey: ['categories', params] })
+      queryClient.invalidateQueries({
+        queryKey: ['subcategories'],
+        exact: false,
+      })
     },
     onError: (error) => {
       toast.error(error.message)

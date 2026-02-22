@@ -24,12 +24,14 @@ interface CategoryFormProps {
   onFormSubmit: (data: CategorySchema) => void
   isSubmitting: boolean
   type: 'create' | 'edit'
+  createSubcategory?: boolean
 }
 
 export const CategoryForm = ({
   onFormSubmit,
   isSubmitting,
   type,
+  createSubcategory,
 }: CategoryFormProps) => {
   const { data: categories } = useGetAllCategories()
 
@@ -59,30 +61,35 @@ export const CategoryForm = ({
         {...register('name')}
       />
       <SlugField />
-      <Select
-        options={categories ?? []}
-        label="Nadređena kategorija"
-        placeholder="Izaberite nadređenu kategoriju"
-        value={parentCategoryId ?? null}
-        keys={{ label: 'name', value: 'id' }}
-        onSelect={(category) => onChange(category?.id ?? null)}
-      />
-      <IconSelect />
-      <FieldLabel>
-        <Field orientation="horizontal">
-          <Checkbox
-            id="toggle-checkbox-2"
-            checked={featured}
-            onCheckedChange={onCheckboxChange}
-          />
-          <FieldContent>
-            <FieldTitle>Istaknuta kategorija</FieldTitle>
-            <FieldDescription>
-              Istaknuta kategorija će biti prikazana na početnoj stranici
-            </FieldDescription>
-          </FieldContent>
-        </Field>
-      </FieldLabel>
+      {createSubcategory && (
+        <Select
+          options={categories ?? []}
+          label="Nadređena kategorija"
+          placeholder="Izaberite nadređenu kategoriju"
+          value={parentCategoryId ?? null}
+          keys={{ label: 'name', value: 'id' }}
+          onSelect={(category) => onChange(category?.id ?? null)}
+          disabled={createSubcategory}
+        />
+      )}
+      {!createSubcategory && <IconSelect />}
+      {!createSubcategory && (
+        <FieldLabel>
+          <Field orientation="horizontal">
+            <Checkbox
+              id="toggle-checkbox-2"
+              checked={featured}
+              onCheckedChange={onCheckboxChange}
+            />
+            <FieldContent>
+              <FieldTitle>Istaknuta kategorija</FieldTitle>
+              <FieldDescription>
+                Istaknuta kategorija će biti prikazana na početnoj stranici
+              </FieldDescription>
+            </FieldContent>
+          </Field>
+        </FieldLabel>
+      )}
       <div>
         <Label className="mb-2">Opis kategorije</Label>
         <Textarea
@@ -101,7 +108,7 @@ export const CategoryForm = ({
           }}
         >
           <Save />
-          {type === 'create' ? 'Sacuvaj' : 'Izmeni'}
+          {type === 'create' ? 'Sačuvaj' : 'Izmeni'}
         </Button>
       </DialogFooter>
     </form>
